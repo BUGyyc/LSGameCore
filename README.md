@@ -1,3 +1,47 @@
+
+- [DEV\_LIST](#dev_list)
+- [Framework Pipeline](#framework-pipeline)
+- [Lockstep Tutorial](#lockstep-tutorial)
+		- [前言](#前言)
+		- [教程大纲](#教程大纲)
+			- [阶段零: 帧同步概要](#阶段零-帧同步概要)
+			- [阶段一: 基础帧同步(视频重置中...)](#阶段一-基础帧同步视频重置中)
+			- [阶段二：预测\&回滚式 (视频重置中...)](#阶段二预测回滚式-视频重置中)
+			- [**References：**](#references)
+			- [**赞助名单**](#赞助名单)
+
+
+
+---
+
+# DEV_LIST
+
+- [X] HashCode 验证
+- [] 弱网络测试
+- [] Sync 流程
+- [] UDP、TCP 环境验证
+- [] CodeGenerate 生成
+
+
+# Framework Pipeline
+
+- 三种模式：
+  - Client 模式
+  - Host Client 模式
+  - Pure Server 模式
+- 两个工程：
+  - Client 工程
+  - Client 工程 + 内嵌战斗服代码（战斗服只是一个网络线程，只做广播协议）
+- 工程启动流程：
+  - 打开 Launch 场景
+    - Host Client 模式：作为房主，点击CreateRoom，创建房间，会得到随机端口号，也可以自主设定端口号；
+    - Client 模式：点击 JoinRoom，输入目标端口，进入房间
+
+
+
+
+
+---
 #  Lockstep Tutorial
 
 ### 前言

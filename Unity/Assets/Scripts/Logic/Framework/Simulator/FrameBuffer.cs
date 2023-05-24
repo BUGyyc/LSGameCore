@@ -245,6 +245,9 @@ namespace Lockstep.Game {
                 }
                 else {
                     IsNeedRollback = true;
+
+                    LogMaster.E("[RollBack]  本地对比 帧数据不一致，进行回滚    ");
+
                     break;
                 }
             }

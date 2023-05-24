@@ -6,6 +6,12 @@ using Lockstep.Util;
 
 namespace Lockstep.Game {
     public partial class GameStateService {
+
+        /// <summary>
+        /// ! 计算得到关键的 Hash 数据
+        /// </summary>
+        /// <param name="idx"></param>
+        /// <returns></returns>
         public override int GetHash(ref int idx){
             int hash = 1;
             foreach (var entity in GetPlayers()) {
