@@ -2,13 +2,13 @@
 - [DEV\_LIST](#dev_list)
 - [Framework Pipeline](#framework-pipeline)
 - [Lockstep Tutorial](#lockstep-tutorial)
-		- [前言](#前言)
-		- [教程大纲](#教程大纲)
-			- [阶段零: 帧同步概要](#阶段零-帧同步概要)
-			- [阶段一: 基础帧同步(视频重置中...)](#阶段一-基础帧同步视频重置中)
-			- [阶段二：预测\&回滚式 (视频重置中...)](#阶段二预测回滚式-视频重置中)
-			- [**References：**](#references)
-			- [**赞助名单**](#赞助名单)
+    - [前言](#前言)
+    - [教程大纲](#教程大纲)
+      - [阶段零: 帧同步概要](#阶段零-帧同步概要)
+      - [阶段一: 基础帧同步(视频重置中...)](#阶段一-基础帧同步视频重置中)
+      - [阶段二：预测\&回滚式 (视频重置中...)](#阶段二预测回滚式-视频重置中)
+      - [**References：**](#references)
+      - [**赞助名单**](#赞助名单)
 
 
 
@@ -17,10 +17,13 @@
 # DEV_LIST
 
 - [X] [HashCode 验证](/Doc/HashCode%20%E9%AA%8C%E8%AF%81.md)
-- [] 弱网络测试
-- [] Sync 流程
-- [] UDP、TCP 环境验证
-- [] CodeGenerate 生成
+- [X] 弱网络测试
+
+- [ ] Sync 流程图
+- [ ] UDP、TCP 环境验证
+- [ ] CodeGenerate 生成
+- [ ] AssetBundle
+- [ ] HybridCLR
 
 
 # Framework Pipeline
