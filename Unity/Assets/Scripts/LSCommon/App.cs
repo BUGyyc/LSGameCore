@@ -23,4 +23,30 @@ public static class APP{
 
     //!  游戏内的战斗配置在 GameConfig 中 
 
+
+#region  模拟客户端网络抖动
+    /// <summary>
+    /// 客户端模拟网络抖动延迟
+    /// </summary>
+    public static bool DebugClientNetDelay = true;
+
+    public static float DebugClientNetDelayPercent = 0.9f;
+
+    public static int DebugMaxClientNetDelayFrameCount = 60;
+
+    public static int DebugMinClientNetDelayFrameCount = 50;
+
+    /// <summary>
+    /// 通过Min、Max 随机出来的比较帧号
+    /// </summary>
+    public static int DebugClientNetDelayCompareFrame;
+
+    /// <summary>
+    /// 上一次的延迟帧号
+    /// </summary>
+    public static int DebugClientNetDelayStartFrame;
+
+#endregion
+
+
 }

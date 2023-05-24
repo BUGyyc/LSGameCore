@@ -16,7 +16,7 @@
 
 # DEV_LIST
 
-- [X] HashCode 验证
+- [X] [HashCode 验证](/Doc/HashCode%20%E9%AA%8C%E8%AF%81.md)
 - [] 弱网络测试
 - [] Sync 流程
 - [] UDP、TCP 环境验证

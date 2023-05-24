@@ -376,8 +376,38 @@ namespace Lockstep.Game {
                 DoClientUpdate();
             }
             else {
+
+                int tempTick = inputTick;
                 while (inputTick <= inputTargetTick) {
-                    SendInputs(inputTick++);
+                    if(APP.DebugClientNetDelay == false)
+                    {
+                        SendInputs(inputTick++);
+                    }
+                    else if(APP.DebugClientNetDelayStartFrame == 0)
+                    {
+                        //开始随机
+                        bool DelayResult = UnityEngine.Random.Range(0,1f) <= APP.DebugClientNetDelayPercent;
+
+                        if(DelayResult){
+                            //随机出一个持续帧号
+                            APP.DebugClientNetDelayCompareFrame = UnityEngine.Random.Range(APP.DebugMinClientNetDelayFrameCount,APP.DebugMaxClientNetDelayFrameCount);
+                            //记录当前帧号
+                            APP.DebugClientNetDelayStartFrame = tempTick;
+                        }
+                        else
+                        {
+                            SendInputs(inputTick++);
+                        }
+                    }
+                    else if(tempTick - APP.DebugClientNetDelayStartFrame >= APP.DebugClientNetDelayCompareFrame)
+                    {
+                        //清空
+                        APP.DebugClientNetDelayStartFrame = 0;
+                        APP.DebugClientNetDelayCompareFrame = 0;
+                    }else{
+                        LogMaster.L($"模拟网络延迟 tempTick {tempTick}    ");
+                    }
+                    tempTick++;
                 }
 
                 DoNormalUpdate();
