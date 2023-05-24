@@ -79,13 +79,13 @@ namespace Lockstep.Game {
         public void OnRoomInfoUpdate(RoomInfo[] addInfo, int[] deleteInfos, RoomChangedInfo[] changedInfos){ }
 
         public void OnTcpHello(Msg_G2C_Hello msg){
-            Log($"OnTcpHello msg:{msg} ");
+            Log($"[Client]  OnTcpHello msg:{msg} ");
             EventHelper.Trigger(EEvent.OnGameCreate, msg);
             //CoroutineHelper.StartCoroutine(YiledLoadingMap());
         }
 
         public void OnUdpHello(int mapId, byte localId){
-            Log($"OnUdpHello mapId:{mapId} localId:{localId}");
+            Log($"[Client]  OnUdpHello mapId:{mapId} localId:{localId}");
         }
 
         public void OnGameStartInfo(Msg_G2C_GameStartInfo data){
@@ -102,7 +102,8 @@ namespace Lockstep.Game {
         }
 
         public void OnAllFinishedLoaded(short level){
-            Log("OnAllFinishedLoaded " + level);
+            Log("[Client]  OnAllFinishedLoaded " + level);
+            LogMaster.L($"加载完成 level {level} ");
             EventHelper.Trigger(EEvent.OnAllPlayerFinishedLoad, level);
         }
 

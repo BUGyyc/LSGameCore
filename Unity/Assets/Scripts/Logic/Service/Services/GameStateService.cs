@@ -19,8 +19,9 @@ namespace Lockstep.Game {
 
         private void AddEntity<T>(T e) where T : BaseEntity{
             if (typeof(T) == typeof(Player)) {
-                int i = 0;
+                // int i = 0;
                 Debug.Log("Add Player");
+                LogMaster.L($"[Client]  加入玩家");
             }
 
             var t = e.GetType();

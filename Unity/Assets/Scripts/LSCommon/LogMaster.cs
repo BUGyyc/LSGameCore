@@ -28,7 +28,7 @@ public static class LogMaster
 // #if UNITY_EDITOR
         if (World.Instance != null) tickValue = World.Instance.Tick;
 // #endif
-        Debug.LogErrorFormat($"<color=red> tick:{tickValue}  err:    {string.Join(",", str)}   </color>");
+        Debug.LogErrorFormat($"<color=red> [Tick:{tickValue}]  err:    {string.Join(",", str)}   </color>");
     }
 
 

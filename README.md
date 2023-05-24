@@ -17,6 +17,13 @@
 - [ ] CodeGenerate 生成
 - [ ] AssetBundle
 - [ ] HybridCLR
+- [ ] 一键打包工具
+- [ ] 资源规范检测工具
+
+- [ ] 战斗验证
+  - [ ] 动画帧与逻辑帧号对齐
+  - [ ] Timeline 结合 帧同步
+  - [ ] 动画驱动位移测试
 
 
 # Framework Pipeline

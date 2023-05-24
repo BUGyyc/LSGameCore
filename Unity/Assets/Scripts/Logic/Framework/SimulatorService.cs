@@ -269,7 +269,8 @@ namespace Lockstep.Game {
             }
 
             _world.StartGame(_gameStartInfo, LocalActorId);
-            Debug.Log($"Game Start");
+            Debug.Log($"[Client]  Game Start");
+            LogMaster.L($"-------------------------------游戏启动 ---------------------------------------------------------------------- ");
             EventHelper.Trigger(EEvent.SimulationStart, null);
 
             while (inputTick < PreSendInputCount) {
