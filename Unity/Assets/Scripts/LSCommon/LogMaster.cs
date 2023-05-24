@@ -2,20 +2,20 @@
  * @Author: delevin.ying 
  * @Date: 2023-05-24 13:53:22 
  * @Last Modified by: delevin.ying
- * @Last Modified time: 2023-05-24 14:00:33
+ * @Last Modified time: 2023-05-24 16:48:47
  */
 
 
 using UnityEngine;
-using System.Linq;
+using Lockstep.Game;
 
 public static class LogMaster
 {
     public static void L(params string[] str)
     {
-        uint tickValue = 0;
+        int tickValue = 0;
         //#if UNITY_EDITOR
-        // if (ActionWorld.Instance != null) tickValue = ActionWorld.Instance.Simulation.GetWorld().Contexts.gameState.tick.value;
+        if (World.Instance != null) tickValue = World.Instance.Tick;
         //#endif
 
         Debug.LogFormat($"<color=yellow> [Tick:{tickValue}]  info:  {string.Join(",", str)}   </color>");
@@ -24,9 +24,9 @@ public static class LogMaster
 
     public static void E(params string[] str)
     {
-        uint tickValue = 0;
+        int tickValue = 0;
 // #if UNITY_EDITOR
-//         if (ActionWorld.Instance != null) tickValue = ActionWorld.Instance.Simulation.GetWorld().Contexts.gameState.tick.value;
+        if (World.Instance != null) tickValue = World.Instance.Tick;
 // #endif
         Debug.LogErrorFormat($"<color=red> tick:{tickValue}  err:    {string.Join(",", str)}   </color>");
     }

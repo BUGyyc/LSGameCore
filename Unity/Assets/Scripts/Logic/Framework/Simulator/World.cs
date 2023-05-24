@@ -110,7 +110,9 @@ namespace Lockstep.Game {
             Tick++;
         }
 
-
+        /// <summary>
+        ///! GameCore Logic
+        /// </summary>
         public void RegisterSystems(){
             RegisterSystem(new HeroSystem());
             RegisterSystem(new EnemySystem());

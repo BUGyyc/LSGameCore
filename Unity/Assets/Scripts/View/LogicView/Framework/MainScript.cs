@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MainScript : MonoBehaviour {
     public Launcher launcher = new Launcher();
-    public int MaxEnemyCount = 10;
+    private int MaxEnemyCount = APP.MaxEnemyCount;
     public bool IsClientMode = false;
     public bool IsRunVideo;
     public bool IsVideoMode = false;

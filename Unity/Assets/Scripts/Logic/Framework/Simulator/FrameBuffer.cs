@@ -264,6 +264,8 @@ namespace Lockstep.Game {
                 || _nextClientTick >
                 MaxContinueServerTick + (_maxClientPredictFrameCount - 3) //client has predict too much
             ) {
+                //! 请求丢失的帧数据
+
                 Debug.Log("SendMissFrameReq " + MaxContinueServerTick);
                 _networkService.SendMissFrameReq(MaxContinueServerTick);
             }

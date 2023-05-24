@@ -1,4 +1,142 @@
-﻿#define DEBUG_FRAME_DELAY
+﻿/*
+ * @Author: delevin.ying 
+ * @Date: 2023-05-24 15:59:19 
+ * @Last Modified by: delevin.ying
+ * @Last Modified time: 2023-05-24 16:15:21
+ */
+/*
+ * @Author: delevin.ying 
+ * @Date: 2023-05-24 15:59:18 
+ * @Last Modified by:   delevin.ying 
+ * @Last Modified time: 2023-05-24 15:59:18 
+ */
+/*
+ * @Author: delevin.ying 
+ * @Date: 2023-05-24 15:59:16 
+ * @Last Modified by:   delevin.ying 
+ * @Last Modified time: 2023-05-24 15:59:16 
+ */
+/*
+ * @Author: delevin.ying 
+ * @Date: 2023-05-24 15:59:10 
+ * @Last Modified by:   delevin.ying 
+ * @Last Modified time: 2023-05-24 15:59:10 
+ */
+/*
+ * @Author: delevin.ying 
+ * @Date: 2023-05-24 15:59:06 
+ * @Last Modified by:   delevin.ying 
+ * @Last Modified time: 2023-05-24 15:59:06 
+ */
+/*
+ * @Author: delevin.ying 
+ * @Date: 2023-05-24 15:58:59 
+ * @Last Modified by:   delevin.ying 
+ * @Last Modified time: 2023-05-24 15:58:59 
+ */
+/*
+ * @Author: delevin.ying 
+ * @Date: 2023-05-24 15:58:59 
+ * @Last Modified by:   delevin.ying 
+ * @Last Modified time: 2023-05-24 15:58:59 
+ */
+/*
+ * @Author: delevin.ying 
+ * @Date: 2023-05-24 15:58:58 
+ * @Last Modified by:   delevin.ying 
+ * @Last Modified time: 2023-05-24 15:58:58 
+ */
+/*
+ * @Author: delevin.ying 
+ * @Date: 2023-05-24 15:58:57 
+ * @Last Modified by:   delevin.ying 
+ * @Last Modified time: 2023-05-24 15:58:57 
+ */
+/*
+ * @Author: delevin.ying 
+ * @Date: 2023-05-24 15:58:57 
+ * @Last Modified by:   delevin.ying 
+ * @Last Modified time: 2023-05-24 15:58:57 
+ */
+/*
+ * @Author: delevin.ying 
+ * @Date: 2023-05-24 15:58:57 
+ * @Last Modified by:   delevin.ying 
+ * @Last Modified time: 2023-05-24 15:58:57 
+ */
+/*
+ * @Author: delevin.ying 
+ * @Date: 2023-05-24 15:58:56 
+ * @Last Modified by:   delevin.ying 
+ * @Last Modified time: 2023-05-24 15:58:56 
+ */
+/*
+ * @Author: delevin.ying 
+ * @Date: 2023-05-24 15:58:56 
+ * @Last Modified by:   delevin.ying 
+ * @Last Modified time: 2023-05-24 15:58:56 
+ */
+/*
+ * @Author: delevin.ying 
+ * @Date: 2023-05-24 15:58:56 
+ * @Last Modified by:   delevin.ying 
+ * @Last Modified time: 2023-05-24 15:58:56 
+ */
+/*
+ * @Author: delevin.ying 
+ * @Date: 2023-05-24 15:58:55 
+ * @Last Modified by:   delevin.ying 
+ * @Last Modified time: 2023-05-24 15:58:55 
+ */
+/*
+ * @Author: delevin.ying 
+ * @Date: 2023-05-24 15:58:55 
+ * @Last Modified by:   delevin.ying 
+ * @Last Modified time: 2023-05-24 15:58:55 
+ */
+/*
+ * @Author: delevin.ying 
+ * @Date: 2023-05-24 15:58:54 
+ * @Last Modified by:   delevin.ying 
+ * @Last Modified time: 2023-05-24 15:58:54 
+ */
+/*
+ * @Author: delevin.ying 
+ * @Date: 2023-05-24 15:58:49 
+ * @Last Modified by:   delevin.ying 
+ * @Last Modified time: 2023-05-24 15:58:49 
+ */
+/*
+ * @Author: delevin.ying 
+ * @Date: 2023-05-24 15:58:49 
+ * @Last Modified by:   delevin.ying 
+ * @Last Modified time: 2023-05-24 15:58:49 
+ */
+/*
+ * @Author: delevin.ying 
+ * @Date: 2023-05-24 15:58:49 
+ * @Last Modified by:   delevin.ying 
+ * @Last Modified time: 2023-05-24 15:58:49 
+ */
+/*
+ * @Author: delevin.ying 
+ * @Date: 2023-05-24 15:58:48 
+ * @Last Modified by:   delevin.ying 
+ * @Last Modified time: 2023-05-24 15:58:48 
+ */
+/*
+ * @Author: delevin.ying 
+ * @Date: 2023-05-24 15:58:48 
+ * @Last Modified by:   delevin.ying 
+ * @Last Modified time: 2023-05-24 15:58:48 
+ */
+/*
+ * @Author: delevin.ying 
+ * @Date: 2023-05-24 15:58:47 
+ * @Last Modified by:   delevin.ying 
+ * @Last Modified time: 2023-05-24 15:58:47 
+ */
+#define DEBUG_FRAME_DELAY
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -205,6 +343,7 @@ namespace Lockstep.Game {
 
             if (_hasRecvInputMsg) {
                 if (_gameStartTimestampMs == -1) {
+                    //! 初始启动时间戳
                     _gameStartTimestampMs = LTime.realtimeSinceStartupMS;
                 }
             }
@@ -213,6 +352,7 @@ namespace Lockstep.Game {
                 return;
             }
 
+            //! 计算帧号
             _tickSinceGameStart =
                 (int) ((LTime.realtimeSinceStartupMS - _gameStartTimestampMs) / NetworkDefine.UPDATE_DELTATIME);
             if (_constStateService.IsVideoMode) {
@@ -245,6 +385,9 @@ namespace Lockstep.Game {
         }
 
 
+        /// <summary>
+        /// 纯服务器模式
+        /// </summary>
         private void DoClientUpdate(){
             int maxRollbackCount = 5;
             if (_isDebugRollback && _world.Tick > maxRollbackCount && _world.Tick % maxRollbackCount == 0) {
@@ -304,17 +447,21 @@ namespace Lockstep.Game {
 
             // Pursue Server frames
             var deadline = LTime.realtimeSinceStartupMS + MaxSimulationMsPerFrame;
+            
             while (_world.Tick < _cmdBuffer.CurTickInServer) {
                 var tick = _world.Tick;
                 var sFrame = _cmdBuffer.GetServerFrame(tick);
                 if (sFrame == null) {
+                    //? 没有拿到服务器帧，进行一次追帧
                     OnPursuingFrame();
                     return;
                 }
 
                 _cmdBuffer.PushLocalFrame(sFrame);
                 Simulate(sFrame, tick == minTickToBackup);
+
                 if (LTime.realtimeSinceStartupMS > deadline) {
+                    //延迟时间比较久了，进行追帧
                     OnPursuingFrame();
                     return;
                 }
@@ -383,11 +530,20 @@ namespace Lockstep.Game {
             }
         }
 
-
+        /// <summary>
+        /// 模拟一帧
+        /// </summary>
+        /// <param name="frame"></param>
+        /// <param name="isNeedGenSnap"></param>
         private void Simulate(ServerFrame frame, bool isNeedGenSnap = true){
             Step(frame, isNeedGenSnap);
         }
 
+        /// <summary>
+        /// 预测一帧
+        /// </summary>
+        /// <param name="frame"></param>
+        /// <param name="isNeedGenSnap"></param>
         private void Predict(ServerFrame frame, bool isNeedGenSnap = true){
             Step(frame, isNeedGenSnap);
         }
@@ -426,7 +582,7 @@ namespace Lockstep.Game {
                 CleanUselessSnapshot(System.Math.Min(_cmdBuffer.NextTickToCheck - 1, _world.Tick));
             }
         }
-
+        
         private void CleanUselessSnapshot(int tick){
             //TODO
         }
@@ -470,9 +626,12 @@ namespace Lockstep.Game {
             }
         }
 
+        /// <summary>
+        /// ? 追帧
+        /// </summary>
         void OnPursuingFrame(){
             _constStateService.IsPursueFrame = true;
-            Debug.Log($"PurchaseServering curTick:" + _world.Tick);
+            Debug.Log($"Purchase Servering curTick:" + _world.Tick);
             var progress = _world.Tick * 1.0f / _cmdBuffer.CurTickInServer;
             EventHelper.Trigger(EEvent.PursueFrameProcess, progress);
         }
