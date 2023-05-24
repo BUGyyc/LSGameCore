@@ -80,7 +80,7 @@
 
 ---
 
-< https://github.com/JiepengTan/LockstepEngine>
+<https://github.com/JiepengTan/LockstepEngine>
 <https://github.com/JiepengTan/LockstepEngine_ARPGDemo>
 <https://www.bilibili.com/video/av70422751/>
 <https://github.com/JiepengTan/LockstepMath>
