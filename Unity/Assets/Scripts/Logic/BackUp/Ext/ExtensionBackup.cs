@@ -22,12 +22,14 @@ namespace Lockstep.Game{
     public partial class Ball :IBackup{                                                                  
        public void WriteBackup(Serializer writer){                                           
 			writer.Write(EntityId);
+			writer.Write(entityType);
 			writer.Write(PrefabId);
 			transform.WriteBackup(writer);                                                                                     
        }                                                                                            
                                                                                                     
        public void ReadBackup(Deserializer reader){                                       
 			EntityId = reader.ReadInt32();
+			entityType = reader.ReadUInt32();
 			PrefabId = reader.ReadInt32();
 			transform.ReadBackup(reader);                                                                                     
        }                                                                                            
@@ -35,6 +37,7 @@ namespace Lockstep.Game{
        public int GetHash(ref int idx){                                      
            int hash = 1;                                                                             
 			hash += EntityId.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += entityType.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
 			hash += PrefabId.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
 			hash += transform.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);                                                                                     
            return hash;                                                                                    
@@ -42,6 +45,7 @@ namespace Lockstep.Game{
                                                                                                     
        public void DumpStr(StringBuilder sb,string prefix){                                       
 			sb.AppendLine(prefix + "EntityId"+":" + EntityId.ToString());
+			sb.AppendLine(prefix + "entityType"+":" + entityType.ToString());
 			sb.AppendLine(prefix + "PrefabId"+":" + PrefabId.ToString());
 			sb.AppendLine(prefix + "transform" +":");  transform.DumpStr(sb,"\t" + prefix);                                                                                     
        }                                                                                            
@@ -298,6 +302,7 @@ namespace Lockstep.Game{
     public partial class Enemy :IBackup{                                                                  
        public void WriteBackup(Serializer writer){                                           
 			writer.Write(EntityId);
+			writer.Write(entityType);
 			writer.Write(PrefabId);
 			writer.Write(curHealth);
 			writer.Write(damage);
@@ -316,6 +321,7 @@ namespace Lockstep.Game{
                                                                                                     
        public void ReadBackup(Deserializer reader){                                       
 			EntityId = reader.ReadInt32();
+			entityType = reader.ReadUInt32();
 			PrefabId = reader.ReadInt32();
 			curHealth = reader.ReadInt32();
 			damage = reader.ReadInt32();
@@ -335,6 +341,7 @@ namespace Lockstep.Game{
        public int GetHash(ref int idx){                                      
            int hash = 1;                                                                             
 			hash += EntityId.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += entityType.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
 			hash += PrefabId.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
 			hash += curHealth.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
 			hash += damage.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
@@ -354,6 +361,7 @@ namespace Lockstep.Game{
                                                                                                     
        public void DumpStr(StringBuilder sb,string prefix){                                       
 			sb.AppendLine(prefix + "EntityId"+":" + EntityId.ToString());
+			sb.AppendLine(prefix + "entityType"+":" + entityType.ToString());
 			sb.AppendLine(prefix + "PrefabId"+":" + PrefabId.ToString());
 			sb.AppendLine(prefix + "curHealth"+":" + curHealth.ToString());
 			sb.AppendLine(prefix + "damage"+":" + damage.ToString());
@@ -376,6 +384,7 @@ namespace Lockstep.Game{
     public partial class Player :IBackup{                                                                  
        public void WriteBackup(Serializer writer){                                           
 			writer.Write(EntityId);
+			writer.Write(entityType);
 			writer.Write(PrefabId);
 			writer.Write(curHealth);
 			writer.Write(damage);
@@ -396,6 +405,7 @@ namespace Lockstep.Game{
                                                                                                     
        public void ReadBackup(Deserializer reader){                                       
 			EntityId = reader.ReadInt32();
+			entityType = reader.ReadUInt32();
 			PrefabId = reader.ReadInt32();
 			curHealth = reader.ReadInt32();
 			damage = reader.ReadInt32();
@@ -417,6 +427,7 @@ namespace Lockstep.Game{
        public int GetHash(ref int idx){                                      
            int hash = 1;                                                                             
 			hash += EntityId.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += entityType.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
 			hash += PrefabId.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
 			hash += curHealth.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
 			hash += damage.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
@@ -438,6 +449,7 @@ namespace Lockstep.Game{
                                                                                                     
        public void DumpStr(StringBuilder sb,string prefix){                                       
 			sb.AppendLine(prefix + "EntityId"+":" + EntityId.ToString());
+			sb.AppendLine(prefix + "entityType"+":" + entityType.ToString());
 			sb.AppendLine(prefix + "PrefabId"+":" + PrefabId.ToString());
 			sb.AppendLine(prefix + "curHealth"+":" + curHealth.ToString());
 			sb.AppendLine(prefix + "damage"+":" + damage.ToString());
@@ -538,6 +550,7 @@ namespace Lockstep.Game{
     public partial class Spawner :IBackup{                                                                  
        public void WriteBackup(Serializer writer){                                           
 			writer.Write(EntityId);
+			writer.Write(entityType);
 			writer.Write(PrefabId);
 			writer.Write(Timer);
 			Info.WriteBackup(writer);
@@ -546,6 +559,7 @@ namespace Lockstep.Game{
                                                                                                     
        public void ReadBackup(Deserializer reader){                                       
 			EntityId = reader.ReadInt32();
+			entityType = reader.ReadUInt32();
 			PrefabId = reader.ReadInt32();
 			Timer = reader.ReadLFloat();
 			Info.ReadBackup(reader);
@@ -555,6 +569,7 @@ namespace Lockstep.Game{
        public int GetHash(ref int idx){                                      
            int hash = 1;                                                                             
 			hash += EntityId.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += entityType.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
 			hash += PrefabId.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
 			hash += Timer.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
 			hash += Info.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
@@ -564,6 +579,7 @@ namespace Lockstep.Game{
                                                                                                     
        public void DumpStr(StringBuilder sb,string prefix){                                       
 			sb.AppendLine(prefix + "EntityId"+":" + EntityId.ToString());
+			sb.AppendLine(prefix + "entityType"+":" + entityType.ToString());
 			sb.AppendLine(prefix + "PrefabId"+":" + PrefabId.ToString());
 			sb.AppendLine(prefix + "Timer"+":" + Timer.ToString());
 			sb.AppendLine(prefix + "Info" +":");  Info.DumpStr(sb,"\t" + prefix);

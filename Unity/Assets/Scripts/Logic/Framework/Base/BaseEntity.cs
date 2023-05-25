@@ -11,6 +11,7 @@ namespace Lockstep.Game {
     [Serializable]
     [NoBackup]
     public partial class BaseEntity : BaseLifeCycle, IEntity, ILPTriggerEventHandler {
+        public uint entityType;
         public int EntityId;
         public int PrefabId;
         public CTransform2D transform = new CTransform2D();

@@ -1,7 +1,9 @@
 using Lockstep.Game;
-
-namespace Lockstep.Game {
-    public interface IGameResourceService : IService {
-        object LoadPrefab(int id);
+using Lockstep.GameCore;
+namespace Lockstep.Game
+{
+    public interface IGameResourceService : IService
+    {
+        object LoadPrefab(int id, uint type);
     }
 }

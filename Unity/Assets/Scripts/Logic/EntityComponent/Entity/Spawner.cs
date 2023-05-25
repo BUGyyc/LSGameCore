@@ -1,5 +1,5 @@
 using System;
-using Lockstep.Game;
+using Lockstep.GameCore;
 using Lockstep.Math;
 
 namespace Lockstep.Game {    
@@ -26,7 +26,7 @@ namespace Lockstep.Game {
             }
 
             GameStateService.CurEnemyCount++;
-            GameStateService.CreateEntity<Enemy>(Info.prefabId, Info.spawnPoint);
+            GameStateService.CreateEntity<Enemy>(EntityType.Enemy,Info.prefabId, Info.spawnPoint);
         }
     }
 }

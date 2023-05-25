@@ -3,21 +3,30 @@ using Lockstep.Game;
 using Lockstep.Math;
 using UnityEngine;
 using Debug = Lockstep.Logging.Debug;
+using Lockstep.GameCore;
 
-namespace Lockstep.Game {
-    public class EnemySystem : BaseSystem {
+namespace Lockstep.Game
+{
+    public class EnemySystem : BaseSystem
+    {
         private Spawner[] Spawners => _gameStateService.GetSpawners();
         private Enemy[] AllEnemy => _gameStateService.GetEnemies();
 
-
-        public override void DoStart(){
-            for (int i = 0; i < 3; i++) {
+        public override void DoStart()
+        {
+            for (int i = 0; i < 3; i++)
+            {
                 var configId = 100 + i;
-                var config = _gameConfigService.GetEntityConfig(configId) as SpawnerConfig;
-                _gameStateService.CreateEntity<Spawner>(configId, config.entity.Info.spawnPoint);
+                var config = _gameConfigService.GetEntityConfig(EntityType.Spawner, configId) as SpawnerConfig;
+                _gameStateService.CreateEntity<Spawner>(
+                    EntityType.Spawner,
+                    configId,
+                    config.entity.Info.spawnPoint
+                );
             }
 
-            foreach (var spawner in Spawners) {
+            foreach (var spawner in Spawners)
+            {
                 spawner.ServiceContainer = _serviceContainer;
                 spawner.GameStateService = _gameStateService;
                 spawner.DebugService = _debugService;
@@ -25,12 +34,15 @@ namespace Lockstep.Game {
             }
         }
 
-        public override void DoUpdate(LFloat deltaTime){
-            foreach (var spawner in Spawners) {
+        public override void DoUpdate(LFloat deltaTime)
+        {
+            foreach (var spawner in Spawners)
+            {
                 spawner.DoUpdate(deltaTime);
             }
 
-            foreach (var enemy in AllEnemy) {
+            foreach (var enemy in AllEnemy)
+            {
                 enemy.DoUpdate(deltaTime);
             }
         }

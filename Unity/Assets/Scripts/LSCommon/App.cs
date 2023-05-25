@@ -32,9 +32,9 @@ public static class APP{
 
     public static float DebugClientNetDelayPercent = 0.9f;
 
-    public static int DebugMaxClientNetDelayFrameCount = 60;
+    public static int DebugMaxClientNetDelayFrameCount = 40;
 
-    public static int DebugMinClientNetDelayFrameCount = 50;
+    public static int DebugMinClientNetDelayFrameCount = 30;
 
     /// <summary>
     /// 通过Min、Max 随机出来的比较帧号

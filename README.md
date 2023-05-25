@@ -4,6 +4,7 @@
   - [ECS Core](#ecs-core)
     - [How write GameCore Code](#how-write-gamecore-code)
       - [new Entity](#new-entity)
+      - [显示层（GameObject绑定Entity）](#显示层gameobject绑定entity)
       - [new ComponentData](#new-componentdata)
       - [new System](#new-system)
     - [Runtime ECS 的增删改查](#runtime-ecs-的增删改查)
@@ -76,6 +77,22 @@ ExtensionAfterBackupEntity文件下补充，如下图：
 ![1685004983211](image/README/1685004983211.png)
 
 !最后点击 LPEngine->CodeGen，运行成功后。ExtensionBackup文件内会生成代码，自动填补了Hash、备份等相关代码。
+
+#### 显示层（GameObject绑定Entity）
+
+ECS 属于逻辑层，GameObject 属于显示层。我们需要特别的操作，将显示层绑定特定的Entity
+
+对于需要GameObject显示对象的，需要新增Config。在GameConfig内补充，如下：
+
+![1685011475878](image/README/1685011475878.png)
+
+另外，GameConfig中也需要设置，如下：
+
+![1685011525181](image/README/1685011525181.png)
+
+Resources内的配置也需要设置，如下：
+
+![1685011573258](image/README/1685011573258.png)
 
 
 #### new ComponentData
