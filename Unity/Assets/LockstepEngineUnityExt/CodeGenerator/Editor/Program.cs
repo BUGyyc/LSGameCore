@@ -10,44 +10,59 @@ using Lockstep.Game;
 
 #endif
 
-namespace Lockstep.CodeGenerator {
+namespace Lockstep.CodeGenerator
+{
 
 
-    public class CodeGenHelper {
-        public class CodeGenInfos {
+    public class CodeGenHelper
+    {
+        public class CodeGenInfos
+        {
             public GenInfo[] GenInfos;
         }
 
-        public static void Gen(string[] args){
-            if (args == null || args.Length == 0) {
-                args = new[] {"../Config/CodeGenerator/Config.json"};
+        public static void Gen(string[] args)
+        {
+            if (args == null || args.Length == 0)
+            {
+                args = new[] { "../Config/CodeGenerator/Config.json" };
             }
 
-            if (args.Length > 0) {
-                foreach (var path in args) {
+            if (args.Length > 0)
+            {
+                foreach (var path in args)
+                {
                     Debug.Log(path);
                     CopyFilesByConfig(Path.Combine(Define.BaseDirectory, path));
                 }
             }
-            else {
+            else
+            {
                 Debug.Log("Need config path");
             }
         }
 
-        static void CopyFilesByConfig(string configPath){
+        static void CopyFilesByConfig(string configPath)
+        {
+
+            LogMaster.S($"read config", configPath);
+
             var allTxt = File.ReadAllText(configPath);
             var config = JsonUtil.ToObject<CodeGenInfos>(allTxt);
             var prefix = Define.BaseDirectory;
-            foreach (var genInfo in config.GenInfos) {
+            foreach (var genInfo in config.GenInfos)
+            {
                 GenCode(genInfo);
             }
         }
 
-        static void GenCode(GenInfo info){
+        static void GenCode(GenInfo info)
+        {
             EditorBaseCodeGenerator gener = null;
             if (info == null || string.IsNullOrEmpty(info.GenerateFileName)) return;
             var path = Path.Combine(Define.BaseDirectory, info.TypeHandlerConfigPath);
-            Debug.Log(path);
+            // Debug.Log(path);
+            LogMaster.S($"GenCode by file",path);
             var allTxt = File.ReadAllText(path);
             var config = JsonUtil.ToObject<FileHandlerInfo>(allTxt);
             info.FileHandlerInfo = config;
@@ -65,9 +80,12 @@ namespace Lockstep.CodeGenerator {
     }
 #else
 
-    public static class EditorCodeGen {
+    public static class EditorCodeGen
+    {
         [MenuItem("LPEngine/CodeGen")]
-        static void CodeGen(){
+        static void CodeGen()
+        {
+            LogMaster.I("[Tool] 代码自动生成----------- ");
             Lockstep.Logging.Logger.OnMessage += UnityLogHandler.OnLog;
             var config = Resources.Load<CodeGenConfig>("CodeGenerator/CodeGenConfig");
             Define.RelPath = config.relPath;

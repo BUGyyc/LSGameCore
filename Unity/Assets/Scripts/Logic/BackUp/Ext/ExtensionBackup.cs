@@ -19,6 +19,36 @@ using System.Text;
 #if !DONT_USE_GENERATE_CODE                                                                      
 
 namespace Lockstep.Game{                                                                                               
+    public partial class Ball :IBackup{                                                                  
+       public void WriteBackup(Serializer writer){                                           
+			writer.Write(EntityId);
+			writer.Write(PrefabId);
+			transform.WriteBackup(writer);                                                                                     
+       }                                                                                            
+                                                                                                    
+       public void ReadBackup(Deserializer reader){                                       
+			EntityId = reader.ReadInt32();
+			PrefabId = reader.ReadInt32();
+			transform.ReadBackup(reader);                                                                                     
+       }                                                                                            
+                                                                                                    
+       public int GetHash(ref int idx){                                      
+           int hash = 1;                                                                             
+			hash += EntityId.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += PrefabId.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += transform.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);                                                                                     
+           return hash;                                                                                    
+       }                                                                                            
+                                                                                                    
+       public void DumpStr(StringBuilder sb,string prefix){                                       
+			sb.AppendLine(prefix + "EntityId"+":" + EntityId.ToString());
+			sb.AppendLine(prefix + "PrefabId"+":" + PrefabId.ToString());
+			sb.AppendLine(prefix + "transform" +":");  transform.DumpStr(sb,"\t" + prefix);                                                                                     
+       }                                                                                            
+    }                                                               
+}                                                              
+
+namespace Lockstep.Game{                                                                                               
     public partial class CAnimator :IBackup{                                                                  
        public void WriteBackup(Serializer writer){                                           
 			writer.Write(_animLen);
@@ -59,31 +89,31 @@ namespace Lockstep.Game{
 namespace Lockstep.Game{                                                                                               
     public partial class CBrain :IBackup{                                                                  
        public void WriteBackup(Serializer writer){                                           
-			writer.Write(atkInterval);
 			writer.Write(_atkTimer);
+			writer.Write(atkInterval);
 			writer.Write(stopDistSqr);
 			writer.Write(targetId);                                                                                     
        }                                                                                            
                                                                                                     
        public void ReadBackup(Deserializer reader){                                       
-			atkInterval = reader.ReadLFloat();
 			_atkTimer = reader.ReadLFloat();
+			atkInterval = reader.ReadLFloat();
 			stopDistSqr = reader.ReadLFloat();
 			targetId = reader.ReadInt32();                                                                                     
        }                                                                                            
                                                                                                     
        public int GetHash(ref int idx){                                      
            int hash = 1;                                                                             
-			hash += atkInterval.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
 			hash += _atkTimer.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += atkInterval.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
 			hash += stopDistSqr.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
 			hash += targetId.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);                                                                                     
            return hash;                                                                                    
        }                                                                                            
                                                                                                     
        public void DumpStr(StringBuilder sb,string prefix){                                       
+			sb.AppendLine(prefix + "_atkTimer"+":" + _atkTimer.ToString());
 			sb.AppendLine(prefix + "atkInterval"+":" + atkInterval.ToString());
-			sb.AppendLine(prefix + "atkTimer"+":" + _atkTimer.ToString());
 			sb.AppendLine(prefix + "stopDistSqr"+":" + stopDistSqr.ToString());
 			sb.AppendLine(prefix + "targetId"+":" + targetId.ToString());                                                                                     
        }                                                                                            

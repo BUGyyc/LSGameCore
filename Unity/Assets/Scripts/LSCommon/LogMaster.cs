@@ -8,6 +8,7 @@
 
 using UnityEngine;
 using Lockstep.Game;
+//using System.Diagnostics;
 
 public static class LogMaster
 {
@@ -18,16 +19,28 @@ public static class LogMaster
         if (World.Instance != null) tickValue = World.Instance.Tick;
         //#endif
 
-        Debug.LogFormat($"<color=yellow> [Tick:{tickValue}]  info:  {string.Join(",", str)}   </color>");
+        Debug.LogFormat($"<color=yellow> [Tick:{tickValue}] {string.Join(",", str)}   </color>");
+    }
+
+    [System.Diagnostics.Conditional("UNITY_EDITOR")]
+    public static void I(params string[] args)
+    {
+        Debug.LogFormat($"<color=yellow> {string.Join(",", args)}   </color>");
+    }
+
+    [System.Diagnostics.Conditional("UNITY_EDITOR")]
+    public static void S(string str1,string str2)
+    {
+        Debug.LogFormat($"<color=yellow>{str1}</color>  {str2}");
     }
 
 
     public static void E(params string[] str)
     {
         int tickValue = 0;
-// #if UNITY_EDITOR
+        // #if UNITY_EDITOR
         if (World.Instance != null) tickValue = World.Instance.Tick;
-// #endif
+        // #endif
         Debug.LogErrorFormat($"<color=red> [Tick:{tickValue}]  err:    {string.Join(",", str)}   </color>");
     }
 

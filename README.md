@@ -2,7 +2,11 @@
 - [DEV\_LIST](#dev_list)
 - [Framework Pipeline](#framework-pipeline)
   - [ECS Core](#ecs-core)
-    - [ECS 的增删改查](#ecs-的增删改查)
+    - [How write GameCore Code](#how-write-gamecore-code)
+      - [new Entity](#new-entity)
+      - [new ComponentData](#new-componentdata)
+      - [new System](#new-system)
+    - [Runtime ECS 的增删改查](#runtime-ecs-的增删改查)
       - [创建Entity](#创建entity)
       - [查找Entity](#查找entity)
       - [删除Entity](#删除entity)
@@ -57,7 +61,33 @@
 
 ## ECS Core
 
-### ECS 的增删改查
+### How write GameCore Code
+
+#### new Entity 
+
+新增一种Entity，例如新增一个篮球，加入到玩法中
+
+Entity 文件夹下，新增类：Ball。如下图：
+
+![1685004788568](image/README/1685004788568.png)
+
+ExtensionAfterBackupEntity文件下补充，如下图：
+
+![1685004983211](image/README/1685004983211.png)
+
+!最后点击 LPEngine->CodeGen，运行成功后。ExtensionBackup文件内会生成代码，自动填补了Hash、备份等相关代码。
+
+
+#### new ComponentData
+
+新增一种ComponentData
+
+#### new System
+
+新增一种规则、驱动逻辑
+
+
+### Runtime ECS 的增删改查
 
 #### 创建Entity
 
