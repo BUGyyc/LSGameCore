@@ -50,23 +50,36 @@ public class LaunchServer : MonoBehaviour
 
         connectBtn.onClick.AddListener(() =>
         {
-            string ip = IpIF.text;
-            int port = int.Parse(PortIF.text);
-            NetSetting.IP = ip;
-            NetSetting.Port = port;
-            NetSetting.Number = int.Parse(NumberIF.text);
-
-            Debug.Log($"[Server]  BtnStart   {ip}  {port}   {NetSetting.Number} ");
-
-            gameManager.SetActive(true);
-            connectBtn.enabled = false;
-            var txt = connectBtn.GetComponentInChildren<Text>();
-
-            if (txt != null)
-            {
-                txt.text = "房间已开启，等待链接";
-            }
+            ConnectBattle();
         });
+
+#if UNITY_EDITOR
+        if (APP.QuickDebugSinglePlayer)
+        {
+            NumberIF.text = "1";
+            ConnectBattle();
+        }
+#endif
+    }
+
+    private void ConnectBattle()
+    {
+        string ip = IpIF.text;
+        int port = int.Parse(PortIF.text);
+        NetSetting.IP = ip;
+        NetSetting.Port = port;
+        NetSetting.Number = int.Parse(NumberIF.text);
+
+        Debug.Log($"[Server]  BtnStart   {ip}  {port}   {NetSetting.Number} ");
+
+        gameManager.SetActive(true);
+        connectBtn.enabled = false;
+        var txt = connectBtn.GetComponentInChildren<Text>();
+
+        if (txt != null)
+        {
+            txt.text = "房间已开启，等待链接";
+        }
     }
 }
 

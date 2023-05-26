@@ -91,6 +91,11 @@ namespace Lockstep.Game
             return GetEntities<Spawner>().ToArray(); //TODO Cache
         }
 
+        public Ball[] GetBalls()
+        {
+            return GetEntities<Ball>().ToArray();
+        }
+
         public object GetEntity(int id)
         {
             if (_id2Entities.TryGetValue(id, out var val))

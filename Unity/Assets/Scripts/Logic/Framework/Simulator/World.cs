@@ -101,8 +101,8 @@ namespace Lockstep.Game
                 player.localId = i;
             }
 
-            LogMaster.I("创建篮球");
-            var ball = _gameStateService.CreateEntity<Ball>(EntityType.Ball, 0, LVector2.zero);
+            //LogMaster.I("创建篮球");
+            //var ball = _gameStateService.CreateEntity<Ball>(EntityType.Ball, 0, LVector2.zero);
 
             var allPlayers = _gameStateService.GetPlayers();
 
@@ -147,6 +147,7 @@ namespace Lockstep.Game
         {
             RegisterSystem(new HeroSystem());
             RegisterSystem(new EnemySystem());
+            RegisterSystem(new BallSystem());
             RegisterSystem(new PhysicSystem());
             RegisterSystem(new HashSystem());
         }

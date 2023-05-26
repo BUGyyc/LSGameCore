@@ -20,6 +20,13 @@ public class Launch : MonoBehaviour
         {
             SceneManager.LoadScene("Client");
         });
+
+#if UNITY_EDITOR
+        if (APP.QuickDebugSinglePlayer)
+        {
+            SceneManager.LoadScene("HostClient");
+        }
+#endif
     }
 
     // Update is called once per frame

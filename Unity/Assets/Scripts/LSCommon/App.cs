@@ -2,13 +2,15 @@
  * @Author: delevin.ying 
  * @Date: 2023-05-24 11:45:45 
  * @Last Modified by: delevin.ying
- * @Last Modified time: 2023-05-24 16:56:58
+ * @Last Modified time: 2023-05-26 14:41:00
  */
 
 
 public static class APP{
 
     // public 
+
+    public static bool QuickDebugSinglePlayer = false;
 
     public static bool DebugMissNetPackage = false;
 
