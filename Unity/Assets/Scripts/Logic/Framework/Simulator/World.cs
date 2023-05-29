@@ -124,6 +124,10 @@ namespace Lockstep.Game
             DoDestroy();
         }
 
+        /// <summary>
+        ///! 驱动战斗逻辑更新
+        /// </summary>
+        /// <param name="isNeedGenSnap"></param>
         public void Step(bool isNeedGenSnap = true)
         {
             if (_commonStateService.IsPause)

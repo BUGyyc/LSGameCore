@@ -20,6 +20,7 @@ namespace Lockstep.Game {
         }
 
         public void RegisterTimeMachine(ITimeMachine roll){
+            //!------------------------
             if (roll != null && roll != this && _timeMachineHash.Add(roll)) ;
             {
                 _allTimeMachines = null;

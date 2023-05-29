@@ -59,6 +59,7 @@ namespace Lockstep.Game {
             //AutoCreateManagers;
             var svcs = _serviceContainer.GetAllServices();
             foreach (var service in svcs) {
+                //! 所有的 GameCore System 注册 timeMachine 方便回滚
                 _timeMachineContainer.RegisterTimeMachine(service as ITimeMachine);
                 if (service is BaseService baseService) {
                     _mgrContainer.RegisterManager(baseService);
