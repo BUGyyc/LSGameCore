@@ -139,6 +139,11 @@ namespace NetMsg.Common {
             return tick;
         }
 
+        /// <summary>
+        ///! 对比，性能待验证
+        /// </summary>
+        /// <param name="frame"></param>
+        /// <returns></returns>
         public bool Equals(ServerFrame frame){
             if (frame == null) return false;
             if (tick != frame.tick) return false;

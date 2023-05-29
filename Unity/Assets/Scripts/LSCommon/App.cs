@@ -30,7 +30,7 @@ public static class APP{
     /// <summary>
     /// 客户端模拟网络抖动延迟
     /// </summary>
-    public static bool DebugClientNetDelay = false;
+    public static readonly bool DebugClientNetDelay = false;
 
     public static float DebugClientNetDelayPercent = 0.9f;
 

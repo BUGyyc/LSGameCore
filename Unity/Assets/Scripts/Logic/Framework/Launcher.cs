@@ -136,7 +136,9 @@ namespace Lockstep.Game {
             _syncContext.Update();
             Utils.UpdateServices();
             var deltaTime = fDeltaTime.ToLFloat();
+            //驱动客户端与服务端的网络模块逻辑更新，主要是收发包
             _networkService.DoUpdate(deltaTime);
+            //特别的重播模式
             if (IsVideoMode && IsRunVideo && CurTick < MaxRunTick) {
                 _simulatorService.RunVideo();
                 return;
@@ -146,6 +148,7 @@ namespace Lockstep.Game {
                 _simulatorService.JumpTo(JumpToTick);
             }
 
+            //! 核心逻辑，客户端的核心驱动
             _simulatorService.DoUpdate(fDeltaTime);
         }
 

@@ -174,6 +174,11 @@ namespace Lockstep.Game {
         #region tcp
 
         public Msg_G2C_GameStartInfo GameStartInfo { get; private set; }
+        
+        /// <summary>
+        /// 客户端接收到服务器心跳包回应
+        /// </summary>
+        /// <param name="reader"></param>
         protected void G2C_PlayerPing(object reader){
             var msg = reader as Msg_G2C_PlayerPing;
             EventHelper.Trigger(EEvent.OnPlayerPing, msg);
