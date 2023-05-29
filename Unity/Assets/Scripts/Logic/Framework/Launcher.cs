@@ -75,6 +75,8 @@ namespace Lockstep.Game {
                 mgr.InitReference(_serviceContainer, _mgrContainer);
             }
 
+
+            //! 这里进行了自动绑定事件
             //bind events
             foreach (var mgr in _mgrContainer.AllMgrs) {
                 _registerService.RegisterEvent<EEvent, GlobalEventHandler>("OnEvent_", "OnEvent_".Length,
@@ -130,6 +132,7 @@ namespace Lockstep.Game {
         }
 
         public void DoUpdate(float fDeltaTime){
+            //? 同步多线程数据到主线程？
             _syncContext.Update();
             Utils.UpdateServices();
             var deltaTime = fDeltaTime.ToLFloat();
