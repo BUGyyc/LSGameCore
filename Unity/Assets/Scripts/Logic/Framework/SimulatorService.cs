@@ -572,7 +572,11 @@ namespace Lockstep.Game
             inputs[LocalActorId] = input;
             cFrame.Inputs = inputs;
             cFrame.tick = curTick;
+
+            //TODO: ???
             FillInputWithLastFrame(cFrame);
+
+            //TODO: 对于一次客户端输入，认为输入是可靠的，因此生成了一个 Client 缓冲
             _cmdBuffer.PushLocalFrame(cFrame);
             //if (input.Commands != null) {
             //    var playerInput = new Deserializer(input.Commands[0].content).Parse<Lockstep.Game.PlayerInput>();
