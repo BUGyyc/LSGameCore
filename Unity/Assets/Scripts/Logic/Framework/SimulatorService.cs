@@ -482,6 +482,7 @@ namespace Lockstep.Game
                     return;
                 }
 
+                //TODO: 这里等同于 用 Server 缓冲写入 Client 缓冲？？？？
                 _cmdBuffer.PushLocalFrame(sFrame);
                 Simulate(sFrame, tick == minTickToBackup);
 
@@ -549,6 +550,7 @@ namespace Lockstep.Game
                     frame = cFrame;
                 }
 
+                //网络好的状况下，本地可能略快于服务器的广播，那么缓冲就是本地缓冲
                 _cmdBuffer.PushLocalFrame(frame);
                 Predict(frame, true);
             }
