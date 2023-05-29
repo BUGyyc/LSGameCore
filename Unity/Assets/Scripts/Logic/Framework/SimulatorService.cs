@@ -39,14 +39,25 @@ namespace Lockstep.Game
         /// </summary>
         public const int MaxPredictFrameCount = 30;
 
+        /// <summary>
+        /// 局部历史 平均 ping 
+        /// </summary>
         public int PingVal => _cmdBuffer?.PingVal ?? 0;
+        /// <summary>
+        /// 局部历史 平均 delay
+        /// </summary>
         public int DelayVal => _cmdBuffer?.DelayVal ?? 0;
 
         // components
         public World World => _world;
         private World _world;
         private IFrameBuffer _cmdBuffer;
+        /// <summary>
+        /// Hash 计算相关
+        /// </summary>
         private HashHelper _hashHelper;
+
+        //TODO:---------------------
         private DumpHelper _dumpHelper;
 
         // game status
@@ -185,6 +196,11 @@ namespace Lockstep.Game
             _dumpHelper.Trace(msg, isNewLine, isNeedLogTrace);
         }
 
+
+        /// <summary>
+        ///! 特殊的重播模式，用来跳帧
+        /// </summary>
+        /// <param name="tick"></param>
         public void JumpTo(int tick)
         {
             if (tick + 1 == _world.Tick || tick == _world.Tick)
@@ -229,6 +245,9 @@ namespace Lockstep.Game
             _tickOnLastJumpTo = tick;
         }
 
+        /// <summary>
+        /// ! 驱动重播模式
+        /// </summary>
         public void RunVideo()
         {
             if (_tickOnLastJumpTo == _world.Tick)
@@ -450,8 +469,10 @@ namespace Lockstep.Game
             // Pursue Server frames
             var deadline = LTime.realtimeSinceStartupMS + MaxSimulationMsPerFrame;
 
+            //! 当前帧 小于 服务器下发的准确帧 （这里的准确帧是通过了本地帧数据验证的 缓冲 ）
             while (_world.Tick < _cmdBuffer.CurTickInServer)
             {
+                //! 进行追帧
                 var tick = _world.Tick;
                 var sFrame = _cmdBuffer.GetServerFrame(tick);
                 if (sFrame == null)
@@ -466,7 +487,7 @@ namespace Lockstep.Game
 
                 if (LTime.realtimeSinceStartupMS > deadline)
                 {
-                    //延迟时间比较久了，进行追帧
+                    //????
                     OnPursuingFrame();
                     return;
                 }
@@ -474,6 +495,7 @@ namespace Lockstep.Game
 
             if (_constStateService.IsPursueFrame)
             {
+                //完成 PursueFrame
                 _constStateService.IsPursueFrame = false;
                 EventHelper.Trigger(EEvent.PursueFrameDone);
             }
@@ -531,6 +553,7 @@ namespace Lockstep.Game
                 Predict(frame, true);
             }
 
+            //! 发送需要验证的 HashCode 
             _hashHelper.CheckAndSendHashCodes();
         }
 
@@ -541,6 +564,7 @@ namespace Lockstep.Game
         void SendInputs(int curTick)
         {
             var input = new Msg_PlayerInput(curTick, LocalActorId, _inputService.GetInputCmds());
+            //! 创建了一个帧缓冲
             var cFrame = new ServerFrame();
             var inputs = new Msg_PlayerInput[_actorCount];
             inputs[LocalActorId] = input;
@@ -667,11 +691,17 @@ namespace Lockstep.Game
             inputs[LocalActorId] = myInput;
         }
 
+
+        /// <summary>
+        /// ! 处理输入队列
+        /// </summary>
+        /// <param name="frame"></param>
         private void ProcessInputQueue(ServerFrame frame)
         {
             var inputs = frame.Inputs;
             foreach (var playerInput in _playerInputs)
             {
+                //先清空，方便写入
                 playerInput.Reset();
             }
 
@@ -681,6 +711,8 @@ namespace Lockstep.Game
                     continue;
                 if (input.ActorId >= _playerInputs.Length)
                     continue;
+                
+                //! 这里描述为 InputEntity ，太牵强了~~~~~
                 var inputEntity = _playerInputs[input.ActorId];
                 foreach (var command in input.Commands)
                 {
@@ -688,6 +720,7 @@ namespace Lockstep.Game
                         this,
                         input.ActorId + " >> " + input.Tick + ": " + input.Commands.Count()
                     );
+                    //! 把 Command 内的数据写入 inputEntity
                     _inputService.Execute(command, inputEntity);
                 }
             }
@@ -701,6 +734,9 @@ namespace Lockstep.Game
             _constStateService.IsPursueFrame = true;
             Debug.Log($"Purchase Servering curTick:" + _world.Tick);
             var progress = _world.Tick * 1.0f / _cmdBuffer.CurTickInServer;
+
+            //! 等待帧号追上 服务器中的 帧号
+
             EventHelper.Trigger(EEvent.PursueFrameProcess, progress);
         }
 

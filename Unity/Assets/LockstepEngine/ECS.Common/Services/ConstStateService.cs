@@ -39,6 +39,9 @@ namespace Lockstep.Game {
 
     }
 
+    /// <summary>
+    /// ! 获取游戏的特殊状态数据
+    /// </summary>
     public partial class ConstStateService : BaseService, IConstStateService {
         public static ConstStateService Instance { get; private set; }
 

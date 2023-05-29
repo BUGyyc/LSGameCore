@@ -5,8 +5,10 @@ using System.Text;
 using Lockstep.Math;
 using Lockstep.Serialization;
 
-namespace Lockstep.Game {
-    public class HashHelper : BaseSimulatorHelper {
+namespace Lockstep.Game
+{
+    public class HashHelper : BaseSimulatorHelper
+    {
         private INetworkService _networkService;
         private IFrameBuffer _cmdBuffer;
 
@@ -14,58 +16,91 @@ namespace Lockstep.Game {
         private int _firstHashTick = 0;
         Dictionary<int, int> _tick2Hash = new Dictionary<int, int>();
 
-        public HashHelper(IServiceContainer serviceContainer, World world, INetworkService networkService,
-            IFrameBuffer cmdBuffer) : base(serviceContainer, world){
+        public HashHelper(
+            IServiceContainer serviceContainer,
+            World world,
+            INetworkService networkService,
+            IFrameBuffer cmdBuffer
+        )
+            : base(serviceContainer, world)
+        {
             this._networkService = networkService;
             this._cmdBuffer = cmdBuffer;
         }
 
-
-        public void CheckAndSendHashCodes(){
+        /// <summary>
+        /// ///! 计算出 HashCode ，并且发送给服务器
+        /// </summary>
+        public void CheckAndSendHashCodes()
+        {
             //only sends the hashCodes whose FrameInputs was checked
-            if (_cmdBuffer.NextTickToCheck > _firstHashTick) {
-                var count = LMath.Min(_allHashCodes.Count, (int) (_cmdBuffer.NextTickToCheck - _firstHashTick),
-                    (480 / 4));
-                if (count > 0) {
+            if (_cmdBuffer.NextTickToCheck > _firstHashTick)
+            {
+                var count = LMath.Min(
+                    _allHashCodes.Count,
+                    (int)(_cmdBuffer.NextTickToCheck - _firstHashTick),
+                    (480 / 4)
+                );
+                if (count > 0)
+                {
                     _networkService.SendHashCodes(_firstHashTick, _allHashCodes, 0, count);
                     _firstHashTick = _firstHashTick + count;
+                    //清理掉已经验证的 HashCode
                     _allHashCodes.RemoveRange(0, count);
                 }
             }
         }
 
-        public bool TryGetValue(int tick, out int hash){
+        public bool TryGetValue(int tick, out int hash)
+        {
             return _tick2Hash.TryGetValue(tick, out hash);
         }
 
-        public int CalcHash(bool isNeedTrace = false){
+        /// <summary>
+        /// ! 生成 HashCode
+        /// </summary>
+        /// <param name="isNeedTrace"></param>
+        /// <returns></returns>
+        public int CalcHash(bool isNeedTrace = false)
+        {
             int idx = 0;
-            return CalcHash(ref idx,isNeedTrace);
+            return CalcHash(ref idx, isNeedTrace);
         }
 
-
-        private int CalcHash(ref int idx,bool isNeedTrace){
+        private int CalcHash(ref int idx, bool isNeedTrace)
+        {
             int hashIdx = 0;
             int hashCode = 0;
             var debug = _serviceContainer.GetService<IDebugService>();
-            foreach (var svc in _serviceContainer.GetAllServices()) {
-                if (svc is IHashCode hashSvc) {
+            foreach (var svc in _serviceContainer.GetAllServices())
+            {
+                if (svc is IHashCode hashSvc)
+                {
                     hashCode += hashSvc.GetHash(ref hashIdx) * PrimerLUT.GetPrimer(hashIdx++);
-                    //if (isNeedTrace) { debug.Trace($"svc {svc.GetType().Name} hashCode{hashCode}" ,true);}
+                    // if (isNeedTrace) { debug.Trace($"svc {svc.GetType().Name} hashCode{hashCode}" ,true);}
                 }
             }
 
             return hashCode;
         }
 
-        public void SetHash(int tick, int hash){
-            if (tick < _firstHashTick) {
+        /// <summary>
+        /// 塞入Hash值
+        /// </summary>
+        /// <param name="tick"></param>
+        /// <param name="hash"></param>
+        public void SetHash(int tick, int hash)
+        {
+            if (tick < _firstHashTick)
+            {
                 return;
             }
 
-            var idx = (int) (tick - _firstHashTick);
-            if (_allHashCodes.Count <= idx) {
-                for (int i = 0; i < idx + 1; i++) {
+            var idx = (int)(tick - _firstHashTick);
+            if (_allHashCodes.Count <= idx)
+            {
+                for (int i = 0; i < idx + 1; i++)
+                {
                     _allHashCodes.Add(0);
                 }
             }

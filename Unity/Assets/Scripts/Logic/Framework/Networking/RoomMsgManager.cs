@@ -270,6 +270,13 @@ namespace Lockstep.Game {
             SendUdp(EMsgSC.C2G_RepMissFrameAck, new Msg_RepMissFrameAck() {MissFrameTick = missFrameTick});
         }
 
+        /// <summary>
+        /// 告知服务器，HashCode 
+        /// </summary>
+        /// <param name="firstHashTick"></param>
+        /// <param name="allHashCodes"></param>
+        /// <param name="startIdx"></param>
+        /// <param name="count"></param>
         public void SendHashCodes(int firstHashTick, List<int> allHashCodes, int startIdx, int count){
             Msg_HashCode msg = new Msg_HashCode();
             msg.StartTick = firstHashTick;

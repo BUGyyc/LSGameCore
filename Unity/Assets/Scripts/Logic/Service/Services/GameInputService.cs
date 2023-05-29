@@ -10,6 +10,11 @@ namespace Lockstep.Game {
     public class GameInputService : IInputService {
         public static PlayerInput CurGameInput = new PlayerInput();
 
+        /// <summary>
+        /// ! 这里相对于 往 entity 对象中写数据，也是为了减少创建新对象
+        /// </summary>
+        /// <param name="cmd"></param>
+        /// <param name="entity"></param>
         public void Execute(InputCmd cmd, object entity){
             var input = new Deserializer(cmd.content).Parse<PlayerInput>();
             var playerInput = entity as PlayerInput;
