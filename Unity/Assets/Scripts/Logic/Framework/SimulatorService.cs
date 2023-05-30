@@ -79,7 +79,9 @@ namespace Lockstep.Game
         public int TargetTick => _tickSinceGameStart + FramePredictCount;
 
         // input preSend
-        //TODO: ?? 需要发送的输入指令
+        /// <summary>
+        /// ?? 需要发送的输入指令
+        /// </summary>
         public int PreSendInputCount = 1; //~~~
         public int inputTick = 0;
         public int inputTargetTick => _tickSinceGameStart + PreSendInputCount;

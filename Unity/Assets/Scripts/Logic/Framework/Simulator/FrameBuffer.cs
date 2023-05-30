@@ -48,6 +48,7 @@ namespace Lockstep.Game
 
             //TODO:  ？？丢失的帧？？？？
             public int missTick = -1;
+
             /// <summary>
             /// ! 下一个需要检验的 帧号
             /// </summary>
@@ -66,16 +67,24 @@ namespace Lockstep.Game
             /// </summary>
             private float _timer;
 
-            //TODO: 间隔检测的时间阈值
+            /// <summary>
+            /// //TODO: 间隔检测的时间阈值
+            /// </summary>
             private float _checkInterval = 0.5f;
 
-            //TODO: ??????
+            /// <summary>
+            /// //TODO: ??????
+            /// </summary>
             private float _incPercent = 0.3f;
 
-            //TODO: ?????
+            /// <summary>
+            /// //TODO: ?????
+            /// </summary>
             private float _targetPreSendTick;
 
-            //TODO: ?????
+            /// <summary>
+            /// //TODO: ?????
+            /// </summary>
             private float _oldPercent = 0.6f;
 
             public void DoUpdate(float deltaTime)
@@ -86,7 +95,6 @@ namespace Lockstep.Game
                     _timer = 0;
                     if (!hasMissTick)
                     {
-
                         //!  awesome ------------------------------->  why  ????????
                         var preSend = _cmdBuffer._maxPing * 1.0f / NetworkDefine.UPDATE_DELTATIME;
                         _targetPreSendTick =
@@ -114,16 +122,26 @@ namespace Lockstep.Game
 
                 if (missTick != -1)
                 {
+                    //! 有记录到丢失的帧号
+
+                    //! 最大的预测帧号：相当于未来帧号
+                    //! 丢失的帧号
+                    //! 求得 延迟的 总帧数
                     var delayTick = _simulatorService.TargetTick - missTick;
+
+                    //! 求得预备发送的帧号，相当于从 PreSendInputCount 到 targetPreSendTick 得到一个发送窗口
                     var targetPreSendTick =
                         _simulatorService.PreSendInputCount
                         + (int)System.Math.Ceiling(delayTick * _incPercent);
+                    
+                    //限定范围
                     targetPreSendTick = LMath.Clamp(targetPreSendTick, 1, 60);
 #if UNITY_EDITOR
                     Debug.LogWarning(
                         $"Expend preSend buffer old:{_simulatorService.PreSendInputCount} new:{targetPreSendTick}"
                     );
 #endif
+                    //! 重新设定了发送窗口的最大值 帧号
                     _simulatorService.PreSendInputCount = targetPreSendTick;
                     nextCheckMissTick = _simulatorService.TargetTick;
                     missTick = -1;
@@ -136,9 +154,24 @@ namespace Lockstep.Game
         public static byte __debugMainActorID;
 
         //buffers
+        /// <summary>
+        /// 最大预测帧数
+        /// </summary>
         private int _maxClientPredictFrameCount;
+
+        /// <summary>
+        /// 帧缓冲的大小
+        /// </summary>
         private int _bufferSize;
+
+        /// <summary>
+        /// ???  2 个 快照帧号间隔？？？？
+        /// </summary>
         private int _spaceRollbackNeed;
+
+        /// <summary>
+        /// ????  最大的服务器帧号 , 防止溢出的边界帧号？？？？？
+        /// </summary>
         private int _maxServerOverFrameCount;
 
         /// <summary>
@@ -169,8 +202,20 @@ namespace Lockstep.Game
         /// ! 猜测的服务器时间戳
         /// </summary>
         private long _guessServerStartTimestamp = Int64.MaxValue;
+
+        /// <summary>
+        /// 全局游戏历史中，最小的 Ping
+        /// </summary>
         private long _historyMinPing = Int64.MaxValue;
+
+        /// <summary>
+        /// 局部时间内的最小的 Ping
+        /// </summary>
         private long _minPing = Int64.MaxValue;
+
+        /// <summary>
+        /// 局部时间内的最大的 Ping
+        /// </summary>
         private long _maxPing = Int64.MinValue;
 
         /// <summary>
@@ -190,6 +235,13 @@ namespace Lockstep.Game
         /// <typeparam name="long"></typeparam>
         /// <returns></returns>
         private List<long> _delays = new List<long>();
+
+        /// <summary>
+        /// 记录帧号对应的时间戳
+        /// </summary>
+        /// <typeparam name="int"></typeparam>
+        /// <typeparam name="long"></typeparam>
+        /// <returns></returns>
         Dictionary<int, long> _tick2SendTimestamp = new Dictionary<int, long>();
         #endregion
         /// the tick client need run in next update
@@ -249,6 +301,10 @@ namespace Lockstep.Game
             _maxServerOverFrameCount = bufferSize - _spaceRollbackNeed;
             _serverBuffer = new ServerFrame[bufferSize];
             _clientBuffer = new ServerFrame[bufferSize];
+
+            LogMaster.L(
+                $"[FrameBuffer] bufferSize:{bufferSize} snapshotFrameInterval:{snapshotFrameInterval} maxClientPredictFrameCount:{maxClientPredictFrameCount}"
+            );
         }
 
         /// <summary>
@@ -289,6 +345,7 @@ namespace Lockstep.Game
             if (ping < _minPing)
             {
                 _minPing = ping;
+                //! 通过 Ping 值，去评估服务器的起始时间戳
                 _guessServerStartTimestamp =
                     (LTime.realtimeSinceStartupMS - msg.timeSinceServerStart) - _minPing / 2;
             }
@@ -371,7 +428,6 @@ namespace Lockstep.Game
                         && _predictHelper.missTick == -1
                     )
                     {
-
                         //!  有丢失帧号
                         _predictHelper.missTick = data.tick;
                     }
@@ -500,7 +556,6 @@ namespace Lockstep.Game
 #endif
             _networkService.SendInput(input);
         }
-
 
         /// <summary>
         /// ! 取帧数据，如果有服务器帧数据，那么就用服务器帧数据，如果没有就用本地帧数据
