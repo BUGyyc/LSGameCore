@@ -84,7 +84,15 @@ ModelManifest.xml
 #Backup file  
 *.bak
 CopyUnityProject/.vscode/settings.json
-CopyUnityProject/
-Server/
 Unity/.cr/personal/FavoritesList/List.xml
 Unity/UserSettings/EditorUserSettings.asset
+CopyUnityProject/Assets/
+CopyUnityProject/Library/
+CopyUnityProject/ProjectSettings/
+CopyUnityProject/UserSettings/
+CopyUnityProject/Logs/
+CopyUnityProject/.cr/
+CopyUnityProject/.vsconfig
+CopyUnityProject/Assembly-CSharp.csproj
+CopyUnityProject/Assembly-CSharp-Editor.csproj
+CopyUnityProject/CopyUnityProject.sln
