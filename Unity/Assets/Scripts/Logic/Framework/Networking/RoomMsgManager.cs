@@ -36,6 +36,9 @@ namespace Lockstep.Game {
 
         private delegate BaseMsg ParseNetMsg(Deserializer reader);
 
+        /// <summary>
+        ///! 游戏GameCore状态
+        /// </summary>
         public EGameState CurGameState = EGameState.Idle;
 
         private NetClient _netUdp;
@@ -183,6 +186,11 @@ namespace Lockstep.Game {
             var msg = reader as Msg_G2C_PlayerPing;
             EventHelper.Trigger(EEvent.OnPlayerPing, msg);
         }
+
+        /// <summary>
+        /// 回应包，单纯的设定了一个ID　后续可以和其他协议合并
+        /// </summary>
+        /// <param name="reader"></param>
         protected void G2C_Hello(object reader){
             var msg = reader as Msg_G2C_Hello;
             EventHelper.Trigger(EEvent.OnServerHello, msg);
@@ -192,6 +200,10 @@ namespace Lockstep.Game {
             _handler.OnGameEvent(msg.Data);
         }
 
+        /// <summary>
+        /// 游戏开局
+        /// </summary>
+        /// <param name="reader"></param>
         protected void G2C_GameStartInfo(object reader){
             var msg = reader as Msg_G2C_GameStartInfo;
             HasRecvGameDta = true;
@@ -255,9 +267,19 @@ namespace Lockstep.Game {
             return reader.Parse<T>();
         }
 
+        /// <summary>
+        /// 上传 Ping 值，内容就是本地的时间戳
+        /// </summary>
+        /// <param name="localId"></param>
+        /// <param name="timestamp"></param>
         public void SendPing(byte localId, long timestamp){
             SendUdp(EMsgSC.C2G_PlayerPing, new Msg_C2G_PlayerPing(){localId = localId,sendTimestamp =  timestamp});
         }
+
+        /// <summary>
+        /// 上传 本地的输入
+        /// </summary>
+        /// <param name="msg"></param>
         public void SendInput(Msg_PlayerInput msg){
             SendUdp(EMsgSC.C2G_PlayerInput, msg);
         }
@@ -334,6 +356,11 @@ namespace Lockstep.Game {
             _handler.OnServerFrames(msg);
         }
 
+
+        /// <summary>
+        /// ??
+        /// </summary>
+        /// <param name="reader"></param>
         protected void G2C_RepMissFrame(object reader){
             var msg = reader as Msg_RepMissFrame;
             _handler.OnMissFrames(msg);

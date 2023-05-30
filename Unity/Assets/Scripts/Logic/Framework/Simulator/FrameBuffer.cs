@@ -73,33 +73,44 @@ namespace Lockstep.Game
             private float _checkInterval = 0.5f;
 
             /// <summary>
-            /// //TODO: ??????
+            /// //TODO: 魔法值，只是表示一种倾向比例
             /// </summary>
             private float _incPercent = 0.3f;
 
             /// <summary>
-            /// //TODO: ?????
+            /// //TODO: 临时值
             /// </summary>
             private float _targetPreSendTick;
 
             /// <summary>
-            /// //TODO: ?????
+            /// //TODO: ????? 魔法值，只是表示一种倾向比例
             /// </summary>
             private float _oldPercent = 0.6f;
 
+            /// <summary>
+            /// ! 主要目的在于：根据 Ping 、以及丢帧情况，设定一个相对合理的 输入窗口 发送 Size
+            /// </summary>
+            /// <param name="deltaTime"></param>
             public void DoUpdate(float deltaTime)
             {
                 _timer += deltaTime;
                 if (_timer > _checkInterval)
                 {
                     _timer = 0;
-                    if (!hasMissTick)
+                    if (hasMissTick == false)
                     {
+                        //! 没有丢失帧
+
                         //!  awesome ------------------------------->  why  ????????
+
+                        //! 通过一个局部最大 ping 值，预估能进行发送的
                         var preSend = _cmdBuffer._maxPing * 1.0f / NetworkDefine.UPDATE_DELTATIME;
+
+                        //根据比例算出能发送的帧数量
                         _targetPreSendTick =
                             _targetPreSendTick * _oldPercent + preSend * (1 - _oldPercent);
 
+                        //得到能发送的帧数量
                         var targetPreSendTick = LMath.Clamp(
                             (int)System.Math.Ceiling(_targetPreSendTick),
                             1,
@@ -114,6 +125,7 @@ namespace Lockstep.Game
                             );
                         }
 #endif
+                        //最后设定，能进行发送的帧数量
                         _simulatorService.PreSendInputCount = targetPreSendTick;
                     }
 
@@ -143,6 +155,7 @@ namespace Lockstep.Game
 #endif
                     //! 重新设定了发送窗口的最大值 帧号
                     _simulatorService.PreSendInputCount = targetPreSendTick;
+                    //?? 下一个要检测的 Miss 帧号
                     nextCheckMissTick = _simulatorService.TargetTick;
                     missTick = -1;
                     hasMissTick = true;
@@ -151,6 +164,9 @@ namespace Lockstep.Game
         }
 
         /// for debug
+        /// <summary>
+        /// TODO:
+        /// </summary>
         public static byte __debugMainActorID;
 
         //buffers
@@ -245,6 +261,9 @@ namespace Lockstep.Game
         Dictionary<int, long> _tick2SendTimestamp = new Dictionary<int, long>();
         #endregion
         /// the tick client need run in next update
+        /// <summary>
+        /// 客户端的下一帧
+        /// </summary>
         private int _nextClientTick;
 
         /// <summary>
@@ -270,6 +289,10 @@ namespace Lockstep.Game
         /// </summary>
         /// <value></value>
         public bool IsNeedRollback { get; private set; }
+        /// <summary>
+        /// ! 最新一个被缓冲验证的帧号
+        /// </summary>
+        /// <value></value>
         public int MaxContinueServerTick { get; private set; }
 
         /// <summary>
@@ -338,6 +361,7 @@ namespace Lockstep.Game
         public void OnPlayerPing(Msg_G2C_PlayerPing msg)
         {
             //PushServerFrames(frames, isNeedDebugCheck);
+            //! Ping = 发送到接收的消耗
             var ping = LTime.realtimeSinceStartupMS - msg.sendTimestamp;
             _pings.Add(ping);
             if (ping > _maxPing)
@@ -403,8 +427,10 @@ namespace Lockstep.Game
                     CurTickInServer = data.tick;
                 }
 
+
                 if (data.tick >= NextTickToCheck + _maxServerOverFrameCount - 1)
                 {
+                    //! 溢出
                     //to avoid ringBuffer override the frame that have not been checked
                     return;
                 }
@@ -443,13 +469,16 @@ namespace Lockstep.Game
         {
             //! 客户端发送一个 Ping 包
             _networkService.SendPing(_simulatorService.LocalActorId, LTime.realtimeSinceStartupMS);
+            //! 设定 发送的输入窗口 Size
             _predictHelper.DoUpdate(deltaTime);
             //! 当前帧号
             int worldTick = _simulatorService.World.Tick;
+            //! 更新Ping、时间戳
             UpdatePingVal(deltaTime);
 
             //Debug.Assert(nextTickToCheck <= nextClientTick, "localServerTick <= localClientTick ");
             //Confirm frames
+            //! 验证帧缓冲数据
             IsNeedRollback = false;
             while (NextTickToCheck <= MaxServerTickInBuffer && NextTickToCheck < worldTick)
             {
@@ -491,10 +520,12 @@ namespace Lockstep.Game
                     break;
                 }
             }
-
+            //! 得到 Server 缓冲中，最后一个被验证的 帧号
             MaxContinueServerTick = tick - 1;
             if (MaxContinueServerTick <= 0)
                 return;
+            
+            //! 丢失了太多帧，或者客户端预测太超前了，服务器广播得到的 帧缓冲 太滞后了
             if (
                 MaxContinueServerTick < CurTickInServer // has some middle frame pack was lost
                 || _nextClientTick > MaxContinueServerTick + (_maxClientPredictFrameCount - 3) //client has predict too much
@@ -517,26 +548,32 @@ namespace Lockstep.Game
             if (_pingTimer > 0.5f)
             {
                 _pingTimer = 0;
+                //! 计算局部平均 Delay
                 DelayVal = (int)(_delays.Sum() / LMath.Max(_delays.Count, 1));
+                //清空
                 _delays.Clear();
+                //! 计算局部平均 Ping
                 PingVal = (int)(_pings.Sum() / LMath.Max(_pings.Count, 1));
-                //! 清理历史值
+                //清空
                 _pings.Clear();
 
                 if (_minPing < _historyMinPing && _simulatorService._gameStartTimestampMs != -1)
                 {
+                    //! 更新历史最小
                     _historyMinPing = _minPing;
 #if UNITY_EDITOR
                     Debug.LogWarning(
                         $"Recalc _gameStartTimestampMs {_simulatorService._gameStartTimestampMs} _guessServerStartTimestamp:{_guessServerStartTimestamp}"
                     );
 #endif
+                    //更新时间戳，为了更加精准
                     _simulatorService._gameStartTimestampMs = LMath.Min(
                         _guessServerStartTimestamp,
                         _simulatorService._gameStartTimestampMs
                     );
                 }
 
+                //! 重置
                 _minPing = Int64.MaxValue;
                 _maxPing = Int64.MinValue;
             }

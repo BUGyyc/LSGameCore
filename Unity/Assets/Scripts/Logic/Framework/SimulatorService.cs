@@ -81,6 +81,7 @@ namespace Lockstep.Game
         // input preSend
         /// <summary>
         /// ?? 需要发送的输入指令
+        /// NOTE： 记录当前环境下，能进行广播的最大数量帧
         /// </summary>
         public int PreSendInputCount = 1; //~~~
         public int inputTick = 0;
