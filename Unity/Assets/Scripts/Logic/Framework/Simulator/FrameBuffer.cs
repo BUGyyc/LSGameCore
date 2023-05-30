@@ -69,13 +69,13 @@ namespace Lockstep.Game
             //TODO: 间隔检测的时间阈值
             private float _checkInterval = 0.5f;
 
-            //TODO:
+            //TODO: ??????
             private float _incPercent = 0.3f;
 
-            //TODO:
+            //TODO: ?????
             private float _targetPreSendTick;
 
-            //TODO:
+            //TODO: ?????
             private float _oldPercent = 0.6f;
 
             public void DoUpdate(float deltaTime)
@@ -302,6 +302,10 @@ namespace Lockstep.Game
             _networkService.SendMissFrameRepAck(MaxContinueServerTick + 1);
         }
 
+        /// <summary>
+        /// 客户端模式强制写入 Server、Client 缓冲中
+        /// </summary>
+        /// <param name="data"></param>
         public void ForcePushDebugFrame(ServerFrame data)
         {
             var targetIdx = data.tick % _bufferSize;
@@ -351,13 +355,15 @@ namespace Lockstep.Game
                 //Debug.Log("PushServerFramesSucc" + data.tick);
                 if (data.tick > MaxServerTickInBuffer)
                 {
-
+                    //TODO:
                     MaxServerTickInBuffer = data.tick;
                 }
 
+                //转换为数组索引
                 var targetIdx = data.tick % _bufferSize;
                 if (_serverBuffer[targetIdx] == null || _serverBuffer[targetIdx].tick != data.tick)
                 {
+                    //! 将接受到的缓冲写入到 Server缓冲中
                     _serverBuffer[targetIdx] = data;
                     if (
                         data.tick > _predictHelper.nextCheckMissTick

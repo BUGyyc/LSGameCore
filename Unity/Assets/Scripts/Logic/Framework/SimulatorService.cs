@@ -482,6 +482,7 @@ namespace Lockstep.Game
                     return;
                 }
 
+                //TODO: 这里等同于 用 Server 缓冲写入 Client 缓冲？？？？
                 _cmdBuffer.PushLocalFrame(sFrame);
                 Simulate(sFrame, tick == minTickToBackup);
 
@@ -549,6 +550,7 @@ namespace Lockstep.Game
                     frame = cFrame;
                 }
 
+                //网络好的状况下，本地可能略快于服务器的广播，那么缓冲就是本地缓冲
                 _cmdBuffer.PushLocalFrame(frame);
                 Predict(frame, true);
             }
@@ -570,7 +572,11 @@ namespace Lockstep.Game
             inputs[LocalActorId] = input;
             cFrame.Inputs = inputs;
             cFrame.tick = curTick;
+
+            //TODO: ???
             FillInputWithLastFrame(cFrame);
+
+            //TODO: 对于一次客户端输入，认为输入是可靠的，因此生成了一个 Client 缓冲
             _cmdBuffer.PushLocalFrame(cFrame);
             //if (input.Commands != null) {
             //    var playerInput = new Deserializer(input.Commands[0].content).Parse<Lockstep.Game.PlayerInput>();
