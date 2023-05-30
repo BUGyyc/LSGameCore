@@ -1,6 +1,8 @@
-namespace Lockstep.Game {
+namespace Lockstep.Game
+{
     [System.Serializable]
-    public class PureAudioService : PureBaseService, IAudioService {
-        public void PlayClip(string clip){ }
+    public class PureAudioService : PureBaseService, IAudioService
+    {
+        public void PlayClip(string clip) { }
     }
 }

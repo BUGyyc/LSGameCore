@@ -1,6 +1,8 @@
-namespace Lockstep.BehaviourTree {
-    public abstract partial class BTCondition : BTPrecondition {
+namespace Lockstep.BehaviourTree
+{
+    public abstract partial class BTCondition : BTPrecondition
+    {
         public BTCondition()
-            : base(0){ }
+            : base(0) { }
     }
 }
