@@ -9,6 +9,10 @@ namespace Lockstep {
 
     public delegate void NetMsgHandler(object param);
 
+
+    /// <summary>
+    /// ! 事件系统待修改  TODO:
+    /// </summary>
     public partial class EventHelper {
         private static Dictionary<int, List<GlobalEventHandler>> allListeners =
             new Dictionary<int, List<GlobalEventHandler>>();

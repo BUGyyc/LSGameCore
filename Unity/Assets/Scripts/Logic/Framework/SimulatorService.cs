@@ -26,12 +26,16 @@ namespace Lockstep.Game
     public class SimulatorService : BaseGameService, ISimulatorService, IDebugService
     {
         public static SimulatorService Instance { get; private set; }
+
+        /// <summary>
+        /// 回滚帧号
+        /// </summary>
         public int __debugRollbackToTick;
 
         //FIXME:
         public const long MinMissFrameReqTickDiff = 10;
 
-        //TODO: 提前帧号？？？？
+        //! TODO: 提前帧号？？？？  实际与追帧有关
         public const long MaxSimulationMsPerFrame = 20;
 
         /// <summary>
@@ -59,25 +63,43 @@ namespace Lockstep.Game
         /// </summary>
         private HashHelper _hashHelper;
 
-        //TODO:---------------------
+        //TODO: 本地操作记录，可持久化至本地，待验证
         private DumpHelper _dumpHelper;
 
         // game status
         private Msg_G2C_GameStartInfo _gameStartInfo;
         public byte LocalActorId { get; private set; }
+
+        /// <summary>
+        /// 全部玩家
+        /// </summary>
         private byte[] _allActors;
+
+        /// <summary>
+        /// 玩家数量
+        /// </summary>
         private int _actorCount => _allActors.Length;
         private PlayerInput[] _playerInputs => _world.PlayerInputs;
         public bool IsRunning { get; set; }
 
+        //! 根据网络状况调整预测帧数
         //! TODO: 这里的预测，相当于关闭了
         /// frame count that need predict(TODO should change according current network's delay)
         public int FramePredictCount = 0; //~~~
 
-        /// game init timestamp
+        /// <summary>
+        /// 游戏开局的时间戳
+        /// </summary>
         public long _gameStartTimestampMs = -1;
 
+        /// <summary>
+        /// 始于游戏开局的帧号
+        /// </summary>
         private int _tickSinceGameStart;
+
+        /// <summary>
+        /// 目标帧号，模拟预测的目标最大帧号
+        /// </summary>
         public int TargetTick => _tickSinceGameStart + FramePredictCount;
 
         // input preSend
@@ -87,6 +109,10 @@ namespace Lockstep.Game
         /// </summary>
         public int PreSendInputCount = 1; //~~~
         public int inputTick = 0;
+
+        /// <summary>
+        /// ! 根据网络波动而变化的 最大可输入 帧数据，相当于 窗口 Size
+        /// </summary>
         public int inputTargetTick => _tickSinceGameStart + PreSendInputCount;
 
         //video mode
@@ -190,6 +216,7 @@ namespace Lockstep.Game
             );
             EventHelper.Trigger(EEvent.SimulationStart, null);
 
+            //! ??? 首帧落后较多，将多个输入发送出去，有风险
             while (inputTick < PreSendInputCount)
             {
                 SendInputs(inputTick++);
@@ -341,46 +368,58 @@ namespace Lockstep.Game
                 {
                     if (APP.DebugClientNetDelay == false)
                     {
+                        //! 客户端发送本地需要发送的输入指令
                         SendInputs(inputTick++);
-                    }
-                    else if (APP.DebugClientNetDelayStartFrame == 0)
-                    {
-                        //开始随机
-                        bool DelayResult =
-                            UnityEngine.Random.Range(0, 1f) <= APP.DebugClientNetDelayPercent;
-
-                        if (DelayResult)
-                        {
-                            //随机出一个持续帧号
-                            APP.DebugClientNetDelayCompareFrame = UnityEngine.Random.Range(
-                                APP.DebugMinClientNetDelayFrameCount,
-                                APP.DebugMaxClientNetDelayFrameCount
-                            );
-                            //记录当前帧号
-                            APP.DebugClientNetDelayStartFrame = tempTick;
-                        }
-                        else
-                        {
-                            SendInputs(inputTick++);
-                        }
-                    }
-                    else if (
-                        tempTick - APP.DebugClientNetDelayStartFrame
-                        >= APP.DebugClientNetDelayCompareFrame
-                    )
-                    {
-                        //清空
-                        APP.DebugClientNetDelayStartFrame = 0;
-                        APP.DebugClientNetDelayCompareFrame = 0;
                     }
                     else
                     {
-                        LogMaster.L($"模拟网络延迟 tempTick {tempTick}    ");
+                        //! 测试弱网络的情况下，网络包延迟
+                        _DebugLowNet(tempTick);
                     }
                     tempTick++;
                 }
 
                 DoNormalUpdate();
+            }
+        }
+
+        /// <summary>
+        /// ! 测试弱网络情况
+        /// </summary>
+        public void _DebugLowNet(int tempTick)
+        {
+            if (APP.DebugClientNetDelayStartFrame == 0)
+            {
+                //开始随机
+                bool DelayResult =
+                    UnityEngine.Random.Range(0, 1f) <= APP.DebugClientNetDelayPercent;
+
+                if (DelayResult)
+                {
+                    //随机出一个持续帧号
+                    APP.DebugClientNetDelayCompareFrame = UnityEngine.Random.Range(
+                        APP.DebugMinClientNetDelayFrameCount,
+                        APP.DebugMaxClientNetDelayFrameCount
+                    );
+                    //记录当前帧号
+                    APP.DebugClientNetDelayStartFrame = tempTick;
+                }
+                else
+                {
+                    SendInputs(inputTick++);
+                }
+            }
+            else if (
+                tempTick - APP.DebugClientNetDelayStartFrame >= APP.DebugClientNetDelayCompareFrame
+            )
+            {
+                //清空
+                APP.DebugClientNetDelayStartFrame = 0;
+                APP.DebugClientNetDelayCompareFrame = 0;
+            }
+            else
+            {
+                LogMaster.L($"模拟网络延迟 tempTick {tempTick}    ");
             }
         }
 
@@ -476,7 +515,7 @@ namespace Lockstep.Game
                 maxContinueServerTick - (maxContinueServerTick % snapshotFrameInterval)
             );
 
-            // Pursue Server frames
+            //! 追帧触发线 （20ms）
             var deadline = LTime.realtimeSinceStartupMS + MaxSimulationMsPerFrame;
 
             //! 当前帧 小于 服务器下发的准确帧 （这里的准确帧是通过了本地帧数据验证的 缓冲 ）
@@ -498,8 +537,10 @@ namespace Lockstep.Game
                 //! 立即模拟一帧
                 Simulate(sFrame, tick == minTickToBackup);
 
+                //! ???????????????????????????????????????????  理论上无法触发才对
                 if (LTime.realtimeSinceStartupMS > deadline)
                 {
+                    //! 理论上无法触发
                     //追帧
                     OnPursuingFrame();
                     return;
@@ -541,8 +582,7 @@ namespace Lockstep.Game
                 }
             }
 
-            //! 进行预测模拟， FramePredictCount 一直是 0 ???
-            //Run frames
+            //! 进行预测模拟， FramePredictCount 一直是 0 ??? TODO: 预测窗口Size 要随网络状况波动
             while (_world.Tick <= TargetTick)
             {
                 var curTick = _world.Tick;
@@ -558,12 +598,14 @@ namespace Lockstep.Game
                     //! 如果没有收到服务器广播帧
                     //! 那么就取本地帧
                     var cFrame = _cmdBuffer.GetLocalFrame(curTick);
+                    //! 猜测其他玩家的输入
                     FillInputWithLastFrame(cFrame);
                     frame = cFrame;
                 }
 
-                //网络好的状况下，本地可能略快于服务器的广播，那么缓冲就是本地缓冲
+                //! 网络好的状况下，本地可能略快于服务器的广播，那么缓冲就是本地缓冲，本地缓冲会和serverBuffer 做对比，如果不一致就回滚
                 _cmdBuffer.PushLocalFrame(frame);
+                //! 进行预测
                 Predict(frame, true);
             }
 
@@ -585,19 +627,18 @@ namespace Lockstep.Game
             cFrame.Inputs = inputs;
             cFrame.tick = curTick;
 
-            //TODO: ???
+            LogMaster.L($"[Client]  手机到客户端输入 curTick {curTick}");
+
+            //TODO: 客户端需要预测，所以对方客户端输入，用历史上一帧的结果进行预测
             FillInputWithLastFrame(cFrame);
 
             //TODO: 对于一次客户端输入，认为输入是可靠的，因此生成了一个 Client 缓冲
             _cmdBuffer.PushLocalFrame(cFrame);
-            //if (input.Commands != null) {
-            //    var playerInput = new Deserializer(input.Commands[0].content).Parse<Lockstep.Game.PlayerInput>();
-            //    Debug.Log($"SendInput curTick{curTick} maxSvrTick{_cmdBuffer.MaxServerTickInBuffer} _tickSinceGameStart {_tickSinceGameStart} uv {playerInput.inputUV}");
-            //}
+
             if (curTick > _cmdBuffer.MaxServerTickInBuffer)
             {
-                //TODO combine all history inputs into one Msg
-                //Debug.Log("SendInput " + curTick +" _tickSinceGameStart " + _tickSinceGameStart);
+                LogMaster.L($"[Client]  client execute SendInput curTick {curTick}");
+                //TODO: combine all history inputs into one Msg
                 _cmdBuffer.SendInput(input);
             }
         }

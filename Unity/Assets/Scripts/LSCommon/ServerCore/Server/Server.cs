@@ -74,10 +74,10 @@ namespace Lockstep.FakeServer.Server
         public void Dispatch(Session session, Packet packet)
         {
             ushort opcode = packet.Opcode();
-            if (opcode == 39)
-            {
-                int i = 0;
-            }
+            // if (opcode == 39)
+            // {
+            //     int i = 0;
+            // }
 
             var message = session.Network.MessagePacker.DeserializeFrom(
                 opcode,

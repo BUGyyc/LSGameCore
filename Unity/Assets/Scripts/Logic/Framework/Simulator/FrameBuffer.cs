@@ -145,7 +145,7 @@ namespace Lockstep.Game
                     var targetPreSendTick =
                         _simulatorService.PreSendInputCount
                         + (int)System.Math.Ceiling(delayTick * _incPercent);
-                    
+
                     //限定范围
                     targetPreSendTick = LMath.Clamp(targetPreSendTick, 1, 60);
 #if UNITY_EDITOR
@@ -289,6 +289,7 @@ namespace Lockstep.Game
         /// </summary>
         /// <value></value>
         public bool IsNeedRollback { get; private set; }
+
         /// <summary>
         /// ! 最新一个被缓冲验证的帧号
         /// </summary>
@@ -405,6 +406,9 @@ namespace Lockstep.Game
             for (int i = 0; i < count; i++)
             {
                 var data = frames[i];
+
+                LogMaster.L($"[Client] PushServerFrames {data.tick} ");
+
                 //Debug.Log("PushServerFrames" + data.tick);
                 if (_tick2SendTimestamp.TryGetValue(data.tick, out var sendTimeStamp))
                 {
@@ -426,7 +430,6 @@ namespace Lockstep.Game
                     //! 把记录的当前帧号刷新，缓冲中最大的
                     CurTickInServer = data.tick;
                 }
-
 
                 if (data.tick >= NextTickToCheck + _maxServerOverFrameCount - 1)
                 {
@@ -524,7 +527,7 @@ namespace Lockstep.Game
             MaxContinueServerTick = tick - 1;
             if (MaxContinueServerTick <= 0)
                 return;
-            
+
             //! 丢失了太多帧，或者客户端预测太超前了，服务器广播得到的 帧缓冲 太滞后了
             if (
                 MaxContinueServerTick < CurTickInServer // has some middle frame pack was lost
@@ -591,6 +594,9 @@ namespace Lockstep.Game
                 Debug.Log($"SendInput tick:{input.Tick} uv:{playerInput.inputUV}");
             }
 #endif
+
+            LogMaster.L($"[Client]  SendInput input.tick {input.Tick}");
+
             _networkService.SendInput(input);
         }
 

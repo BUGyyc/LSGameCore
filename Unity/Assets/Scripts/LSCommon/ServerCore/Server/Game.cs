@@ -199,6 +199,7 @@ namespace Lockstep.FakeServer.Server
         ///! 所有需要等待输入到来的Ids
         /// </summary>
         private List<byte> _allNeedWaitInputPlayerIds;
+
         /// <summary>
         /// 所有的历史帧
         /// </summary>
@@ -353,6 +354,7 @@ namespace Lockstep.FakeServer.Server
             //! 如果这里相差很大，那么追的帧数太多，会导致性能峰值
             while (Tick < _tickSinceGameStart)
             {
+                //! 广播帧数据
                 _CheckBorderServerFrame(true);
             }
         }
@@ -429,6 +431,8 @@ namespace Lockstep.FakeServer.Server
 
             msg.startTick = frames[0].tick;
             msg.frames = frames;
+
+            LogMaster.L($"[Server]  广播信息  Tick：{Tick} ");
 
             //!  广播指令，这里的UDP 待验证
             BorderUdp(EMsgSC.G2C_FrameData, msg);
@@ -831,7 +835,7 @@ namespace Lockstep.FakeServer.Server
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public long _gameStartTimestampMs = -1;
 
@@ -842,6 +846,7 @@ namespace Lockstep.FakeServer.Server
 
         /// <summary>
         /// 从起始时间到现在，所出的帧号
+        /// ! 很特别的帧率计算方式
         /// </summary>
         /// <returns></returns>
         public int _tickSinceGameStart =>
@@ -899,6 +904,10 @@ namespace Lockstep.FakeServer.Server
                 }
             }
 #endif
+
+            LogMaster.L(
+                $"[Server] RecvInput actorID:{input.ActorId} inputTick:{input.Tick} Tick{Tick}"
+            );
 
             //Debug.Log($"RecvInput actorID:{input.ActorId} inputTick:{input.Tick} Tick{Tick}");
             if (input.Tick < Tick)
