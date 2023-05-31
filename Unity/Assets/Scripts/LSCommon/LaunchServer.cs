@@ -21,6 +21,8 @@ public class LaunchServer : MonoBehaviour
 
     public GameObject gameManager;
 
+    public string successTip = "房间已创建，等待链接";
+
     public string GetLocalIp()
     {
         ///获取本地的IP地址
@@ -78,7 +80,7 @@ public class LaunchServer : MonoBehaviour
 
         if (txt != null)
         {
-            txt.text = "房间已开启，等待链接";
+            txt.text = successTip;
         }
     }
 }

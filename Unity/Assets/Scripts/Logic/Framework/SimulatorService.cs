@@ -40,9 +40,10 @@ namespace Lockstep.Game
         public const int MaxPredictFrameCount = 30;
 
         /// <summary>
-        /// 局部历史 平均 ping 
+        /// 局部历史 平均 ping
         /// </summary>
         public int PingVal => _cmdBuffer?.PingVal ?? 0;
+
         /// <summary>
         /// 局部历史 平均 delay
         /// </summary>
@@ -52,6 +53,7 @@ namespace Lockstep.Game
         public World World => _world;
         private World _world;
         private IFrameBuffer _cmdBuffer;
+
         /// <summary>
         /// Hash 计算相关
         /// </summary>
@@ -199,7 +201,6 @@ namespace Lockstep.Game
             _dumpHelper.Trace(msg, isNewLine, isNeedLogTrace);
         }
 
-
         /// <summary>
         ///! 特殊的重播模式，用来跳帧
         /// </summary>
@@ -312,12 +313,14 @@ namespace Lockstep.Game
                 return;
             }
 
+            #region  Debug Rollback
             if (__debugRollbackToTick > 0)
             {
                 GetService<ICommonStateService>().IsPause = true;
                 RollbackTo(__debugRollbackToTick, 0, false);
                 __debugRollbackToTick = -1;
             }
+            #endregion
 
             if (_commonStateService.IsPause)
             {
@@ -455,16 +458,20 @@ namespace Lockstep.Game
             }
         }
 
+        /// <summary>
+        /// ! 帧同步。客户端方面的主要工作
+        /// </summary>
         private void DoNormalUpdate()
         {
-            //make sure client is not move ahead too much than server
             var maxContinueServerTick = _cmdBuffer.MaxContinueServerTick;
             if ((_world.Tick - maxContinueServerTick) > MaxPredictFrameCount)
             {
+                //! 防止网络很好的玩家，领先服务器太多帧号，理论上不会这样，除非单链路卡顿，或者服务器卡顿等奇怪原因
                 //NOTE: 超过了最大预测帧号，不需要再执行，等待
                 return;
             }
 
+            //! 备份里面，最小的帧号
             var minTickToBackup = (
                 maxContinueServerTick - (maxContinueServerTick % snapshotFrameInterval)
             );
@@ -480,18 +487,20 @@ namespace Lockstep.Game
                 var sFrame = _cmdBuffer.GetServerFrame(tick);
                 if (sFrame == null)
                 {
-                    //? 没有拿到服务器帧，进行一次追帧
+                    //! 没有拿到服务器帧，进行一次追帧
                     OnPursuingFrame();
                     return;
                 }
 
                 //TODO: 这里等同于 用 Server 缓冲写入 Client 缓冲？？？？
                 _cmdBuffer.PushLocalFrame(sFrame);
+
+                //! 立即模拟一帧
                 Simulate(sFrame, tick == minTickToBackup);
 
                 if (LTime.realtimeSinceStartupMS > deadline)
                 {
-                    //????
+                    //追帧
                     OnPursuingFrame();
                     return;
                 }
@@ -504,7 +513,7 @@ namespace Lockstep.Game
                 EventHelper.Trigger(EEvent.PursueFrameDone);
             }
 
-            // Roll back
+            //! Roll back
             if (_cmdBuffer.IsNeedRollback)
             {
                 //! 回滚 Core
@@ -558,7 +567,7 @@ namespace Lockstep.Game
                 Predict(frame, true);
             }
 
-            //! 发送需要验证的 HashCode 
+            //! 发送需要验证的 HashCode
             _hashHelper.CheckAndSendHashCodes();
         }
 
@@ -569,7 +578,7 @@ namespace Lockstep.Game
         void SendInputs(int curTick)
         {
             var input = new Msg_PlayerInput(curTick, LocalActorId, _inputService.GetInputCmds());
-            //! 创建了一个帧缓冲
+            //! 创建了一个帧缓冲 , 这里每帧都是创建，//TODO: 后续需要从对象池中取
             var cFrame = new ServerFrame();
             var inputs = new Msg_PlayerInput[_actorCount];
             inputs[LocalActorId] = input;
@@ -678,7 +687,7 @@ namespace Lockstep.Game
         }
 
         /// <summary>
-        /// ! 用上一次的历史帧数据，作为下一帧数据
+        /// ! 除自己外，其他玩家都用上一次的历史输入
         /// </summary>
         /// <param name="frame"></param>
         private void FillInputWithLastFrame(ServerFrame frame)
@@ -687,7 +696,7 @@ namespace Lockstep.Game
             var inputs = frame.Inputs;
             var lastServerInputs = tick == 0 ? null : _cmdBuffer.GetFrame(tick - 1)?.Inputs;
             var myInput = inputs[LocalActorId];
-            //fill inputs with last frame's input (Input predict)
+            //! 先覆盖所有
             for (int i = 0; i < _actorCount; i++)
             {
                 inputs[i] = new Msg_PlayerInput(
@@ -696,10 +705,9 @@ namespace Lockstep.Game
                     lastServerInputs?[i]?.Commands
                 );
             }
-
+            //! 这里再覆盖一次，是因为循环中，全部玩家用了历史最后一帧的输入，但是本地玩家用客观的最新输入，这是当前的输入
             inputs[LocalActorId] = myInput;
         }
-
 
         /// <summary>
         /// ! 处理输入队列
@@ -720,7 +728,7 @@ namespace Lockstep.Game
                     continue;
                 if (input.ActorId >= _playerInputs.Length)
                     continue;
-                
+
                 //! 这里描述为 InputEntity ，太牵强了~~~~~
                 var inputEntity = _playerInputs[input.ActorId];
                 foreach (var command in input.Commands)

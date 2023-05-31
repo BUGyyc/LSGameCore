@@ -20,15 +20,18 @@ namespace Lockstep.FakeServer.Server
         /// 更新间隔
         /// </summary>
         private const double UpdateInterval = NetworkDefine.UPDATE_DELTATIME / 1000.0f; //frame rate = 30
+
         /// <summary>
         /// 上一次更新的时间戳
         /// </summary>
         private DateTime _lastUpdateTimeStamp;
+
         /// <summary>
         /// 启动的时间戳
         /// </summary>
         private DateTime _startUpTimeStamp;
         private double _deltaTime;
+
         /// <summary>
         /// 始于启动的时间戳
         /// </summary>
@@ -36,6 +39,7 @@ namespace Lockstep.FakeServer.Server
 
         //user mgr
         private Game _game;
+
         /// <summary>
         /// ID 映射 玩家
         /// </summary>
@@ -48,6 +52,7 @@ namespace Lockstep.FakeServer.Server
         /// ID 生成计数器
         /// </summary>
         private static int _idCounter = 0;
+
         /// <summary>
         /// 当前房间内的玩家数量
         /// </summary>
@@ -125,7 +130,7 @@ namespace Lockstep.FakeServer.Server
             var fTimeSinceStartUp = (float)_timeSinceStartUp;
             _game?.DoUpdate(fDeltaTime);
         }
-        
+
         void OnPlayerConnect(Session session, BaseMsg message)
         {
             //TODO load from db
@@ -152,7 +157,7 @@ namespace Lockstep.FakeServer.Server
                 _game.DoStart(0, 0, 0, players, "123");
             }
 
-            Debug.Log("[Server] OnPlayerConnect count:" + _curCount + " ");
+            LogMaster.I("[Server] OnPlayerConnect count:" + _curCount + " ");
         }
 
         void OnPlayerQuit(Session session, BaseMsg message)
@@ -161,7 +166,7 @@ namespace Lockstep.FakeServer.Server
             if (player == null)
                 return;
             _curCount--;
-            Debug.Log("OnPlayerQuit count:" + _curCount);
+            LogMaster.I("[Server] OnPlayerQuit count:   {_curCount} ");
             _id2Player.Remove(player.UserId);
             if (_curCount == 0)
             {

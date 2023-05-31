@@ -8,6 +8,8 @@ public class Launch : MonoBehaviour
 {
     public Button createRoomBtn;
     public Button joinRoomBtn;
+
+    public Button pureServerBtn;
     // Start is called before the first frame update
     void Start()
     {
@@ -27,6 +29,11 @@ public class Launch : MonoBehaviour
             SceneManager.LoadScene("HostClient");
         }
 #endif
+
+        pureServerBtn.onClick.AddListener(() =>
+        {
+            SceneManager.LoadScene("PureServer");
+        });
     }
 
     // Update is called once per frame

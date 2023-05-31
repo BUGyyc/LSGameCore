@@ -191,7 +191,7 @@ namespace Lockstep.FakeServer.Server
         private float _firstFrameTimeStamp = 0;
 
         /// <summary>
-        /// TODO:
+        /// TODO: 没咋用上
         /// </summary>
         private float _waitTimer = 0;
 
@@ -199,9 +199,18 @@ namespace Lockstep.FakeServer.Server
         ///! 所有需要等待输入到来的Ids
         /// </summary>
         private List<byte> _allNeedWaitInputPlayerIds;
-        private List<ServerFrame> _allHistoryFrames = new List<ServerFrame>(); //所有的历史帧
+        /// <summary>
+        /// 所有的历史帧
+        /// </summary>
+        /// <typeparam name="ServerFrame"></typeparam>
+        /// <returns></returns>
+        private List<ServerFrame> _allHistoryFrames = new List<ServerFrame>();
 
         private byte[] _playerLoadingProgress;
+
+        /// <summary>
+        /// !  防止请求过多？？？
+        /// </summary>
         public const int MaxRepMissFrameCountPerPack = 600;
 
         /// <summary>
@@ -435,7 +444,7 @@ namespace Lockstep.FakeServer.Server
                 //记录起始时间戳
                 _gameStartTimestampMs =
                     LTime.realtimeSinceStartupMS
-                    + NetworkDefine.UPDATE_DELTATIME * _ServerTickDealy;
+                    + NetworkDefine.UPDATE_DELTATIME * _ServerTickDelay;
             }
 
             Tick++;
@@ -722,6 +731,8 @@ namespace Lockstep.FakeServer.Server
             RemovePlayer(player);
             _userId2LocalId.Remove(player.UserId); //同时还需要彻底的移除记录 避免玩家重连
             Log($"Player{player.UserId} OnPlayerLeave room {GameId}");
+
+            LogMaster.I($"[Server]   Player{player.UserId} OnPlayerLeave room {GameId}");
         }
 
         void RemovePlayer(Player player)
@@ -819,8 +830,15 @@ namespace Lockstep.FakeServer.Server
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public long _gameStartTimestampMs = -1;
-        public int _ServerTickDealy = 0;
+
+        /// <summary>
+        /// TODO: 这个值很魔幻  ？？？
+        /// </summary>
+        public int _ServerTickDelay = 0;
 
         /// <summary>
         /// 从起始时间到现在，所出的帧号
@@ -888,7 +906,7 @@ namespace Lockstep.FakeServer.Server
                 //! 过去的输入，进行丢弃
                 return;
             }
-            
+
             //! 将玩家的输入生成 帧数据
             var frame = GetOrCreateFrame(input.Tick);
 
