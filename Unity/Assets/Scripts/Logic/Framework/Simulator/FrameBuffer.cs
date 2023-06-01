@@ -378,6 +378,11 @@ namespace Lockstep.Game
             //Debug.Log("OnPlayerPing " + ping);
         }
 
+        /// <summary>
+        ///! 服务器回应丢失的帧数据
+        /// </summary>
+        /// <param name="frames"></param>
+        /// <param name="isNeedDebugCheck"></param>
         public void PushMissServerFrames(ServerFrame[] frames, bool isNeedDebugCheck = true)
         {
             PushServerFrames(frames, isNeedDebugCheck);
@@ -457,7 +462,7 @@ namespace Lockstep.Game
                         && _predictHelper.missTick == -1
                     )
                     {
-                        //!  有丢失帧号
+                        //!  有丢失帧号，标记
                         _predictHelper.missTick = data.tick;
                     }
                 }
@@ -513,7 +518,7 @@ namespace Lockstep.Game
                 }
             }
 
-            //Request miss frame data
+            //找到准确验证的帧号最大值
             int tick = NextTickToCheck;
             for (; tick <= MaxServerTickInBuffer; tick++)
             {
@@ -556,7 +561,7 @@ namespace Lockstep.Game
                 //清空
                 _delays.Clear();
                 //! 计算局部平均 Ping
-                PingVal = (int)(_pings.Sum() / LMath.Max(_pings.Count, 1));
+                PingVal = (int)(_pings.Sum() / LMath.Max(_pings.Count, 1)); 
                 //清空
                 _pings.Clear();
 

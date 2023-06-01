@@ -1061,6 +1061,11 @@ namespace Lockstep.FakeServer.Server
             SendUdp(player, EMsgSC.G2C_RepMissFrame, msg, true);
         }
 
+        /// <summary>
+        /// 重传已接收
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="data"></param>
         void C2G_RepMissFrameAck(Player player, BaseMsg data)
         {
             var msg = data as Msg_RepMissFrameAck;

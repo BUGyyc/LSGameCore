@@ -15,6 +15,9 @@
         /// 帧率
         public const int FRAME_RATE = 33;
         
+        /// <summary>
+        /// 每帧 ms 数量
+        /// </summary>
         public const int UPDATE_DELTATIME = 30;
 
         public const string NetKey = "LockstepPlatform";

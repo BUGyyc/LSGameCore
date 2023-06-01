@@ -111,6 +111,10 @@ namespace Lockstep.Game {
             EventHelper.Trigger(EEvent.OnServerFrame, msg);
         }
 
+        /// <summary>
+        /// 丢失了帧
+        /// </summary>
+        /// <param name="msg"></param>
         public void OnMissFrames(Msg_RepMissFrame msg){
             Log("OnMissFrames");
             if (msg == null) return;

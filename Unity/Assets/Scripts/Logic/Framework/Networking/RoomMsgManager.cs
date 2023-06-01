@@ -284,10 +284,18 @@ namespace Lockstep.Game {
             SendUdp(EMsgSC.C2G_PlayerInput, msg);
         }
         
+        /// <summary>
+        /// 向服务器请求 丢失的帧数据
+        /// </summary>
+        /// <param name="missFrameTick"></param>
         public void SendMissFrameReq(int missFrameTick){
             SendUdp(EMsgSC.C2G_ReqMissFrame, new Msg_ReqMissFrame() {StartTick = missFrameTick});
         }
 
+        /// <summary>
+        /// 客户端 回应 服务器，重传的帧数据已接收
+        /// </summary>
+        /// <param name="missFrameTick"></param>
         public void SendMissFrameRepAck(int missFrameTick){
             SendUdp(EMsgSC.C2G_RepMissFrameAck, new Msg_RepMissFrameAck() {MissFrameTick = missFrameTick});
         }
