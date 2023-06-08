@@ -105,14 +105,14 @@ namespace Lockstep.CodeGenerator
 
             List<string> list = new List<string>();
 
-            InsertLogTrackCode(@"F:\github\Lockstep-Tutorial\Unity\Assets\Scripts\LSCommon\Launch.cs");
+            //InsertLogTrackCode(@"F:\github\Lockstep-Tutorial\Unity\Assets\Scripts\LSCommon\Launch.cs");
 
-            //FileUtil.GetDir(@"F:\github\Lockstep-Tutorial\Unity\Assets\Scripts\LSCommon", ".cs", ref list);
-            //foreach (string path in list)
-            //{
-            //    LogMaster.I("--->"+path);
-            //    InsertLogTrackCode(path);
-            //}
+            FileUtil.GetDir(@"F:\github\Lockstep-Tutorial\Unity\Assets\Scripts", ".cs", ref list);
+            foreach (string path in list)
+            {
+                // LogMaster.I("--->" + path);
+                InsertLogTrackCode(path);
+            }
 
         }
 
@@ -251,17 +251,26 @@ namespace Lockstep.CodeGenerator
             ms_regexLogTrackCodeIgnore = new Regex(ignore_log_pattern);
 
             var text = File.ReadAllText(fullPath);
-            LogMaster.A(text);
+            // LogMaster.A(text);
             var matches = ms_regexFuncAll.Matches(text);
             int cnt = matches.Count;
 
-            LogMaster.I("text.Len", text.Length.ToString());
+            // LogMaster.I("text.Len", text.Length.ToString());
 
-            LogMaster.E("匹配数量", cnt.ToString());
+            // LogMaster.E("匹配数量", cnt.ToString());
 
             for (int i = cnt - 1; i >= 0; i--)
             {
                 var matchFuncAll = matches[i];
+
+                if (matchFuncAll.Value.Contains(LockstepLogFlag)) 
+                {
+                    //
+                    // LogMaster.I("has old flag");
+                    continue;
+                }
+
+                // LogMaster.A("func content: " + matchFuncAll.Value);
                 var matchFuncHead = ms_regexFuncHead.Match(
                     text,
                     matchFuncAll.Index,
@@ -290,16 +299,16 @@ namespace Lockstep.CodeGenerator
 
                     if (matchFirstCode.Success) // 如果没有找到，则是一个空函数，不需要打印日志
                     {
-                        LogMaster.I("find success  ---------------------" + matchFirstCode.Value);
+                        //LogMaster.I("find success  ---------------------" + matchFirstCode.Value);
                         // 如果找到代码，则判断是否是日志代码
                         if (!ms_regexLogTrackCode.IsMatch(matchFirstCode.Value))
                         {
-                            LogMaster.I("find success  ---------------------" + matchFirstCode.Value);
+                            //LogMaster.I("find success  ---------------------" + matchFirstCode.Value);
                             if (!ms_regexLogTrackCodeIgnore.IsMatch(matchFirstCode.Value))
                             {
                                 //LogMaster.I("find success  333333333333333333333---------------------" + matchFirstCode.Value);
 
-                                LogMaster.I("需要添加打印 ----------matchFuncHead.Value-----------" + matchFuncHead.Value);
+                                LogMaster.I("添加打印 " + matchFuncHead.Value);
 
 
                                 // 如果不是日志代码，则需要打印日志
@@ -325,11 +334,13 @@ namespace Lockstep.CodeGenerator
         }
 
         static List<string> ParamCompareList = new List<string>() {
-            "uint ",
-            "int ",
-            "long "
+            "uint\0",
+            "int\0",
+            "long\0"
             
         };
+
+        const string LockstepLogFlag = "//NOTE: AutoCreate LockstepLog";
    
     
         private static string GetLogTrackCode(string str)
@@ -338,21 +349,25 @@ namespace Lockstep.CodeGenerator
             //string logStr = string.Format($"\n\r LogMaster.L(\"{logMasterStr}\");");
 
             List<string> result = new List<string>();
-             
-            string reStr = str.Replace(')', ' ');
+
+            var a = str.Replace("ref ","");
+            var b = a.Replace("out ","");
+
+            string reStr = b.Replace(')', ' ');
+
             string[] array = reStr.Split('(');
             reStr = array[1];
 
             string[] paramGroup = reStr.Split(',');
             foreach (var m in paramGroup)
             {
-                LogMaster.L("====" + m);
+                //Vector3 pointOfPlane
                 foreach (var item in ParamCompareList)
                 {
                     if (m.Contains(item))
                     {
                         var newM = m.Replace(item, "");
-                        LogMaster.L("result:  " + newM);
+                        // LogMaster.L("result:  " + newM);
                         result.Add(newM);
                         continue;
                     }
@@ -365,10 +380,10 @@ namespace Lockstep.CodeGenerator
             foreach (var item in result) 
             {
                 //logMasterStr += @"item:{item}";
-                string a = string.Copy(item).Trim();
-                stringBuilder.Append(a+": ");
+                string val = string.Copy(item).Trim();
+                stringBuilder.Append(val+": ");
                 stringBuilder.Append(@"{");
-                stringBuilder.Append(a);
+                stringBuilder.Append(val);
                 stringBuilder.Append(@"} ");
             }
 
@@ -376,11 +391,11 @@ namespace Lockstep.CodeGenerator
             logMasterStr = stringBuilder.ToString();
             //string logStr = stringBuilder.ToString();
 
-            string logStr = $"\n\r LogMaster.L($\""+  logMasterStr + "\");";
+            string logStr = "        "+LockstepLogFlag+ $"\n        LogMaster.L($\"" +  logMasterStr + "\");\n";
 
             //string logStr = string.Format($"\n\r LogMaster.L(\"{logMasterStr}\");");
 
-            LogMaster.A(logStr);
+            // LogMaster.A(logStr);
 
 
             return logStr;
