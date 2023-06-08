@@ -53,6 +53,7 @@ namespace Lockstep.Game
 
         public virtual void OnLoginFailed(ELoginResult result)
         {
+
             Log("Login failed reason " + result);
         }
 
