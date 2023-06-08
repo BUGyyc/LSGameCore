@@ -5,6 +5,7 @@ using Lockstep.Util;
 using UnityEngine;
 using Debug = Lockstep.Logging.Debug;
 using System.Text;
+using static UnityEditor.Progress;
 #if UNITY_5_3_OR_NEWER
 using UnityEditor;
 using Lockstep.Game;
@@ -102,14 +103,26 @@ namespace Lockstep.CodeGenerator
         {
             //Directory dir = new Directory();
 
+
+            //var arr =new string[] { "Vector3 pointOfPlane", "int abc" };
+            //Regex reg = new Regex("(int )");
+            //foreach(var item in arr)
+            //{
+            //  if(reg.Match(item).Success)
+            //    {
+            //        LogMaster.I(item);
+            //    }
+            //}
+
+            //return;
             List<string> list = new List<string>();
 
-            // InsertLogTrackCode(@"F:\github\Lockstep-Tutorial\Unity\Assets\Scripts\Logic\Framework\Networking\BaseLoginHandler.cs");
+            //InsertLogTrackCode(@"F:\github\Lockstep-Tutorial\Unity\Assets\Scripts\LSCommon\Launch.cs");
 
             FileUtil.GetDir(@"F:\github\Lockstep-Tutorial\Unity\Assets\Scripts", ".cs", ref list);
             foreach (string path in list)
             {
-                // LogMaster.I("--->" + path);
+                LogMaster.I("--->" + path);
                 InsertLogTrackCode(path);
             }
         }
@@ -265,7 +278,7 @@ namespace Lockstep.CodeGenerator
                 if (matchFuncAll.Value.Contains(LockstepLogFlag))
                 {
                     //
-                    // LogMaster.I("has old flag");
+                    LogMaster.I("has old flag");
                     continue;
                 }
 
@@ -307,7 +320,7 @@ namespace Lockstep.CodeGenerator
                             {
                                 //LogMaster.I("find success  333333333333333333333---------------------" + matchFirstCode.Value);
 
-                                LogMaster.I("添加打印 " + matchFuncHead.Value);
+
 
                                 // 如果不是日志代码，则需要打印日志
                                 string textLogCode = GetLogTrackCode(
@@ -322,6 +335,9 @@ namespace Lockstep.CodeGenerator
                                 );
 
                                 hasChanged = true && flag;
+
+                                if (hasChanged)
+                                    LogMaster.I("添加打印 " + matchFuncHead.Value);
                             }
                         }
                     }
@@ -334,7 +350,7 @@ namespace Lockstep.CodeGenerator
             }
         }
 
-        static List<string> ParamCompareList = new List<string>() { "uint\0", "int\0", "long\0" };
+        static List<string> ParamCompareList = new List<string>() {"uint","int", "long" , "LFloat", "LVector3" };
 
         const string LockstepLogFlag = "//NOTE: AutoCreate LockstepLog";
 
@@ -353,20 +369,26 @@ namespace Lockstep.CodeGenerator
             string[] array = reStr.Split('(');
             reStr = array[1];
 
+            Regex compareReg = default;
+
             string[] paramGroup = reStr.Split(',');
             foreach (var m in paramGroup)
             {
-                //Vector3 pointOfPlane
+                //LogMaster.L("m " + m);
                 foreach (var item in ParamCompareList)
                 {
-                    if (m.Contains(item))
+
+                    compareReg = new Regex("("+ item+" )");
+
+                    if (compareReg.Match(m).Success)
                     {
-                        var newM = m.Replace(item, "");
+                        var newM = m.Replace(item+" ", "");
                         // LogMaster.L("result:  " + newM);
                         result.Add(newM);
-                        continue;
+                        break;
                     }
                 }
+
             }
 
             string logMasterStr = default;
@@ -374,6 +396,7 @@ namespace Lockstep.CodeGenerator
 
             foreach (var item in result)
             {
+                LogMaster.L("item " + item);
                 //logMasterStr += @"item:{item}";
                 string val = string.Copy(item).Trim();
                 stringBuilder.Append(val + ": ");
@@ -393,7 +416,16 @@ namespace Lockstep.CodeGenerator
                 + logMasterStr
                 + "\");\n";
 
-            flag = logMasterStr.Length > 0;
+            flag = result.Count > 0;
+
+            if (flag == false)
+            {
+                //LogMaster.E("字段不符合 ");
+            }
+            else
+            {
+                //LogMaster.L("字段符合 ");
+            }
 
             return logStr;
         }
