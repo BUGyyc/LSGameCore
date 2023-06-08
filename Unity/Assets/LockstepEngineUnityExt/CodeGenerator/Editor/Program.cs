@@ -4,6 +4,7 @@ using System.IO;
 using Lockstep.Util;
 using UnityEngine;
 using Debug = Lockstep.Logging.Debug;
+using System.Text;
 #if UNITY_5_3_OR_NEWER
 using UnityEditor;
 using Lockstep.Game;
@@ -104,13 +105,15 @@ namespace Lockstep.CodeGenerator
 
             List<string> list = new List<string>();
 
-            FileUtil.GetDir(@"F:\github\Lockstep-Tutorial\Unity\Assets\Scripts", ".cs", ref list);
-            foreach (string path in list)
-            {
-                LogMaster.I("--->"+path);
-                InsertLogTrackCode(path);
-            }
-            
+            InsertLogTrackCode(@"F:\github\Lockstep-Tutorial\Unity\Assets\Scripts\LSCommon\Launch.cs");
+
+            //FileUtil.GetDir(@"F:\github\Lockstep-Tutorial\Unity\Assets\Scripts\LSCommon", ".cs", ref list);
+            //foreach (string path in list)
+            //{
+            //    LogMaster.I("--->"+path);
+            //    InsertLogTrackCode(path);
+            //}
+
         }
 
         //public static void HashLogTrackCode(string baseDir, string subPath, LogTrackPdbFile pdb, LogHashType hashType)
@@ -201,25 +204,30 @@ namespace Lockstep.CodeGenerator
         //    }
         //}
 
-        static string pattern = @"(public|private|protected)((\s+(static|override|virtual)*\s+)|\s+)\w+(<\w+>)*(\[\])*\s+\w+(<\w+>)*\s*\(([^\)]+\s*)?\)\s*\{[^\{\}]*(((?'Open'\{)[^\{\}]*)+((?'-Open'\})[^\{\}]*)+)*(?(Open)(?!))\}";
+        static string func_pattern = @"(public|private|protected)((\s+(static|override|virtual)*\s+)|\s+)\w+(<\w+>)*(\[\])*\s+\w+(<\w+>)*\s*\(([^\)]+\s*)?\)\s*\{[^\{\}]*(((?'Open'\{)[^\{\}]*)+((?'-Open'\})[^\{\}]*)+)*(?(Open)(?!))\}";
 
+        static string head_pattern = @"(public|private|protected)((\s+(static|override|virtual)*\s+)|\s+)\w+(<\w+>)*(\[\])*\s+\w+(<\w+>)*\s*\(([^\)]+\s*)?\)";
 
-        //static string pattern = @"(public|private|protected)((\s+(static|override|virtual)*\s+)|\s+)\w+(＜\w+>)*(\[\])*\s+\w+(＜\w+>)*\s*\(([^\)]+\s*)?\)";
+        static string left_pattern = @"{.";
 
-        /**
-         * 
-         *     (public|private|protected)((\s+(static|override|virtual)*\s+)|\s+)\w+(＜\w+>)*(\[\])*\s+\w+(＜\w+>)*\s*\(([^\)]+\s*)? \)\s*\{[^\{\}]*(((? 'Open'\{)[^\{\}]*)+((? '-Open'\})[^\{\}]*)+)*(? (Open)(? ! ))\}
-         * 
-         * 
-         * **/
+        static string first_pattern = @"[a-z]+";
+
+        static string log_pattern = @"LogMaster\.L\(.";
+
+        static string ignore_log_pattern = @"Debug\..";
 
 
         static Regex ms_regexFuncAll;// = new Regex(pattern);
+        static Regex ms_regexFuncHead;
+        static Regex ms_regexLeftBrace;
+        static Regex ms_regexFirstCode;
+        static Regex ms_regexLogTrackCode;
+        static Regex ms_regexLogTrackCodeIgnore;
 
         public static void InsertLogTrackCode(string path)
         {
-            string baseDir = "";
-            string subPath = "";
+            //string baseDir = "";
+            //string subPath = "";
 
             bool hasChanged = false;
             var fullPath = path;
@@ -230,7 +238,17 @@ namespace Lockstep.CodeGenerator
                 return;
             }
 
-            ms_regexFuncAll = new Regex(pattern);
+            ms_regexFuncAll = new Regex(func_pattern);
+
+            ms_regexFuncHead = new Regex(head_pattern);
+
+            ms_regexLeftBrace = new Regex(left_pattern);
+
+            ms_regexFirstCode = new Regex(first_pattern);
+
+            ms_regexLogTrackCode = new Regex(log_pattern);
+
+            ms_regexLogTrackCodeIgnore = new Regex(ignore_log_pattern);
 
             var text = File.ReadAllText(fullPath);
             LogMaster.A(text);
@@ -241,61 +259,132 @@ namespace Lockstep.CodeGenerator
 
             LogMaster.E("匹配数量", cnt.ToString());
 
-            //for (int i = cnt - 1; i >= 0; i--)
-            //{
-            //    var matchFuncAll = matches[i];
-            //    var matchFuncHead = ms_regexFuncHead.Match(
-            //        text,
-            //        matchFuncAll.Index,
-            //        matchFuncAll.Length
-            //    );
+            for (int i = cnt - 1; i >= 0; i--)
+            {
+                var matchFuncAll = matches[i];
+                var matchFuncHead = ms_regexFuncHead.Match(
+                    text,
+                    matchFuncAll.Index,
+                    matchFuncAll.Length
+                );
 
-            //    var matchLeftBrace = ms_regexLeftBrace.Match(
-            //        text,
-            //        matchFuncAll.Index,
-            //        matchFuncAll.Length
-            //    );
+                var matchLeftBrace = ms_regexLeftBrace.Match(
+                    text,
+                    matchFuncAll.Index,
+                    matchFuncAll.Length
+                );
 
-            //    if (matchLeftBrace.Success) // 如果没找到，则不是一个规则的函数体，不打印日志
-            //    {
-            //        // 如果找到第1个左括号，则寻找第1行代码
-            //        int len =
-            //            matchFuncAll.Index
-            //            + matchFuncAll.Length
-            //            - (matchLeftBrace.Index + matchLeftBrace.Length);
+                if (matchLeftBrace.Success) // 如果没找到，则不是一个规则的函数体，不打印日志
+                {
+                    // 如果找到第1个左括号，则寻找第1行代码
+                    int len =
+                        matchFuncAll.Index
+                        + matchFuncAll.Length
+                        - (matchLeftBrace.Index + matchLeftBrace.Length);
 
-            //        var matchFirstCode = ms_regexFirstCode.Match(
-            //            text,
-            //            matchLeftBrace.Index + matchLeftBrace.Length,
-            //            len
-            //        );
+                    var matchFirstCode = ms_regexFirstCode.Match(
+                        text,
+                        matchLeftBrace.Index + matchLeftBrace.Length,
+                        len
+                    );
 
-            //        if (matchFirstCode.Success) // 如果没有找到，则是一个空函数，不需要打印日志
-            //        {
-            //            // 如果找到代码，则判断是否是日志代码
-            //            if (!ms_regexLogTrackCode.IsMatch(matchFirstCode.Value))
-            //            {
-            //                if (!ms_regexLogTrackCodeIgnore.IsMatch(matchFirstCode.Value))
-            //                {
-            //                    // 如果不是日志代码，则需要打印日志
-            //                    string textLogCode = GetLogTrackCode(matchFuncHead.Value);
-            //                    // 不增加文件的行数
-            //                    text = text.Insert(
-            //                        matchLeftBrace.Index + matchLeftBrace.Length,
-            //                        textLogCode
-            //                    );
+                    if (matchFirstCode.Success) // 如果没有找到，则是一个空函数，不需要打印日志
+                    {
+                        LogMaster.I("find success  ---------------------" + matchFirstCode.Value);
+                        // 如果找到代码，则判断是否是日志代码
+                        if (!ms_regexLogTrackCode.IsMatch(matchFirstCode.Value))
+                        {
+                            LogMaster.I("find success  ---------------------" + matchFirstCode.Value);
+                            if (!ms_regexLogTrackCodeIgnore.IsMatch(matchFirstCode.Value))
+                            {
+                                //LogMaster.I("find success  333333333333333333333---------------------" + matchFirstCode.Value);
 
-            //                    hasChanged = true;
-            //                }
-            //            }
-            //        }
-            //    }
-            //}
+                                LogMaster.I("需要添加打印 ----------matchFuncHead.Value-----------" + matchFuncHead.Value);
+
+
+                                // 如果不是日志代码，则需要打印日志
+                                string textLogCode = GetLogTrackCode(matchFuncHead.Value);
+
+                                //// 不增加文件的行数
+                                text = text.Insert(
+                                    matchLeftBrace.Index + matchLeftBrace.Length,
+                                    textLogCode
+                                );
+
+                                hasChanged = true;
+                            }
+                        }
+                    }
+                }
+            }
 
             if (hasChanged)
             {
-                File.WriteAllText(baseDir + subPath, text);
+                File.WriteAllText(fullPath, text);
             }
+        }
+
+        static List<string> ParamCompareList = new List<string>() {
+            "uint ",
+            "int ",
+            "long "
+            
+        };
+   
+    
+        private static string GetLogTrackCode(string str)
+        {
+            //string logMasterStr = string.Format($"hello world");
+            //string logStr = string.Format($"\n\r LogMaster.L(\"{logMasterStr}\");");
+
+            List<string> result = new List<string>();
+             
+            string reStr = str.Replace(')', ' ');
+            string[] array = reStr.Split('(');
+            reStr = array[1];
+
+            string[] paramGroup = reStr.Split(',');
+            foreach (var m in paramGroup)
+            {
+                LogMaster.L("====" + m);
+                foreach (var item in ParamCompareList)
+                {
+                    if (m.Contains(item))
+                    {
+                        var newM = m.Replace(item, "");
+                        LogMaster.L("result:  " + newM);
+                        result.Add(newM);
+                        continue;
+                    }
+                }
+            }
+
+            string logMasterStr = default;
+            StringBuilder stringBuilder = new StringBuilder();
+
+            foreach (var item in result) 
+            {
+                //logMasterStr += @"item:{item}";
+                string a = string.Copy(item).Trim();
+                stringBuilder.Append(a+": ");
+                stringBuilder.Append(@"{");
+                stringBuilder.Append(a);
+                stringBuilder.Append(@"} ");
+            }
+
+            //stringBuilder.Append(");");
+            logMasterStr = stringBuilder.ToString();
+            //string logStr = stringBuilder.ToString();
+
+            string logStr = $"\n\r LogMaster.L($\""+  logMasterStr + "\");";
+
+            //string logStr = string.Format($"\n\r LogMaster.L(\"{logMasterStr}\");");
+
+            LogMaster.A(logStr);
+
+
+            return logStr;
+
         }
     }
 #endif

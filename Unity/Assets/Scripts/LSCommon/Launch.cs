@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
@@ -10,12 +10,36 @@ public class Launch : MonoBehaviour
 {
     public virtual void FuncName(int arg1, object arg2, int arg3)
     {
+
+ LogMaster.L($"arg1: {arg1} arg3: {arg3} ");
+
+ //LogMaster.L($"arg1: {arg1}  arg3 : { arg3 } ");
+
+ //LogMaster.L($"arg1: \{arg1\}  arg3 : \{ arg3 \} ");
+
+ //LogMaster.L($"arg1: {arg1\}  arg3 : \{ arg3 \} ");
+
+ //LogMaster.L($"{arg1: \{arg1\}  arg3 : \{ arg3 \} }");
+
+
+
         int c = 1;
         int b = arg1 + c;
     }
 
     public void Test(int a)
     {
+
+ LogMaster.L($"a: {a} ");
+
+ //LogMaster.L($"a : {a } ");
+
+ //LogMaster.L($"a : \{a \} ");
+
+ //LogMaster.L($"a : \{a \} ");
+
+ //LogMaster.L($"{a : \{a \} }");
+
         int c = a++;
         int b = a + c;
     }
