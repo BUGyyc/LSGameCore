@@ -11,7 +11,6 @@ using Lockstep.Game;
 
 #endif
 
-
 using System.Text.RegularExpressions;
 
 namespace Lockstep.CodeGenerator
@@ -105,15 +104,14 @@ namespace Lockstep.CodeGenerator
 
             List<string> list = new List<string>();
 
-            InsertLogTrackCode(@"F:\github\Lockstep-Tutorial\Unity\Assets\Scripts\Logic\Framework\Networking\BaseLoginHandler.cs");
+            // InsertLogTrackCode(@"F:\github\Lockstep-Tutorial\Unity\Assets\Scripts\Logic\Framework\Networking\BaseLoginHandler.cs");
 
-            // FileUtil.GetDir(@"F:\github\Lockstep-Tutorial\Unity\Assets\Scripts", ".cs", ref list);
-            // foreach (string path in list)
-            // {
-            //     // LogMaster.I("--->" + path);
-            //     InsertLogTrackCode(path);
-            // }
-
+            FileUtil.GetDir(@"F:\github\Lockstep-Tutorial\Unity\Assets\Scripts", ".cs", ref list);
+            foreach (string path in list)
+            {
+                // LogMaster.I("--->" + path);
+                InsertLogTrackCode(path);
+            }
         }
 
         //public static void HashLogTrackCode(string baseDir, string subPath, LogTrackPdbFile pdb, LogHashType hashType)
@@ -204,9 +202,11 @@ namespace Lockstep.CodeGenerator
         //    }
         //}
 
-        static string func_pattern = @"(public|private|protected)((\s+(static|override|virtual)*\s+)|\s+)\w+(<\w+>)*(\[\])*\s+\w+(<\w+>)*\s*\(([^\)]+\s*)?\)\s*\{[^\{\}]*(((?'Open'\{)[^\{\}]*)+((?'-Open'\})[^\{\}]*)+)*(?(Open)(?!))\}";
+        static string func_pattern =
+            @"(public|private|protected)((\s+(static|override|virtual)*\s+)|\s+)\w+(<\w+>)*(\[\])*\s+\w+(<\w+>)*\s*\(([^\)]+\s*)?\)\s*\{[^\{\}]*(((?'Open'\{)[^\{\}]*)+((?'-Open'\})[^\{\}]*)+)*(?(Open)(?!))\}";
 
-        static string head_pattern = @"(public|private|protected)((\s+(static|override|virtual)*\s+)|\s+)\w+(<\w+>)*(\[\])*\s+\w+(<\w+>)*\s*\(([^\)]+\s*)?\)";
+        static string head_pattern =
+            @"(public|private|protected)((\s+(static|override|virtual)*\s+)|\s+)\w+(<\w+>)*(\[\])*\s+\w+(<\w+>)*\s*\(([^\)]+\s*)?\)";
 
         static string left_pattern = @"{.";
 
@@ -216,8 +216,7 @@ namespace Lockstep.CodeGenerator
 
         static string ignore_log_pattern = @"Debug\..";
 
-
-        static Regex ms_regexFuncAll;// = new Regex(pattern);
+        static Regex ms_regexFuncAll; // = new Regex(pattern);
         static Regex ms_regexFuncHead;
         static Regex ms_regexLeftBrace;
         static Regex ms_regexFirstCode;
@@ -263,7 +262,7 @@ namespace Lockstep.CodeGenerator
             {
                 var matchFuncAll = matches[i];
 
-                if (matchFuncAll.Value.Contains(LockstepLogFlag)) 
+                if (matchFuncAll.Value.Contains(LockstepLogFlag))
                 {
                     //
                     // LogMaster.I("has old flag");
@@ -310,9 +309,11 @@ namespace Lockstep.CodeGenerator
 
                                 LogMaster.I("添加打印 " + matchFuncHead.Value);
 
-
                                 // 如果不是日志代码，则需要打印日志
-                                string textLogCode = GetLogTrackCode(matchFuncHead.Value);
+                                string textLogCode = GetLogTrackCode(
+                                    matchFuncHead.Value,
+                                    out bool flag
+                                );
 
                                 //// 不增加文件的行数
                                 text = text.Insert(
@@ -320,7 +321,7 @@ namespace Lockstep.CodeGenerator
                                     textLogCode
                                 );
 
-                                hasChanged = true;
+                                hasChanged = true && flag;
                             }
                         }
                     }
@@ -333,25 +334,19 @@ namespace Lockstep.CodeGenerator
             }
         }
 
-        static List<string> ParamCompareList = new List<string>() {
-            "uint\0",
-            "int\0",
-            "long\0"
-            
-        };
+        static List<string> ParamCompareList = new List<string>() { "uint\0", "int\0", "long\0" };
 
         const string LockstepLogFlag = "//NOTE: AutoCreate LockstepLog";
-   
-    
-        private static string GetLogTrackCode(string str)
+
+        private static string GetLogTrackCode(string str, out bool flag)
         {
             //string logMasterStr = string.Format($"hello world");
             //string logStr = string.Format($"\n\r LogMaster.L(\"{logMasterStr}\");");
 
             List<string> result = new List<string>();
 
-            var a = str.Replace("ref ","");
-            var b = a.Replace("out ","");
+            var a = str.Replace("ref ", "");
+            var b = a.Replace("out ", "");
 
             string reStr = b.Replace(')', ' ');
 
@@ -377,11 +372,11 @@ namespace Lockstep.CodeGenerator
             string logMasterStr = default;
             StringBuilder stringBuilder = new StringBuilder();
 
-            foreach (var item in result) 
+            foreach (var item in result)
             {
                 //logMasterStr += @"item:{item}";
                 string val = string.Copy(item).Trim();
-                stringBuilder.Append(val+": ");
+                stringBuilder.Append(val + ": ");
                 stringBuilder.Append(@"{");
                 stringBuilder.Append(val);
                 stringBuilder.Append(@"} ");
@@ -391,15 +386,16 @@ namespace Lockstep.CodeGenerator
             logMasterStr = stringBuilder.ToString();
             //string logStr = stringBuilder.ToString();
 
-            string logStr = "        "+LockstepLogFlag+ $"\n        LogMaster.L($\"" +  logMasterStr + "\");\n";
+            string logStr =
+                "        "
+                + LockstepLogFlag
+                + $"\n        LogMaster.L($\""
+                + logMasterStr
+                + "\");\n";
 
-            //string logStr = string.Format($"\n\r LogMaster.L(\"{logMasterStr}\");");
-
-            // LogMaster.A(logStr);
-
+            flag = logMasterStr.Length > 0;
 
             return logStr;
-
         }
     }
 #endif
