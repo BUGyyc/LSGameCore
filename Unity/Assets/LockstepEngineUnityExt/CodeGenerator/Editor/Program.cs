@@ -105,14 +105,14 @@ namespace Lockstep.CodeGenerator
 
             List<string> list = new List<string>();
 
-            //InsertLogTrackCode(@"F:\github\Lockstep-Tutorial\Unity\Assets\Scripts\LSCommon\Launch.cs");
+            InsertLogTrackCode(@"F:\github\Lockstep-Tutorial\Unity\Assets\Scripts\Logic\Framework\Networking\BaseLoginHandler.cs");
 
-            FileUtil.GetDir(@"F:\github\Lockstep-Tutorial\Unity\Assets\Scripts", ".cs", ref list);
-            foreach (string path in list)
-            {
-                // LogMaster.I("--->" + path);
-                InsertLogTrackCode(path);
-            }
+            // FileUtil.GetDir(@"F:\github\Lockstep-Tutorial\Unity\Assets\Scripts", ".cs", ref list);
+            // foreach (string path in list)
+            // {
+            //     // LogMaster.I("--->" + path);
+            //     InsertLogTrackCode(path);
+            // }
 
         }
 
