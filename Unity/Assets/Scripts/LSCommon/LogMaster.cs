@@ -34,6 +34,12 @@ public static class LogMaster
         Debug.LogFormat($"<color=yellow>{str1}</color>  {str2}");
     }
 
+    [System.Diagnostics.Conditional("UNITY_EDITOR")]
+    public static void A(string str1)
+    {
+        Debug.Log($"{str1}");
+    }
+
 
     public static void E(params string[] str)
     {

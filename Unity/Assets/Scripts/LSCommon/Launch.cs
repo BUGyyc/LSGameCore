@@ -3,13 +3,28 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System;
+using System.Text.RegularExpressions;
 
 public class Launch : MonoBehaviour
 {
+    public virtual void FuncName(int arg1, object arg2, int arg3)
+    {
+        int c = 1;
+        int b = arg1 + c;
+    }
+
+    public void Test(int a)
+    {
+        int c = a++;
+        int b = a + c;
+    }
+
     public Button createRoomBtn;
     public Button joinRoomBtn;
 
     public Button pureServerBtn;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -34,11 +49,5 @@ public class Launch : MonoBehaviour
         {
             SceneManager.LoadScene("PureServer");
         });
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 }
