@@ -391,13 +391,11 @@ namespace Lockstep.CodeGenerator
 
             }
 
-            string logMasterStr = default;
             StringBuilder stringBuilder = new StringBuilder();
 
             foreach (var item in result)
             {
                 LogMaster.L("item " + item);
-                //logMasterStr += @"item:{item}";
                 string val = string.Copy(item).Trim();
                 stringBuilder.Append(val + ": ");
                 stringBuilder.Append(@"{");
@@ -406,7 +404,7 @@ namespace Lockstep.CodeGenerator
             }
 
             //stringBuilder.Append(");");
-            logMasterStr = stringBuilder.ToString();
+            string logMasterStr = stringBuilder.ToString();
             //string logStr = stringBuilder.ToString();
 
             string logStr =
@@ -416,7 +414,7 @@ namespace Lockstep.CodeGenerator
                 + logMasterStr
                 + "\");\n";
 
-            flag = result.Count > 0;
+            flag = string.IsNullOrEmpty(logMasterStr) == false;
 
             if (flag == false)
             {
