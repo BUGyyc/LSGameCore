@@ -1,4 +1,4 @@
-﻿/*
+/*
  * @Author: delevin.ying 
  * @Date: 2023-05-26 16:39:53 
  * @Last Modified by: delevin.ying
@@ -23,7 +23,9 @@ namespace Lockstep.Game
         }
 
         public override void DoUpdate(LFloat deltaTime)
-        {
+        {        //NOTE: AutoCreate LockstepLog
+        LogMaster.L($"deltaTime: {deltaTime} ");
+
            
             foreach (var ball in allBall)
             {

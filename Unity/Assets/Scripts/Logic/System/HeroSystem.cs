@@ -10,7 +10,9 @@ namespace Lockstep.Game{
         EnumCount
     }
     public class HeroSystem : BaseSystem {
-        public override void DoUpdate(LFloat deltaTime){
+        public override void DoUpdate(LFloat deltaTime){        //NOTE: AutoCreate LockstepLog
+        LogMaster.L($"deltaTime: {deltaTime} ");
+
             foreach (var player in _gameStateService.GetPlayers()) {
                 player.DoUpdate(deltaTime);
             }

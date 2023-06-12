@@ -98,6 +98,12 @@ namespace Lockstep.CodeGenerator
             CodeGenHelper.Gen(config.args.Split(';'));
         }
 
+        [MenuItem("LPEngine/CleanBuildSetting")]
+        static void CleanBuildSetting()
+        {
+            //BuildPipeline.BuildAssetBundle 
+        }
+
         [MenuItem("LPEngine/Create Lockstep Log")]
         static void GenerateLockstepLog()
         {

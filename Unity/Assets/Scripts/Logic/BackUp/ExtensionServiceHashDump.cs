@@ -12,7 +12,9 @@ namespace Lockstep.Game {
         /// </summary>
         /// <param name="idx"></param>
         /// <returns></returns>
-        public override int GetHash(ref int idx){
+        public override int GetHash(ref int idx){        //NOTE: AutoCreate LockstepLog
+        LogMaster.L($"idx: {idx} ");
+
             int hash = 1;
             foreach (var entity in GetPlayers()) {
                 hash += entity.curHealth.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
@@ -37,7 +39,9 @@ namespace Lockstep.Game {
             return hash;
         }
 
-        public override void DumpStr(StringBuilder sb, string prefix){
+        public override void DumpStr(StringBuilder sb, string prefix){        //NOTE: AutoCreate LockstepLog
+        LogMaster.L($"");
+
             sb.AppendLine("Hash ------: " +_commonStateService.Hash);
             BackUpUtil.DumpList("GetPlayers", GetPlayers(), sb, prefix);
             BackUpUtil.DumpList("GetEnemies", GetEnemies(), sb, prefix);
@@ -47,20 +51,28 @@ namespace Lockstep.Game {
     }
 
     public partial class IdService : IHashCode, IDumpStr {
-        public int GetHash(ref int idx){
+        public int GetHash(ref int idx){        //NOTE: AutoCreate LockstepLog
+        LogMaster.L($"idx: {idx} ");
+
             return Id * PrimerLUT.GetPrimer(idx++);
         }
 
-        public void DumpStr(System.Text.StringBuilder sb, string prefix){
+        public void DumpStr(System.Text.StringBuilder sb, string prefix){        //NOTE: AutoCreate LockstepLog
+        LogMaster.L($"");
+
             sb.AppendLine(prefix + "Id" + ":" + Id.ToString());
         }
     }
 
     public partial class RandomService {
-        public override int GetHash(ref int idx){
+        public override int GetHash(ref int idx){        //NOTE: AutoCreate LockstepLog
+        LogMaster.L($"idx: {idx} ");
+
             return (int) _i.randSeed * PrimerLUT.GetPrimer(idx++);
         }
-        public override void DumpStr(System.Text.StringBuilder sb, string prefix){
+        public override void DumpStr(System.Text.StringBuilder sb, string prefix){        //NOTE: AutoCreate LockstepLog
+        LogMaster.L($"");
+
             sb.AppendLine(prefix + "randSeed" + ":" + _i.randSeed.ToString());
         }
     }

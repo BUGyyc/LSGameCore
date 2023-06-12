@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -24,7 +24,9 @@ namespace Lockstep.Game
         private bool _hasStart = false;
 
         public void RollbackTo(int tick, int maxContinueServerTick, bool isNeedClear = true)
-        {
+        {        //NOTE: AutoCreate LockstepLog
+        LogMaster.L($"tick: {tick} maxContinueServerTick: {maxContinueServerTick} ");
+
             if (tick < 0)
             {
                 Debug.LogError("Target Tick invalid!" + tick);
@@ -43,7 +45,9 @@ namespace Lockstep.Game
             IServiceContainer serviceContainer,
             IManagerContainer mgrContainer
         )
-        {
+        {        //NOTE: AutoCreate LockstepLog
+        LogMaster.L($"");
+
             Instance = this;
             _serviceContainer = serviceContainer;
             RegisterSystems();
@@ -73,7 +77,9 @@ namespace Lockstep.Game
         }
 
         public void StartGame(Msg_G2C_GameStartInfo gameStartInfo, int localPlayerId)
-        {
+        {        //NOTE: AutoCreate LockstepLog
+        LogMaster.L($"localPlayerId: {localPlayerId} ");
+
             if (_hasStart)
                 return;
             _hasStart = true;
@@ -110,7 +116,9 @@ namespace Lockstep.Game
         }
 
         public override void DoDestroy()
-        {
+        {        //NOTE: AutoCreate LockstepLog
+        LogMaster.L($"");
+
             foreach (var mgr in _systems)
             {
                 mgr.DoDestroy();
@@ -120,7 +128,9 @@ namespace Lockstep.Game
         }
 
         public override void OnApplicationQuit()
-        {
+        {        //NOTE: AutoCreate LockstepLog
+        LogMaster.L($"");
+
             DoDestroy();
         }
 
@@ -129,7 +139,9 @@ namespace Lockstep.Game
         /// </summary>
         /// <param name="isNeedGenSnap"></param>
         public void Step(bool isNeedGenSnap = true)
-        {
+        {        //NOTE: AutoCreate LockstepLog
+        LogMaster.L($"");
+
             if (_commonStateService.IsPause)
                 return;
             var deltaTime = new LFloat(true, 30);
@@ -148,7 +160,9 @@ namespace Lockstep.Game
         ///! GameCore Logic
         /// </summary>
         public void RegisterSystems()
-        {
+        {        //NOTE: AutoCreate LockstepLog
+        LogMaster.L($"");
+
             RegisterSystem(new HeroSystem());
             RegisterSystem(new EnemySystem());
             RegisterSystem(new BallSystem());
@@ -157,7 +171,9 @@ namespace Lockstep.Game
         }
 
         public void RegisterSystem(BaseSystem mgr)
-        {
+        {        //NOTE: AutoCreate LockstepLog
+        LogMaster.L($"");
+
             _systems.Add(mgr);
         }
     }

@@ -14,7 +14,9 @@ namespace Lockstep.Game
         private Dictionary<int, GameObject> _id2Prefab = new Dictionary<int, GameObject>();
 
         public object LoadPrefab(int id, uint type)
-        {
+        {        //NOTE: AutoCreate LockstepLog
+        LogMaster.L($"id: {id} type: {type} ");
+
             var finalId = id + (int)type * 100000;
 
             return _LoadPrefab(finalId, id, (EntityType)type);

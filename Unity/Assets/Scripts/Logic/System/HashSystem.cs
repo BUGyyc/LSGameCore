@@ -6,7 +6,9 @@ using Lockstep.Game;
 
 namespace Lockstep.Game {
     public class HashSystem : BaseSystem {
-        public override void DoUpdate(LFloat deltaTime){
+        public override void DoUpdate(LFloat deltaTime){        //NOTE: AutoCreate LockstepLog
+        LogMaster.L($"deltaTime: {deltaTime} ");
+
             //_commonStateService.Hash = GetHash(_gameStateService);
         }
 

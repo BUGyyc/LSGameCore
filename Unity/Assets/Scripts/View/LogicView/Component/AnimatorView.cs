@@ -19,15 +19,21 @@ namespace Lockstep.Game {
             }
         }
 
-        public void SetInteger(string name, int val){
+        public void SetInteger(string name, int val){        //NOTE: AutoCreate LockstepLog
+        LogMaster.L($"val: {val} ");
+
             anim.SetInteger(name, val);
         }
 
-        public void SetTrigger(string name){
+        public void SetTrigger(string name){        //NOTE: AutoCreate LockstepLog
+        LogMaster.L($"");
+
             anim.SetTrigger(name);
         }
 
-        public void Play(string name, bool isCross){
+        public void Play(string name, bool isCross){        //NOTE: AutoCreate LockstepLog
+        LogMaster.L($"");
+
             animState = animComp[name];
             var state = animComp[name];
             if (state != null) {
@@ -40,13 +46,17 @@ namespace Lockstep.Game {
             }
         }
 
-        public void LateUpdate(){
+        public void LateUpdate(){        //NOTE: AutoCreate LockstepLog
+        LogMaster.L($"");
+
             if (cAnim.curAnimBindInfo != null && cAnim.curAnimBindInfo.isMoveByAnim) {
                 rootTrans.localPosition = Vector3.zero;
             }
         }
 
-        public void Sample(LFloat time){
+        public void Sample(LFloat time){        //NOTE: AutoCreate LockstepLog
+        LogMaster.L($"time: {time} ");
+
             if (Application.isPlaying) {
                 return;
             }

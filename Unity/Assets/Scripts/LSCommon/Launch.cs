@@ -9,7 +9,9 @@ using System.Text.RegularExpressions;
 public class Launch : MonoBehaviour
 {
     public virtual void FuncName(int arg1, object arg2, int arg3)
-    {
+    {        //NOTE: AutoCreate LockstepLog
+        LogMaster.L($"arg1: {arg1} arg3: {arg3} ");
+
 
  LogMaster.L($"arg1: {arg1} arg3: {arg3} ");
 
@@ -28,7 +30,9 @@ public class Launch : MonoBehaviour
     }
 
     public void Test(int a)
-    {
+    {        //NOTE: AutoCreate LockstepLog
+        LogMaster.L($"a: {a} ");
+
 
  LogMaster.L($"a: {a} ");
 

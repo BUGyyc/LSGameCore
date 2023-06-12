@@ -16,7 +16,9 @@ namespace Lockstep.Game {
         public bool hasReachTarget = false;
         public bool needMove = true;
 
-        public override void DoUpdate(LFloat deltaTime){
+        public override void DoUpdate(LFloat deltaTime){        //NOTE: AutoCreate LockstepLog
+        LogMaster.L($"deltaTime: {deltaTime} ");
+
             if (!entity.rigidbody.isOnFloor) {
                 return;
             }
