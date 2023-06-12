@@ -103,14 +103,14 @@ namespace Lockstep.Game
 
                         //!  awesome ------------------------------->  why  ????????
 
-                        //! 通过一个局部最大 ping 值，预估能进行发送的
+                        //! 通过一个局部最大 ping 值，预估能进行发送的，网络差的客户端 ping 值大，那么 preSend 更大
                         var preSend = _cmdBuffer._maxPing * 1.0f / NetworkDefine.UPDATE_DELTATIME;
 
                         //根据比例算出能发送的帧数量
                         _targetPreSendTick =
                             _targetPreSendTick * _oldPercent + preSend * (1 - _oldPercent);
 
-                        //得到能发送的帧数量
+                        //! 得到能发送的帧数量 , 不希望超前太多，所以 Clamp 
                         var targetPreSendTick = LMath.Clamp(
                             (int)System.Math.Ceiling(_targetPreSendTick),
                             1,

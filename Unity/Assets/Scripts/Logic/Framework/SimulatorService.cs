@@ -537,7 +537,7 @@ namespace Lockstep.Game
                 //! 立即模拟一帧
                 Simulate(sFrame, tick == minTickToBackup);
 
-                //! ???????????????????????????????????????????  理论上无法触发才对
+                //! 这里其实是为了分散追帧压力，不用在一帧内追太多，及时退出 while ,然后下一帧接着追帧，
                 if (LTime.realtimeSinceStartupMS > deadline)
                 {
                     //! 理论上无法触发
@@ -567,8 +567,6 @@ namespace Lockstep.Game
                 //! 开始追帧，这里应该设定一个追帧极限，不然一帧模拟太多，容易造成极大的性能峰值
                 while (_world.Tick <= maxContinueServerTick)
                 {
-                    //! 这里存在问题-----------------------------------》 这样风险太高
-                    //FIXME:  这里存在疑惑，可能运用对方客户端的运算结果了，作弊很难避免
                     var sFrame = _cmdBuffer.GetServerFrame(_world.Tick);
                     Logging.Debug.Assert(
                         sFrame != null && sFrame.tick == _world.Tick,
@@ -688,17 +686,27 @@ namespace Lockstep.Game
             return true;
         }
 
+        /// <summary>
+        /// ! Logic 推进
+        /// </summary>
+        /// <param name="frame"></param>
+        /// <param name="isNeedGenSnap"></param>
         void Step(ServerFrame frame, bool isNeedGenSnap = true)
         {
             //Debug.Log("Step: " + _world.Tick + " TargetTick: " + TargetTick);
+            //! 设置新的帧号
             _commonStateService.SetTick(_world.Tick);
+            //! 计算这一帧的 hash
             var hash = _hashHelper.CalcHash();
             _commonStateService.Hash = hash;
+            //! 备份这一帧的数据
             _timeMachineService.Backup(_world.Tick);
             DumpFrame(hash);
             hash = _hashHelper.CalcHash(true);
             _hashHelper.SetHash(_world.Tick, hash);
+            //! 处理帧缓冲中的数据
             ProcessInputQueue(frame);
+            //! 真正的模拟这一帧
             _world.Step(isNeedGenSnap);
             _dumpHelper.OnFrameEnd();
             var tick = _world.Tick;
@@ -857,6 +865,10 @@ namespace Lockstep.Game
             EventHelper.Trigger(EEvent.SimulationInit, null);
         }
 
+        /// <summary>
+        /// ! 客户端启动
+        /// </summary>
+        /// <param name="param"></param>
         void OnEvent_OnAllPlayerFinishedLoad(object param)
         {
             Debug.Log($"OnEvent_OnAllPlayerFinishedLoad");

@@ -101,6 +101,10 @@ namespace Lockstep.Game {
             EventHelper.Trigger(EEvent.OnLoadingProgress, progresses);
         }
 
+        /// <summary>
+        /// ! 客户端收到通知，全部人已就位
+        /// </summary>
+        /// <param name="level"></param>
         public void OnAllFinishedLoaded(short level){
             Log("[Client]  OnAllFinishedLoaded " + level);
             LogMaster.L($"加载完成 level {level} ");

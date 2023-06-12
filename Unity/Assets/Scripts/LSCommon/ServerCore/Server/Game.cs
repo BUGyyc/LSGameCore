@@ -386,7 +386,7 @@ namespace Lockstep.FakeServer.Server
         /// <summary>
         ///! 服务器广播指令
         /// </summary>
-        /// <param name="isForce"> isForce = true ， 乐观帧锁定 </param>
+        /// <param name="isForce"> isForce = true ， 乐观帧 </param>
         /// <returns></returns>
         private bool _CheckBorderServerFrame(bool isForce = false)
         {
@@ -411,18 +411,14 @@ namespace Lockstep.FakeServer.Server
             {
                 if (inputs[i] == null)
                 {
-                    //如果没有输入，那么强制制造一个空输入
+                    //! 如果没有输入，那么强制制造一个空输入，并且标记 Miss
                     inputs[i] = new Msg_PlayerInput(Tick, (byte)i) { IsMiss = true };
                 }
             }
             var msg = new Msg_ServerFrames();
 
-            //!  这里的限制没有明确描述
-            //?  最多取三帧？？
+            //!  这里是在做冗余包，原作者假定使用的是不可靠的 UDP，认为会丢包，所以要发冗余包
             int count = Tick < 2 ? Tick + 1 : 3;
-
-            //! 最多三帧，追帧不会太多，网络很好的客户端不会快太多 ？？？？
-
             var frames = new ServerFrame[count];
             for (int i = 0; i < count; i++)
             {
@@ -1072,6 +1068,11 @@ namespace Lockstep.FakeServer.Server
             Log($"C2G_RepMissFrameAck missFrameTick:{msg.MissFrameTick}");
         }
 
+        /// <summary>
+        ///!  服务器收到客户端通知，战斗服正式启动
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="data"></param>
         void C2G_LoadingProgress(Player player, BaseMsg data)
         {
             if (State != EGameState.Loading)
@@ -1086,6 +1087,7 @@ namespace Lockstep.FakeServer.Server
 
             //Log($"palyer{player.LocalId} Load {msg.Progress}");
 
+            //! 服务器通知客户端端
             BorderTcp(
                 EMsgSC.G2C_LoadingProgress,
                 new Msg_G2C_LoadingProgress() { Progress = _playerLoadingProgress }
@@ -1109,6 +1111,9 @@ namespace Lockstep.FakeServer.Server
             }
         }
 
+        /// <summary>
+        /// ! 如果全部客户端都加载好了，那就广播通知
+        /// </summary>
         void OnFinishedLoaded()
         {
             Log("All Load done");
