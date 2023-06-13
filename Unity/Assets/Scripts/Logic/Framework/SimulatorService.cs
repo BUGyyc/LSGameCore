@@ -364,6 +364,7 @@ namespace Lockstep.Game
             else
             {
                 int tempTick = inputTick;
+                //! 网络延迟大的情况下，InputTargetTick 更大，增多网络差客户端的预测，以及推进游戏
                 while (inputTick <= inputTargetTick)
                 {
                     if (APP.DebugClientNetDelay == false)
