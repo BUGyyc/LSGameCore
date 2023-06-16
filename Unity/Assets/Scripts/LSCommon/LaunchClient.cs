@@ -56,7 +56,7 @@ public class LaunchClient : MonoBehaviour
             Debug.Log($" {ip}  {port} ");
 
             NetSetting.IP = ip;
-            NetSetting.Port = port;
+            NetSetting.Port = (uint)port;
             
             gameManager.SetActive(true);
         });

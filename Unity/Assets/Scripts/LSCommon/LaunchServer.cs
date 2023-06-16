@@ -69,7 +69,7 @@ public class LaunchServer : MonoBehaviour
         string ip = IpIF.text;
         int port = int.Parse(PortIF.text);
         NetSetting.IP = ip;
-        NetSetting.Port = port;
+        NetSetting.Port = (uint)port;
         NetSetting.Number = int.Parse(NumberIF.text);
 
         Debug.Log($"[Server]  BtnStart   {ip}  {port}   {NetSetting.Number} ");

@@ -60,7 +60,7 @@ namespace Lockstep.FakeServer.Server
 
         public void Start()
         {
-            serverIpPoint = NetworkUtil.ToIPEndPoint(NetSetting.IP, NetSetting.Port);
+            serverIpPoint = NetworkUtil.ToIPEndPoint(NetSetting.IP, (int)NetSetting.Port);
 
             _netProxy.MessageDispatcher = this;
             _netProxy.MessagePacker = MessagePacker.Instance;

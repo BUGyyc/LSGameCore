@@ -16,7 +16,7 @@ namespace Lockstep.Game{
         public int id;
 
         public void DoStart(){
-            serverIpPoint = NetworkUtil.ToIPEndPoint(NetSetting.IP, NetSetting.Port);
+            serverIpPoint = NetworkUtil.ToIPEndPoint(NetSetting.IP, (int)NetSetting.Port);
 
             net.Awake(NetworkProtocol.TCP);
             net.MessageDispatcher = this;
