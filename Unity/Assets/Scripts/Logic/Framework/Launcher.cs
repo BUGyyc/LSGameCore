@@ -151,6 +151,8 @@ namespace Lockstep.Game {
 
             //! 核心逻辑，客户端的核心驱动 , 这里的 Tick 是高频率
             _simulatorService.DoUpdate(fDeltaTime);
+
+            
         }
 
         public void DoDestroy(){

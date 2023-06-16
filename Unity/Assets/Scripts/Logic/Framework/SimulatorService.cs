@@ -365,6 +365,7 @@ namespace Lockstep.Game
             {
                 int tempTick = inputTick;
                 //! 网络延迟大的情况下，InputTargetTick 更大，增多网络差客户端的预测，以及推进游戏
+                //! 这块的 Loop ，只是Loop---> Create ClientBuffer、以及 SendInputMsg to Server
                 while (inputTick <= inputTargetTick)
                 {
                     if (APP.DebugClientNetDelay == false)
@@ -613,7 +614,7 @@ namespace Lockstep.Game
         }
 
         /// <summary>
-        /// !!!!!
+        /// ! 预测对方输入，并且 发送输入到服务器
         /// </summary>
         /// <param name="curTick"></param>
         void SendInputs(int curTick)
