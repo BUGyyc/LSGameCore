@@ -93,7 +93,7 @@ namespace NetMsg.Common {
         //GC Tcp
         C2G_Hello,
         G2C_Hello,
-        G2C_GameStartInfo,
+        G2C_GameStartInfo, //! 服务器广播，开始游戏
         C2G_LoadingProgress,
         G2C_LoadingProgress,
         G2C_AllFinishedLoaded,

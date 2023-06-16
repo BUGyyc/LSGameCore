@@ -85,7 +85,7 @@ namespace Lockstep.Game {
         }
 
         public void OnUdpHello(int mapId, byte localId){
-            Log($"[Client]  OnUdpHello mapId:{mapId} localId:{localId}");
+            Log($"[Client] Send OnUdpHello mapId:{mapId} localId:{localId}");
         }
 
         public void OnGameStartInfo(Msg_G2C_GameStartInfo data){
