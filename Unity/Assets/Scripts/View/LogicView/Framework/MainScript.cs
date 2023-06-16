@@ -11,7 +11,7 @@ public class MainScript : MonoBehaviour {
     public string RecordFilePath;
     public bool HasInit = false;
 
-    public GameObject uiObj;
+    // public GameObject uiObj;
 
     private ServiceContainer _serviceContainer;
 
@@ -45,7 +45,7 @@ public class MainScript : MonoBehaviour {
         launcher.DoStart();
         HasInit = true;
 
-        uiObj.SetActive(false);
+        // uiObj.SetActive(false);
     }
 
     private void Update(){

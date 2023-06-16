@@ -14,15 +14,7 @@ namespace Lockstep.FakeServer.Server
 {
     public class Server : IMessageDispatcher
     {
-        //! 这里要参考 ServerCore
-        //TODO: LiteNetLib
-        #region LiteNetLib
-        protected LiteNetLibServer _server;
 
-        public uint Port;
-        public uint RoomPlayerNumber;
-
-        #endregion
 
         //network
         public static IPEndPoint serverIpPoint;
