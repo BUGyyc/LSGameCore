@@ -12,8 +12,8 @@ namespace Lockstep.Game {
         /// </summary>
         /// <param name="idx"></param>
         /// <returns></returns>
-        public override int GetHash(ref int idx){        //NOTE: AutoCreate LockstepLog
-        LogMaster.L($"idx: {idx} ");
+        public override int GetHash(ref int idx){
+
 
             int hash = 1;
             foreach (var entity in GetPlayers()) {
@@ -39,8 +39,8 @@ namespace Lockstep.Game {
             return hash;
         }
 
-        public override void DumpStr(StringBuilder sb, string prefix){        //NOTE: AutoCreate LockstepLog
-        LogMaster.L($"");
+        public override void DumpStr(StringBuilder sb, string prefix){
+
 
             sb.AppendLine("Hash ------: " +_commonStateService.Hash);
             BackUpUtil.DumpList("GetPlayers", GetPlayers(), sb, prefix);
@@ -51,27 +51,26 @@ namespace Lockstep.Game {
     }
 
     public partial class IdService : IHashCode, IDumpStr {
-        public int GetHash(ref int idx){        //NOTE: AutoCreate LockstepLog
-        LogMaster.L($"idx: {idx} ");
+        public int GetHash(ref int idx){
 
             return Id * PrimerLUT.GetPrimer(idx++);
         }
 
-        public void DumpStr(System.Text.StringBuilder sb, string prefix){        //NOTE: AutoCreate LockstepLog
-        LogMaster.L($"");
+        public void DumpStr(System.Text.StringBuilder sb, string prefix){
+
 
             sb.AppendLine(prefix + "Id" + ":" + Id.ToString());
         }
     }
 
     public partial class RandomService {
-        public override int GetHash(ref int idx){        //NOTE: AutoCreate LockstepLog
-        LogMaster.L($"idx: {idx} ");
+        public override int GetHash(ref int idx){
+
 
             return (int) _i.randSeed * PrimerLUT.GetPrimer(idx++);
         }
-        public override void DumpStr(System.Text.StringBuilder sb, string prefix){        //NOTE: AutoCreate LockstepLog
-        LogMaster.L($"");
+        public override void DumpStr(System.Text.StringBuilder sb, string prefix){
+
 
             sb.AppendLine(prefix + "randSeed" + ":" + _i.randSeed.ToString());
         }

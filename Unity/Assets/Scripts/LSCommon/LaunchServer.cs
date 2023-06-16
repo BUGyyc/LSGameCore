@@ -19,7 +19,7 @@ public class LaunchServer : MonoBehaviour
 
     public Button connectBtn;
 
-    public GameObject gameManager;
+    public GameObject serverCoreObj;
 
     public string successTip = "房间已创建，等待链接";
 
@@ -72,9 +72,9 @@ public class LaunchServer : MonoBehaviour
         NetSetting.Port = (uint)port;
         NetSetting.Number = int.Parse(NumberIF.text);
 
-        Debug.Log($"[Server]  BtnStart   {ip}  {port}   {NetSetting.Number} ");
+        // Debug.Log($"[Server]  BtnStart   {ip}  {port}   {NetSetting.Number} ");
 
-        gameManager.SetActive(true);
+        serverCoreObj.SetActive(true);
         connectBtn.enabled = false;
         var txt = connectBtn.GetComponentInChildren<Text>();
 

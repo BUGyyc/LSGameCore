@@ -10,6 +10,8 @@ using Debug = Lockstep.Logging.Debug;
 using Msg_HashCode = NetMsg.Common.Msg_HashCode;
 using Msg_PlayerInput = NetMsg.Common.Msg_PlayerInput;
 
+using Lockstep.Core.Logic.Serialization.Utils;
+
 public interface IIncommingMessage
 {
     T Parse<T>();
@@ -35,17 +37,26 @@ namespace Lockstep.Game
 
     public class RoomMsgManager : IRoomMsgManager
     {
+        //!  网络模块更换为 LiteNetLib Client ===> ClientCore
+
+        #region ClientCore
+        public bool Connected => _netClient.Connected;
+        private readonly LiteNetLibClient _netClient = new LiteNetLibClient();
+
+        #endregion
+
+
         private delegate void DealNetMsg(BaseMsg data);
 
-        private delegate BaseMsg ParseNetMsg(Deserializer reader);
+        private delegate BaseMsg ParseNetMsg(Lockstep.Serialization.Deserializer reader);
 
         /// <summary>
         ///! 游戏GameCore状态
         /// </summary>
         public EGameState CurGameState = EGameState.Idle;
 
-        private NetClient _netUdp;
-        private NetClient _netTcp;
+        // private NetClient _netUdp;
+        // private NetClient _netTcp;
 
         private float _curLoadProgress;
         private float _framePursueRate;
@@ -80,10 +91,38 @@ namespace Lockstep.Game
             _allMsgParsers = new ParseNetMsg[_maxMsgId];
             RegisterMsgHandlers();
             _handler = msgHandler;
-            _netUdp = _netTcp = new NetClient(); //TODO Login
-            _netTcp.DoStart();
-            _netTcp.NetMsgHandler = OnNetMsg;
+
+            //FIXME:
+            _netClient.Start();
+#if UNITY_EDITOR
+            NetSetting.GetAutoCreateRandomPort();
+#endif
+
+            _netClient.Connect(NetSetting.IP, (int)NetSetting.Port);
+
+            // _netUdp = _netTcp = new NetClient(); //TODO Login
+            // _netTcp.DoStart();
+            // _netTcp.NetMsgHandler = OnNetMsg;
         }
+
+        #region ClientCore
+        // protected void SendHello()
+        // {
+        //     Serializer serializer = new Serializer();
+        //     serializer.Put(NetProtocolDefine.Input);
+        //     serializer.Put(input.Tick);
+        //     serializer.Put(LagCompensation);
+        //     serializer.Put(input.Commands.Count());
+        //     serializer.Put(input.ActorId);
+        //     foreach (Lockstep.Core.Logic.Interfaces.ICommand command in input.Commands)
+        //     {
+        //         serializer.Put(command.Tag);
+        //         command.Serialize(serializer);
+        //     }
+        //     _network.Send(Compressor.Compress(serializer));
+        // }
+
+        #endregion
 
         void OnNetMsg(ushort opcode, object msg)
         {
@@ -135,11 +174,14 @@ namespace Lockstep.Game
         public void DoDestroy()
         {
             Debug.Log("DoDestroy");
-            _netTcp.SendMessage(EMsgSC.C2L_LeaveRoom, new Msg_C2L_LeaveRoom().ToBytes());
-            _netUdp?.DoDestroy();
-            _netTcp?.DoDestroy();
-            _netTcp = null;
-            _netUdp = null;
+
+            // _netClient.Send();
+
+            // _netTcp.SendMessage(EMsgSC.C2L_LeaveRoom, new Msg_C2L_LeaveRoom().ToBytes());
+            // _netUdp?.DoDestroy();
+            // _netTcp?.DoDestroy();
+            // _netTcp = null;
+            // _netUdp = null;
         }
 
         void ResetStatus()
@@ -328,7 +370,7 @@ namespace Lockstep.Game
             _allMsgParsers[(int)type] = parseFunc;
         }
 
-        private T ParseData<T>(Deserializer reader)
+        private T ParseData<T>(Lockstep.Serialization.Deserializer reader)
             where T : BaseMsg, new()
         {
             return reader.Parse<T>();
@@ -404,26 +446,26 @@ namespace Lockstep.Game
 
         public void SendUdp(EMsgSC msgId, ISerializable body)
         {
-            var writer = new Serializer();
+            var writer = new Lockstep.Serialization.Serializer();
             body.Serialize(writer);
-            _netUdp?.SendMessage(msgId, writer.CopyData());
+            // _netUdp?.SendMessage(msgId, writer.CopyData());
         }
 
         public void SendTcp(EMsgSC msgId, BaseMsg body)
         {
-            var writer = new Serializer();
+            var writer = new Lockstep.Serialization.Serializer();
             body.Serialize(writer);
-            _netTcp?.SendMessage(msgId, writer.CopyData());
+            // _netTcp?.SendMessage(msgId, writer.CopyData());
         }
 
         protected void G2C_UdpMessage(IIncommingMessage reader)
         {
             var bytes = reader.GetRawBytes();
-            var data = new Deserializer(Compressor.Decompress(bytes));
+            var data = new Lockstep.Serialization.Deserializer(Compressor.Decompress(bytes));
             OnRecvMsg(data);
         }
 
-        protected void OnRecvMsg(Deserializer reader)
+        protected void OnRecvMsg(Lockstep.Serialization.Deserializer reader)
         {
             var msgType = reader.ReadInt16();
             if (msgType >= _maxMsgId)

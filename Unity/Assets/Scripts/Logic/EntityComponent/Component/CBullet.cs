@@ -2,7 +2,7 @@
  * @Author: delevin.ying 
  * @Date: 2023-05-26 16:30:47 
  * @Last Modified by: delevin.ying
- * @Last Modified time: 2023-05-26 16:44:56
+ * @Last Modified time: 2023-06-16 15:46:43
  */
 using System;
 using Lockstep.Collision2D;
@@ -22,8 +22,8 @@ namespace Lockstep.Game {
         // public bool hasReachTarget = false;
         // public bool needMove = true;
 
-        public override void DoUpdate(LFloat deltaTime){        //NOTE: AutoCreate LockstepLog
-        LogMaster.L($"deltaTime: {deltaTime} ");
+        public override void DoUpdate(LFloat deltaTime){
+
 
             // if (!entity.rigidbody.isOnFloor) {
             //     return;

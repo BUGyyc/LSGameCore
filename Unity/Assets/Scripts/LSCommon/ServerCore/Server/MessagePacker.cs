@@ -6,8 +6,8 @@ namespace Lockstep.Game.Server{
     public class MessagePacker : IMessagePacker {
         public static MessagePacker Instance { get; } = new MessagePacker();
 
-        public object DeserializeFrom(ushort opcode, byte[] bytes, int index, int count){        //NOTE: AutoCreate LockstepLog
-        LogMaster.L($"index: {index} count: {count} ");
+        public object DeserializeFrom(ushort opcode, byte[] bytes, int index, int count){
+
 
             var type = (EMsgSC) opcode;
             switch (type) {
@@ -38,8 +38,8 @@ namespace Lockstep.Game.Server{
             return null;
         }
 
-        public byte[] SerializeToByteArray(IMessage msg){        //NOTE: AutoCreate LockstepLog
-        LogMaster.L($"");
+        public byte[] SerializeToByteArray(IMessage msg){
+
 
             return ((BaseFormater) msg).ToBytes();
         }

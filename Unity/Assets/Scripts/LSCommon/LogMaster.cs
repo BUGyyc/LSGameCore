@@ -2,7 +2,7 @@
  * @Author: delevin.ying 
  * @Date: 2023-05-24 13:53:22 
  * @Last Modified by: delevin.ying
- * @Last Modified time: 2023-05-24 16:48:47
+ * @Last Modified time: 2023-06-16 15:52:10
  */
 
 
@@ -19,7 +19,7 @@ public static class LogMaster
         if (World.Instance != null) tickValue = World.Instance.Tick;
         //#endif
 
-        Debug.LogFormat($"<color=yellow> [Tick:{tickValue}] {string.Join(",", str)}   </color>");
+        // Debug.LogFormat($"<color=yellow> [Tick:{tickValue}] {string.Join(",", str)}   </color>");
     }
 
     [System.Diagnostics.Conditional("UNITY_EDITOR")]

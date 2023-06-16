@@ -35,7 +35,7 @@ public class LiteNetLibClient : INetwork
     {
         _client.Connect(serverIp, port, NetSetting.NetConnectKey);
 
-        LogMaster.I($"[NetCore] Send Connect {serverIp}  {port}");
+        LogMaster.I($"[ClientCore]  [NetCore] Send Connect {serverIp}  {port}");
     }
 
     /// <summary>
