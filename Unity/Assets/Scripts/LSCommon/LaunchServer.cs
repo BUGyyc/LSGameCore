@@ -72,7 +72,7 @@ public class LaunchServer : MonoBehaviour
         NetSetting.Port = port;
         NetSetting.Number = int.Parse(NumberIF.text);
 
-        Debug.Log($"[Server]  BtnStart   {ip}  {port}   {NetSetting.Number} ");
+        // Debug.Log($"[Server]  BtnStart   {ip}  {port}   {NetSetting.Number} ");
 
         gameManager.SetActive(true);
         connectBtn.enabled = false;

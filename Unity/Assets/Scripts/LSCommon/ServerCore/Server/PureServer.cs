@@ -11,7 +11,7 @@ using Lockstep.FakeServer.Server;
 
 public class PureServer : MonoBehaviour
 {
-    Server server;
+    Lockstep.FakeServer.Server.Server server;
 
     // public MainScript script;
 
@@ -24,7 +24,7 @@ public class PureServer : MonoBehaviour
         SynchronizationContext.SetSynchronizationContext(contex);
         //Debug.Log("Main start");
         //Utils.StartServices();
-        server = new Server();
+        server = new Lockstep.FakeServer.Server.Server();
         server.Start();
     }
 

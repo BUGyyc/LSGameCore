@@ -44,8 +44,18 @@ namespace Lockstep.Game
         /// </summary>
         public EGameState CurGameState = EGameState.Idle;
 
-        private NetClient _netUdp;
-        private NetClient _netTcp;
+        #region NormalNet
+
+        // private NetClient _netUdp;
+        // private NetClient _netTcp;
+
+        #endregion
+
+        #region LiteNetLib
+
+        private LiteNetLibClient _client = new LiteNetLibClient();
+
+        #endregion
 
         private float _curLoadProgress;
         private float _framePursueRate;
@@ -80,9 +90,66 @@ namespace Lockstep.Game
             _allMsgParsers = new ParseNetMsg[_maxMsgId];
             RegisterMsgHandlers();
             _handler = msgHandler;
-            _netUdp = _netTcp = new NetClient(); //TODO Login
-            _netTcp.DoStart();
-            _netTcp.NetMsgHandler = OnNetMsg;
+
+            #region  NormalNet
+            // _netUdp = _netTcp = new NetClient(); //TODO Login
+            // _netTcp.DoStart();
+            // _netTcp.NetMsgHandler = OnNetMsg;
+            #endregion
+
+            #region LiteNetLib
+
+            _client.Start();
+
+            _client.Connect(NetSetting.IP, NetSetting.Number);
+
+            _client.DataReceived += NetworkOnDataReceived;
+
+            Debug.Log($"[Client] 发起链接  {NetSetting.IP} {NetSetting.Port}");
+
+            #endregion
+        }
+
+        /// <summary>
+        /// 客户端收到服务器的包
+        /// </summary>
+        /// <param name="rawData"></param>
+        private void NetworkOnDataReceived(byte[] rawData)
+        {
+            byte[] source = Compressor.Decompress(rawData);
+            var deserializer = new Lockstep.Core.Logic.Serialization.Utils.Deserializer(source);
+            switch (deserializer.GetByte())
+            {
+                case NetProtocolDefine.Init:
+                {
+                    // Init init = new Init();
+                    // init.Deserialize(deserializer);
+                    // this.InitReceived?.Invoke(this, init);
+                    break;
+                }
+                case NetProtocolDefine.Input:
+                {
+                    // uint tick = deserializer.GetUInt() + deserializer.GetByte();
+                    // int @int = deserializer.GetInt();
+                    // byte @byte = deserializer.GetByte();
+                    // Lockstep.Core.Logic.Interfaces.ICommand[] array =
+                    //     new Lockstep.Core.Logic.Interfaces.ICommand[@int];
+                    // for (int i = 0; i < @int; i++)
+                    // {
+                    //     ushort uShort = deserializer.GetUShort();
+                    //     if (_commandFactories.ContainsKey(uShort))
+                    //     {
+                    //         Lockstep.Core.Logic.Interfaces.ICommand command =
+                    //             (Lockstep.Core.Logic.Interfaces.ICommand)
+                    //                 Activator.CreateInstance(_commandFactories[uShort]);
+                    //         command.Deserialize(deserializer);
+                    //         array[i] = command;
+                    //     }
+                    // }
+                    // base.Enqueue(new Input(tick, @byte, array));
+                    break;
+                }
+            }
         }
 
         void OnNetMsg(ushort opcode, object msg)
@@ -130,16 +197,22 @@ namespace Lockstep.Game
                     SendLoadingProgress(CurProgress);
                 }
             }
+
+            #region LiteNetLib
+            _client?.Update();
+            #endregion
         }
 
         public void DoDestroy()
         {
             Debug.Log("DoDestroy");
-            _netTcp.SendMessage(EMsgSC.C2L_LeaveRoom, new Msg_C2L_LeaveRoom().ToBytes());
-            _netUdp?.DoDestroy();
-            _netTcp?.DoDestroy();
-            _netTcp = null;
-            _netUdp = null;
+            #region NormalNet
+            // _netTcp.SendMessage(EMsgSC.C2L_LeaveRoom, new Msg_C2L_LeaveRoom().ToBytes());
+            // _netUdp?.DoDestroy();
+            // _netTcp?.DoDestroy();
+            // _netTcp = null;
+            // _netUdp = null;
+            #endregion
         }
 
         void ResetStatus()
@@ -406,14 +479,18 @@ namespace Lockstep.Game
         {
             var writer = new Serializer();
             body.Serialize(writer);
-            _netUdp?.SendMessage(msgId, writer.CopyData());
+            #region NormalNet
+            // _netUdp?.SendMessage(msgId, writer.CopyData());
+            #endregion
         }
 
         public void SendTcp(EMsgSC msgId, BaseMsg body)
         {
             var writer = new Serializer();
             body.Serialize(writer);
-            _netTcp?.SendMessage(msgId, writer.CopyData());
+            #region NormalNet
+            // _netTcp?.SendMessage(msgId, writer.CopyData());
+            #endregion
         }
 
         protected void G2C_UdpMessage(IIncommingMessage reader)

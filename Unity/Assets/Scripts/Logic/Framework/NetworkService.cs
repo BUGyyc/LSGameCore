@@ -11,17 +11,17 @@ namespace Lockstep.Game {
             Instance = this;
         }
 
-        public string ServerIp = "127.0.0.1";
-        public int ServerPort = 10083;
+        // public string ServerIp = "127.0.0.1";
+        // public int ServerPort = 10083;
 
-        private long _playerID;
-        private int _roomId;
+        // private long _playerID;
+        // private int _roomId;
 
-        public int Ping => 50; //=> _netProxyRoom.IsInit ? _netProxyRoom.Ping : _netProxyLobby.Ping;
-        public bool IsConnected = true; // => _netProxyLobby != null && _netProxyLobby.Connected;
+        // public int Ping => 50; //=> _netProxyRoom.IsInit ? _netProxyRoom.Ping : _netProxyLobby.Ping;
+        // public bool IsConnected = true; // => _netProxyLobby != null && _netProxyLobby.Connected;
 
         private bool _noNetwork;
-        private bool _isReconnected = false; //是否是重连
+        // private bool _isReconnected = false; //是否是重连
 
         private RoomMsgManager _roomMsgMgr;
         public NetworkMsgHandler _msgHandler = new NetworkMsgHandler();
