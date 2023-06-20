@@ -32,7 +32,8 @@ namespace Lockstep.Game {
         public static LFloat AnimFrameScale = new LFloat(true, 1667);
         [HideInInspector] public LFloat DeadTimer => startTimer + interval * (otherCount + LFloat.half);
 
-        public LFloat NextTriggerTimer(int counter){        //NOTE: AutoCreate LockstepLog
+        public LFloat NextTriggerTimer(int counter){
+        //NOTE: AutoCreate LockstepLog
         LogMaster.L($"counter: {counter} ");
 
             return startTimer + interval * counter;
@@ -48,8 +49,7 @@ namespace Lockstep.Game {
         public LFloat maxPartTime;
         public List<SkillPart> parts = new List<SkillPart>();
 
-        public void DoInit(){        //NOTE: AutoCreate LockstepLog
-        LogMaster.L($"");
+        public void DoInit(){
 
             parts.Sort((a, b) => LMath.Sign(a.startFrame - b.startFrame));
             var time = LFloat.MinValue;

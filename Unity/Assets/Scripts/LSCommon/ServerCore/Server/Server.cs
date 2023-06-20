@@ -220,6 +220,8 @@ namespace Lockstep.FakeServer.Server
                 //! 间隔驱动 Tick 逻辑
                 DoUpdate();
             }
+
+            _server.PollEvents();
         }
 
         public void DoUpdate()

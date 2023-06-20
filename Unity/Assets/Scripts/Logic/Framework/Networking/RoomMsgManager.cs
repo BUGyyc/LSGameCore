@@ -278,9 +278,13 @@ namespace Lockstep.Game
             IsReconnecting = isReconnect;
             ResetStatus();
             this.helloBody = helloBody.Hello;
-            ConnectUdp();
-            //TODO temp code
-            SendTcp(EMsgSC.C2L_JoinRoom, new Msg_C2L_JoinRoom() { RoomId = 0 });
+            #region NormalNet
+
+            // ConnectUdp();
+            // //TODO temp code
+            // SendTcp(EMsgSC.C2L_JoinRoom, new Msg_C2L_JoinRoom() { RoomId = 0 });
+
+            #endregion
         }
 
         void ConnectUdp()

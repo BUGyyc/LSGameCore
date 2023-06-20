@@ -110,7 +110,7 @@ namespace Lockstep.Game
                         _targetPreSendTick =
                             _targetPreSendTick * _oldPercent + preSend * (1 - _oldPercent);
 
-                        //! 得到能发送的帧数量 , 不希望超前太多，所以 Clamp 
+                        //! 得到能发送的帧数量 , 不希望超前太多，所以 Clamp
                         var targetPreSendTick = LMath.Clamp(
                             (int)System.Math.Ceiling(_targetPreSendTick),
                             1,
@@ -326,9 +326,9 @@ namespace Lockstep.Game
             _serverBuffer = new ServerFrame[bufferSize];
             _clientBuffer = new ServerFrame[bufferSize];
 
-            LogMaster.L(
-                $"[FrameBuffer] bufferSize:{bufferSize} snapshotFrameInterval:{snapshotFrameInterval} maxClientPredictFrameCount:{maxClientPredictFrameCount}"
-            );
+            // LogMaster.L(
+            //     $"[FrameBuffer] bufferSize:{bufferSize} snapshotFrameInterval:{snapshotFrameInterval} maxClientPredictFrameCount:{maxClientPredictFrameCount}"
+            // );
         }
 
         /// <summary>
@@ -561,7 +561,7 @@ namespace Lockstep.Game
                 //清空
                 _delays.Clear();
                 //! 计算局部平均 Ping
-                PingVal = (int)(_pings.Sum() / LMath.Max(_pings.Count, 1)); 
+                PingVal = (int)(_pings.Sum() / LMath.Max(_pings.Count, 1));
                 //清空
                 _pings.Clear();
 
