@@ -101,7 +101,7 @@ namespace Lockstep.Game
 
             _client.Start();
 
-            _client.Connect(NetSetting.IP, NetSetting.Number);
+            _client.Connect(NetSetting.IP, NetSetting.Port);
 
             _client.DataReceived += NetworkOnDataReceived;
 
@@ -116,6 +116,8 @@ namespace Lockstep.Game
         /// <param name="rawData"></param>
         private void NetworkOnDataReceived(byte[] rawData)
         {
+            Debug.Log($"[Client] 客户端接收到数据  {rawData.Length} ");
+
             byte[] source = Compressor.Decompress(rawData);
             var deserializer = new Lockstep.Core.Logic.Serialization.Utils.Deserializer(source);
             switch (deserializer.GetByte())

@@ -221,7 +221,9 @@ namespace Lockstep.FakeServer.Server
                 DoUpdate();
             }
 
+            #region LiteNetLib
             _server.PollEvents();
+            #endregion
         }
 
         public void DoUpdate()

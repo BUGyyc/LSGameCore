@@ -35,6 +35,8 @@ public class LiteNetLibClient : INetwork
     public void Connect(string serverIp, int port)
     {
         _client.Connect(serverIp, port, NetSetting.ConnectKey);
+
+        LogMaster.I($"[Client]  Connect {serverIp}  {port}  {NetSetting.ConnectKey}  ");
     }
 
     /// <summary>
