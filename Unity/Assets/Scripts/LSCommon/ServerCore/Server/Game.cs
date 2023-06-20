@@ -229,56 +229,56 @@ namespace Lockstep.FakeServer.Server
         /// <param name="player"></param>
         public void OnRecvPlayerGameData(Player player)
         {
-            if (
-                player == null
-                || NetSetting.Number <= player.LocalId
-                || Players[player.LocalId] != player
-            )
-            {
-                return;
-            }
+            //if (
+            //    player == null
+            //    || NetSetting.Number <= player.LocalId
+            //    || Players[player.LocalId] != player
+            //)
+            //{
+            //    return;
+            //}
 
-            bool hasRecvAll = true;
-            foreach (var user in Players)
-            {
-                if (user != null && user.GameData == null)
-                {
-                    hasRecvAll = false;
-                    break;
-                }
-            }
+            //bool hasRecvAll = true;
+            //foreach (var user in Players)
+            //{
+            //    if (user != null && user.GameData == null)
+            //    {
+            //        hasRecvAll = false;
+            //        break;
+            //    }
+            //}
 
-            var playerCount = NetSetting.Number;
-            if (hasRecvAll)
-            {
-                //TODO
-                for (int i = 0; i < playerCount; i++)
-                {
-                    var helloMsg = new Msg_G2C_Hello() { LocalId = (byte)i };
-                    Players[i].SendTcp(EMsgSC.G2C_Hello, helloMsg);
-                }
+            //var playerCount = NetSetting.Number;
+            //if (hasRecvAll)
+            //{
+            //    //TODO
+            //    for (int i = 0; i < playerCount; i++)
+            //    {
+            //        var helloMsg = new Msg_G2C_Hello() { LocalId = (byte)i };
+            //        Players[i].SendTcp(EMsgSC.G2C_Hello, helloMsg);
+            //    }
 
-                var userInfos = new GameData[playerCount];
-                for (int i = 0; i < playerCount; i++)
-                {
-                    userInfos[i] = Players[i]?.GameData;
-                }
+            //    var userInfos = new GameData[playerCount];
+            //    for (int i = 0; i < playerCount; i++)
+            //    {
+            //        userInfos[i] = Players[i]?.GameData;
+            //    }
 
-                //所有玩家ready了，广播开始游戏
-                SetStartInfo(
-                    new Msg_G2C_GameStartInfo()
-                    {
-                        MapId = MapId,
-                        RoomId = GameId,
-                        Seed = Seed,
-                        UserCount = (byte)NetSetting.Number,
-                        TcpEnd = TcpEnd,
-                        UdpEnd = UdpEnd,
-                        SimulationSpeed = 30,
-                        UserInfos = userInfos
-                    }
-                );
-            }
+            //    //所有玩家ready了，广播开始游戏
+            //    SetStartInfo(
+            //        new Msg_G2C_GameStartInfo()
+            //        {
+            //            MapId = MapId,
+            //            RoomId = GameId,
+            //            Seed = Seed,
+            //            UserCount = (byte)NetSetting.Number,
+            //            TcpEnd = TcpEnd,
+            //            UdpEnd = UdpEnd,
+            //            SimulationSpeed = 30,
+            //            UserInfos = userInfos
+            //        }
+            //    );
+            //}
         }
 
         /// <summary>
@@ -314,35 +314,35 @@ namespace Lockstep.FakeServer.Server
             string gameHash
         )
         {
-            State = EGameState.Loading;
-            Seed = LRandom.Range(1, 100000);
-            Tick = 0;
-            _timeSinceLoaded = 0;
-            _firstFrameTimeStamp = 0;
-            RegisterMsgHandlers();
-            Debug = new DebugInstance("Room" + GameId + ": ");
-            var count = playerInfos.Length;
-            GameType = gameType;
-            GameHash = gameHash;
-            GameId = gameId;
-            Name = gameId.ToString();
-            MapId = mapId;
-            Players = playerInfos;
-            _userId2LocalId.Clear();
-            TimeSinceCreate = LTime.timeSinceLevelLoad;
-            for (byte i = 0; i < count; i++)
-            {
-                var player = Players[i];
-                _userId2LocalId.Add(player.UserId, player.LocalId);
-            }
+            //State = EGameState.Loading;
+            //Seed = LRandom.Range(1, 100000);
+            //Tick = 0;
+            //_timeSinceLoaded = 0;
+            //_firstFrameTimeStamp = 0;
+            //RegisterMsgHandlers();
+            //Debug = new DebugInstance("Room" + GameId + ": ");
+            //var count = playerInfos.Length;
+            //GameType = gameType;
+            //GameHash = gameHash;
+            //GameId = gameId;
+            //Name = gameId.ToString();
+            //MapId = mapId;
+            //Players = playerInfos;
+            //_userId2LocalId.Clear();
+            //TimeSinceCreate = LTime.timeSinceLevelLoad;
+            //for (byte i = 0; i < count; i++)
+            //{
+            //    var player = Players[i];
+            //    _userId2LocalId.Add(player.UserId, player.LocalId);
+            //}
 
-            //Temp code
-            for (byte i = 0; i < count; i++)
-            {
-                var player = Players[i];
-                player.GameData = new GameData();
-                OnRecvPlayerGameData(player);
-            }
+            ////Temp code
+            //for (byte i = 0; i < count; i++)
+            //{
+            //    var player = Players[i];
+            //    player.GameData = new GameData();
+            //    OnRecvPlayerGameData(player);
+            //}
         }
 
         public void DoUpdate(float deltaTime)
@@ -375,16 +375,16 @@ namespace Lockstep.FakeServer.Server
         /// <param name="playerInfo"></param>
         /// <param name="localId"></param>
         /// <returns></returns>
-        Player CreatePlayer(GamePlayerInfo playerInfo, byte localId)
-        {
-            var player = Pool.Get<Player>();
-            player.UserId = playerInfo.UserId;
-            player.Account = playerInfo.Account;
-            player.LoginHash = playerInfo.LoginHash;
-            player.LocalId = localId;
-            player.Game = this;
-            return player;
-        }
+        //Player CreatePlayer(GamePlayerInfo playerInfo, byte localId)
+        //{
+        //    var player = Pool.Get<Player>();
+        //    player.UserId = playerInfo.UserId;
+        //    player.Account = playerInfo.Account;
+        //    player.LoginHash = playerInfo.LoginHash;
+        //    player.LocalId = localId;
+        //    player.Game = this;
+        //    return player;
+        //}
 
         /// <summary>
         ///! 服务器广播指令
@@ -497,165 +497,165 @@ namespace Lockstep.FakeServer.Server
 
         #region net msg
 
-        public void SetStartInfo(Msg_G2C_GameStartInfo info)
-        {
-            Debug.Log("SetStartInfo");
-            GameStartInfo = info;
-            BorderTcp(EMsgSC.G2C_GameStartInfo, GameStartInfo);
-        }
+        //public void SetStartInfo(Msg_G2C_GameStartInfo info)
+        //{
+        //    Debug.Log("SetStartInfo");
+        //    GameStartInfo = info;
+        //    BorderTcp(EMsgSC.G2C_GameStartInfo, GameStartInfo);
+        //}
 
-        public void OnRecvMsg(Player player, Deserializer reader)
-        {
-            if (reader.IsEnd)
-            {
-                DealMsgHandlerError(player, $"{player.UserId} send a Error:Net Msg");
-                return;
-            }
+        //public void OnRecvMsg(Player player, Deserializer reader)
+        //{
+        //    if (reader.IsEnd)
+        //    {
+        //        DealMsgHandlerError(player, $"{player.UserId} send a Error:Net Msg");
+        //        return;
+        //    }
 
-            var msgType = reader.ReadInt16();
-            if (msgType >= MaxMsgIdx)
-            {
-                DealMsgHandlerError(
-                    player,
-                    $"{player.UserId} send a Error msgType out of range {msgType}"
-                );
-                return;
-            }
+        //    var msgType = reader.ReadInt16();
+        //    if (msgType >= MaxMsgIdx)
+        //    {
+        //        DealMsgHandlerError(
+        //            player,
+        //            $"{player.UserId} send a Error msgType out of range {msgType}"
+        //        );
+        //        return;
+        //    }
 
-            //Debug.Log($"OnDataReceived netID = {player.localId}  type:{(EMsgCS) msgType}");
-            {
-                var _func = allMsgDealFuncs[msgType];
-                var _parser = allMsgParsers[msgType];
-                if (_func != null && _parser != null)
-                {
-                    var data = _parser(reader);
-                    if (data == null)
-                    {
-                        DealMsgHandlerError(
-                            player,
-                            $"ErrorMsg type :parser data error playerID = {player.UserId} msgType:{msgType}"
-                        );
-                        return;
-                    }
+        //    //Debug.Log($"OnDataReceived netID = {player.localId}  type:{(EMsgCS) msgType}");
+        //    {
+        //        var _func = allMsgDealFuncs[msgType];
+        //        var _parser = allMsgParsers[msgType];
+        //        if (_func != null && _parser != null)
+        //        {
+        //            var data = _parser(reader);
+        //            if (data == null)
+        //            {
+        //                DealMsgHandlerError(
+        //                    player,
+        //                    $"ErrorMsg type :parser data error playerID = {player.UserId} msgType:{msgType}"
+        //                );
+        //                return;
+        //            }
 
-                    _func(player, data);
-                }
-                else
-                {
-                    DealMsgHandlerError(
-                        player,
-                        $" {player.UserId} ErrorMsg type :no msg handler or parser {msgType}"
-                    );
-                }
-            }
-        }
+        //            _func(player, data);
+        //        }
+        //        else
+        //        {
+        //            DealMsgHandlerError(
+        //                player,
+        //                $" {player.UserId} ErrorMsg type :no msg handler or parser {msgType}"
+        //            );
+        //        }
+        //    }
+        //}
 
-        void DealMsgHandlerError(Player player, string msg)
-        {
-            LogError(msg);
-            TickOut(player, 0);
-        }
+        //void DealMsgHandlerError(Player player, string msg)
+        //{
+        //    LogError(msg);
+        //    TickOut(player, 0);
+        //}
 
-        public void TickOut(Player player, int reason)
-        {
-            //_gameServer.TickOut(player, reason);
-        }
+        //public void TickOut(Player player, int reason)
+        //{
+        //    //_gameServer.TickOut(player, reason);
+        //}
 
-        private void RegisterMsgHandlers()
-        {
-            RegisterHandler(
-                EMsgSC.C2G_PlayerInput,
-                C2G_PlayerInput,
-                (reader) =>
-                {
-                    return ParseData<Msg_PlayerInput>(reader);
-                }
-            );
-            RegisterHandler(
-                EMsgSC.C2G_PlayerPing,
-                C2G_PlayerPing,
-                (reader) =>
-                {
-                    return ParseData<Msg_C2G_PlayerPing>(reader);
-                }
-            );
-            RegisterHandler(
-                EMsgSC.C2G_HashCode,
-                C2G_HashCode,
-                (reader) =>
-                {
-                    return ParseData<Msg_HashCode>(reader);
-                }
-            );
-            RegisterHandler(
-                EMsgSC.C2G_LoadingProgress,
-                C2G_LoadingProgress,
-                (reader) =>
-                {
-                    return ParseData<Msg_C2G_LoadingProgress>(reader);
-                }
-            );
-            RegisterHandler(
-                EMsgSC.C2G_ReqMissFrame,
-                C2G_ReqMissFrame,
-                (reader) =>
-                {
-                    return ParseData<Msg_ReqMissFrame>(reader);
-                }
-            );
-            RegisterHandler(
-                EMsgSC.C2G_RepMissFrameAck,
-                C2G_RepMissFrameAck,
-                (reader) =>
-                {
-                    return ParseData<Msg_RepMissFrameAck>(reader);
-                }
-            );
-        }
+        //private void RegisterMsgHandlers()
+        //{
+        //    RegisterHandler(
+        //        EMsgSC.C2G_PlayerInput,
+        //        C2G_PlayerInput,
+        //        (reader) =>
+        //        {
+        //            return ParseData<Msg_PlayerInput>(reader);
+        //        }
+        //    );
+        //    RegisterHandler(
+        //        EMsgSC.C2G_PlayerPing,
+        //        C2G_PlayerPing,
+        //        (reader) =>
+        //        {
+        //            return ParseData<Msg_C2G_PlayerPing>(reader);
+        //        }
+        //    );
+        //    RegisterHandler(
+        //        EMsgSC.C2G_HashCode,
+        //        C2G_HashCode,
+        //        (reader) =>
+        //        {
+        //            return ParseData<Msg_HashCode>(reader);
+        //        }
+        //    );
+        //    RegisterHandler(
+        //        EMsgSC.C2G_LoadingProgress,
+        //        C2G_LoadingProgress,
+        //        (reader) =>
+        //        {
+        //            return ParseData<Msg_C2G_LoadingProgress>(reader);
+        //        }
+        //    );
+        //    RegisterHandler(
+        //        EMsgSC.C2G_ReqMissFrame,
+        //        C2G_ReqMissFrame,
+        //        (reader) =>
+        //        {
+        //            return ParseData<Msg_ReqMissFrame>(reader);
+        //        }
+        //    );
+        //    RegisterHandler(
+        //        EMsgSC.C2G_RepMissFrameAck,
+        //        C2G_RepMissFrameAck,
+        //        (reader) =>
+        //        {
+        //            return ParseData<Msg_RepMissFrameAck>(reader);
+        //        }
+        //    );
+        //}
 
-        private void RegisterHandler(EMsgSC type, DealNetMsg func, ParseNetMsg parseFunc)
-        {
-            allMsgDealFuncs[(int)type] = func;
-            allMsgParsers[(int)type] = parseFunc;
-        }
+        //private void RegisterHandler(EMsgSC type, DealNetMsg func, ParseNetMsg parseFunc)
+        //{
+        //    allMsgDealFuncs[(int)type] = func;
+        //    allMsgParsers[(int)type] = parseFunc;
+        //}
 
-        T ParseData<T>(Deserializer reader)
-            where T : BaseMsg, new()
-        {
-            T data = null;
-            try
-            {
-                data = reader.Parse<T>();
-                if (!reader.IsEnd)
-                {
-                    data = null;
-                }
-            }
-            catch (Exception e)
-            {
-                LogError("Parse Msg Error:" + e);
-                data = null;
-            }
+        //T ParseData<T>(Deserializer reader)
+        //    where T : BaseMsg, new()
+        //{
+        //    T data = null;
+        //    try
+        //    {
+        //        data = reader.Parse<T>();
+        //        if (!reader.IsEnd)
+        //        {
+        //            data = null;
+        //        }
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        LogError("Parse Msg Error:" + e);
+        //        data = null;
+        //    }
 
-            return data;
-        }
+        //    return data;
+        //}
 
-        public void BorderTcp(EMsgSC type, BaseMsg data)
-        {
-            var bytes = data.ToBytes();
-            foreach (var player in Players)
-            {
-                player?.SendTcp(type, bytes);
-            }
-        }
+        //public void BorderTcp(EMsgSC type, BaseMsg data)
+        //{
+        //    var bytes = data.ToBytes();
+        //    foreach (var player in Players)
+        //    {
+        //        player?.SendTcp(type, bytes);
+        //    }
+        //}
 
-        public void BorderUdp(EMsgSC type, byte[] data)
-        {
-            foreach (var player in Players)
-            {
-                SendUdp(player, type, data);
-            }
-        }
+        //public void BorderUdp(EMsgSC type, byte[] data)
+        //{
+        //    foreach (var player in Players)
+        //    {
+        //        SendUdp(player, type, data);
+        //    }
+        //}
 
         public void BorderUdp(EMsgSC type, ISerializable body)
         {
@@ -668,10 +668,10 @@ namespace Lockstep.FakeServer.Server
             }
         }
 
-        public void SendUdp(Player player, EMsgSC type, byte[] data)
-        {
-            player?.SendUdp(type, data);
-        }
+        //public void SendUdp(Player player, EMsgSC type, byte[] data)
+        //{
+        //    player?.SendUdp(type, data);
+        //}
 
         public void SendUdp(
             Player player,
@@ -689,82 +689,82 @@ namespace Lockstep.FakeServer.Server
 
         #region net status
 
-        public void OnPlayerConnect(Player player)
-        {
-            if (GameStartInfo != null)
-            {
-                player.SendTcp(EMsgSC.G2C_GameStartInfo, GameStartInfo);
-            }
-        }
+        //public void OnPlayerConnect(Player player)
+        //{
+        //    if (GameStartInfo != null)
+        //    {
+        //        player.SendTcp(EMsgSC.G2C_GameStartInfo, GameStartInfo);
+        //    }
+        //}
 
         //net status
-        public void OnPlayerReconnect(GamePlayerInfo playerInfo)
-        {
-            var localId = _userId2LocalId[playerInfo.UserId];
-            var player = CreatePlayer(playerInfo, localId);
-            Players[localId] = player;
-        }
+        //public void OnPlayerReconnect(GamePlayerInfo playerInfo)
+        //{
+        //    var localId = _userId2LocalId[playerInfo.UserId];
+        //    var player = CreatePlayer(playerInfo, localId);
+        //    Players[localId] = player;
+        //}
 
-        public void OnPlayerReconnect(Player player)
-        {
-            player.LocalId = _userId2LocalId[player.UserId];
-            Players[player.LocalId] = player;
-        }
+        //public void OnPlayerReconnect(Player player)
+        //{
+        //    player.LocalId = _userId2LocalId[player.UserId];
+        //    Players[player.LocalId] = player;
+        //}
 
-        public void OnPlayerDisconnect(Player player)
-        {
-            Log($"Player{player.UserId} OnDisconnect room {GameId}");
-            RemovePlayer(player);
-        }
+        //public void OnPlayerDisconnect(Player player)
+        //{
+        //    Log($"Player{player.UserId} OnDisconnect room {GameId}");
+        //    RemovePlayer(player);
+        //}
 
-        public void OnPlayerLeave(long userId)
-        {
-            if (_userId2LocalId.TryGetValue(userId, out var localId))
-            {
-                var player = Players[localId];
-                if (player != null)
-                {
-                    OnPlayerLeave(player);
-                }
-            }
-        }
+        //public void OnPlayerLeave(long userId)
+        //{
+        //    if (_userId2LocalId.TryGetValue(userId, out var localId))
+        //    {
+        //        var player = Players[localId];
+        //        if (player != null)
+        //        {
+        //            OnPlayerLeave(player);
+        //        }
+        //    }
+        //}
 
-        public void OnPlayerLeave(Player player)
-        {
-            RemovePlayer(player);
-            _userId2LocalId.Remove(player.UserId); //同时还需要彻底的移除记录 避免玩家重连
-            Log($"Player{player.UserId} OnPlayerLeave room {GameId}");
+        //public void OnPlayerLeave(Player player)
+        //{
+        //    RemovePlayer(player);
+        //    _userId2LocalId.Remove(player.UserId); //同时还需要彻底的移除记录 避免玩家重连
+        //    Log($"Player{player.UserId} OnPlayerLeave room {GameId}");
 
-            LogMaster.I($"[Server]   Player{player.UserId} OnPlayerLeave room {GameId}");
-        }
+        //    LogMaster.I($"[Server]   Player{player.UserId} OnPlayerLeave room {GameId}");
+        //}
 
-        void RemovePlayer(Player player)
-        {
-            if (Players[player.LocalId] == null)
-                return;
-            Players[player.LocalId] = null;
-            var peer = player.PeerTcp;
-            peer?.Dispose();
+        //void RemovePlayer(Player player)
+        //{
+        //    if (Players[player.LocalId] == null)
+        //        return;
+        //    Players[player.LocalId] = null;
+        //    var peer = player.PeerTcp;
+        //    peer?.Dispose();
 
-            player.PeerTcp = null;
-            peer = player.PeerUdp;
-            peer?.Dispose();
+        //    player.PeerTcp = null;
+        //    peer = player.PeerUdp;
+        //    peer?.Dispose();
 
-            player.PeerUdp = null;
+        //    player.PeerUdp = null;
 
-            var curCount = CurPlayerCount;
-            if (curCount == 0)
-            {
-                Log("All players left, stopping current simulation...");
-                IsRunning = false;
-                State = EGameState.Idle;
-                //_gameServer.OnGameEmpty(this);
-            }
-            else
-            {
-                Log(curCount + " players remaining.");
-            }
-        }
+        //    var curCount = CurPlayerCount;
+        //    if (curCount == 0)
+        //    {
+        //        Log("All players left, stopping current simulation...");
+        //        IsRunning = false;
+        //        State = EGameState.Idle;
+        //        //_gameServer.OnGameEmpty(this);
+        //    }
+        //    else
+        //    {
+        //        Log(curCount + " players remaining.");
+        //    }
+        //}
 
         #endregion
 
@@ -781,21 +781,21 @@ namespace Lockstep.FakeServer.Server
         //回收时候调用
         public void OnReuse() { }
 
-        public void OnRecycle()
-        {
-            _userId2LocalId.Clear();
-            _hashCodes.Clear();
-            Tick = 0;
-            GameId = -1;
-            if (Players == null)
-                return;
-            foreach (var player in Players)
-            {
-                Pool.Return(player);
-            }
+        //public void OnRecycle()
+        //{
+        //    _userId2LocalId.Clear();
+        //    _hashCodes.Clear();
+        //    Tick = 0;
+        //    GameId = -1;
+        //    if (Players == null)
+        //        return;
+        //    foreach (var player in Players)
+        //    {
+        //        Pool.Return(player);
+        //    }
 
-            Players = null;
-        }
+        //    Players = null;
+        //}
 
         #endregion
 
@@ -1038,7 +1038,7 @@ namespace Lockstep.FakeServer.Server
         {
             var reqMsg = data as Msg_ReqMissFrame;
             var nextCheckTick = reqMsg.StartTick;
-            Log($"C2G_ReqMissFrame nextCheckTick id:{player.LocalId}:{nextCheckTick}");
+            //Log($"C2G_ReqMissFrame nextCheckTick id:{player.LocalId}:{nextCheckTick}");
             //!! ?? missReq
             int count = System.Math.Min(
                 System.Math.Min((Tick - 1), _allHistoryFrames.Count) - nextCheckTick,
@@ -1133,6 +1133,7 @@ namespace Lockstep.FakeServer.Server
             }
 
             //BorderTcp(EMsgSC.G2C_GameStartInfo, GameStartInfo);
+
             BorderTcp(EMsgSC.G2C_AllFinishedLoaded, new Msg_G2C_AllFinishedLoaded() { });
         }
 

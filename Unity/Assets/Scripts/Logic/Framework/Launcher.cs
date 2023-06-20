@@ -40,10 +40,10 @@ namespace Lockstep.Game {
         public bool IsClientMode => _constStateService.IsClientMode;
 
         public object transform;
-        private OneThreadSynchronizationContext _syncContext; 
+        //private OneThreadSynchronizationContext _syncContext; 
         public void DoAwake(IServiceContainer services){
-            _syncContext = new OneThreadSynchronizationContext();
-            SynchronizationContext.SetSynchronizationContext(_syncContext);
+            //_syncContext = new OneThreadSynchronizationContext();
+            //SynchronizationContext.SetSynchronizationContext(_syncContext);
             Utils.StartServices();
             if (Instance != null) {
                 Debug.LogError("LifeCycle Error: Awake more than once!!");
@@ -134,7 +134,7 @@ namespace Lockstep.Game {
 
         public void DoUpdate(float fDeltaTime){
             //? 同步多线程数据到主线程？
-            _syncContext.Update();
+            //_syncContext.Update();
             Utils.UpdateServices();
             var deltaTime = fDeltaTime.ToLFloat();
             //驱动客户端与服务端的网络模块逻辑更新，主要是收发包

@@ -12,7 +12,7 @@ using Server.LiteNetLib;
 
 namespace Lockstep.FakeServer.Server
 {
-    public class Server : IMessageDispatcher
+    public class Server //: IMessageDispatcher
     {
         #region LiteNetLib
         //! 使用 LiteNetLibServer
@@ -22,7 +22,7 @@ namespace Lockstep.FakeServer.Server
 
         //network
         // public static IPEndPoint serverIpPoint;
-        private NetOuterProxy _netProxy = new NetOuterProxy();
+        //private NetOuterProxy _netProxy = new NetOuterProxy();
 
         /// <summary>
         /// 更新间隔
@@ -85,8 +85,8 @@ namespace Lockstep.FakeServer.Server
 
             // serverIpPoint = NetworkUtil.ToIPEndPoint(NetSetting.IP, (int)NetSetting.Port);
 
-            _netProxy.MessageDispatcher = this;
-            _netProxy.MessagePacker = MessagePacker.Instance;
+            //_netProxy.MessageDispatcher = this;
+            //_netProxy.MessagePacker = MessagePacker.Instance;
             //! 这里存在疑虑，TCP可能造成延迟更大
             // _netProxy.Awake(NetworkProtocol.TCP, serverIpPoint);
             _startUpTimeStamp = _lastUpdateTimeStamp = DateTime.Now;
@@ -94,41 +94,41 @@ namespace Lockstep.FakeServer.Server
             LogMaster.L($"[Server] {NetSetting.IP} {NetSetting.Port} {NetSetting.Number} ");
         }
 
-        public void Dispatch(Session session, Packet packet)
-        {
-            ushort opcode = packet.Opcode();
-            // if (opcode == 39)
-            // {
-            //     int i = 0;
-            // }
+        //public void Dispatch(Session session, Packet packet)
+        //{
+        //    ushort opcode = packet.Opcode();
+        //    // if (opcode == 39)
+        //    // {
+        //    //     int i = 0;
+        //    // }
 
-            var message = session.Network.MessagePacker.DeserializeFrom(
-                opcode,
-                packet.Bytes,
-                Packet.Index,
-                packet.Length - Packet.Index
-            );
-            OnNetMsg(session, opcode, message as BaseMsg);
-        }
+        //    var message = session.Network.MessagePacker.DeserializeFrom(
+        //        opcode,
+        //        packet.Bytes,
+        //        Packet.Index,
+        //        packet.Length - Packet.Index
+        //    );
+        //    OnNetMsg(session, opcode, message as BaseMsg);
+        //}
         
-        void OnNetMsg(Session session, ushort opcode, BaseMsg msg)
-        {
-            var type = (EMsgSC)opcode;
-            switch (type)
-            {
-                //login
-                // case EMsgSC.L2C_JoinRoomResult:
-                case EMsgSC.C2L_JoinRoom:
-                    OnPlayerConnect(session, msg);
-                    return;
-                case EMsgSC.C2L_LeaveRoom:
-                    OnPlayerQuit(session, msg);
-                    return;
-                //room
-            }
-            var player = session.GetBindInfo<Player>();
-            _game?.OnNetMsg(player, opcode, msg);
-        }
+        //void OnNetMsg(Session session, ushort opcode, BaseMsg msg)
+        //{
+        //    var type = (EMsgSC)opcode;
+        //    switch (type)
+        //    {
+        //        //login
+        //        // case EMsgSC.L2C_JoinRoomResult:
+        //        case EMsgSC.C2L_JoinRoom:
+        //            OnPlayerConnect(session, msg);
+        //            return;
+        //        case EMsgSC.C2L_LeaveRoom:
+        //            OnPlayerQuit(session, msg);
+        //            return;
+        //        //room
+        //    }
+        //    var player = session.GetBindInfo<Player>();
+        //    _game?.OnNetMsg(player, opcode, msg);
+        //}
 
         /// <summary>
         /// Server 的驱动核心
@@ -157,47 +157,47 @@ namespace Lockstep.FakeServer.Server
             _game?.DoUpdate(fDeltaTime);
         }
 
-        void OnPlayerConnect(Session session, BaseMsg message)
-        {
-            //TODO load from db
-            var info = new Player();
-            info.UserId = _idCounter++;
-            info.PeerTcp = session;
-            info.PeerUdp = session;
-            _id2Player[info.UserId] = info;
-            session.BindInfo = info;
-            _curCount++;
-            if (_curCount >= NetSetting.Number)
-            {
-                //TODO temp code
-                _game = new Game();
-                var players = new Player[_curCount];
-                int i = 0;
-                foreach (var player in _id2Player.Values)
-                {
-                    player.LocalId = (byte)i;
-                    player.Game = _game;
-                    players[i] = player;
-                    i++;
-                }
-                _game.DoStart(0, 0, 0, players, "123");
-            }
+        //void OnPlayerConnect(Session session, BaseMsg message)
+        //{
+        //    //TODO load from db
+        //    var info = new Player();
+        //    info.UserId = _idCounter++;
+        //    info.PeerTcp = session;
+        //    info.PeerUdp = session;
+        //    _id2Player[info.UserId] = info;
+        //    session.BindInfo = info;
+        //    _curCount++;
+        //    if (_curCount >= NetSetting.Number)
+        //    {
+        //        //TODO temp code
+        //        _game = new Game();
+        //        var players = new Player[_curCount];
+        //        int i = 0;
+        //        foreach (var player in _id2Player.Values)
+        //        {
+        //            player.LocalId = (byte)i;
+        //            player.Game = _game;
+        //            players[i] = player;
+        //            i++;
+        //        }
+        //        _game.DoStart(0, 0, 0, players, "123");
+        //    }
 
-            LogMaster.I("[Server] OnPlayerConnect count:" + _curCount + " ");
-        }
+        //    LogMaster.I("[Server] OnPlayerConnect count:" + _curCount + " ");
+        //}
 
-        void OnPlayerQuit(Session session, BaseMsg message)
-        {
-            var player = session.GetBindInfo<Player>();
-            if (player == null)
-                return;
-            _curCount--;
-            LogMaster.I("[Server] OnPlayerQuit count:   {_curCount} ");
-            _id2Player.Remove(player.UserId);
-            if (_curCount == 0)
-            {
-                _game = null;
-            }
-        }
+        //void OnPlayerQuit(Session session, BaseMsg message)
+        //{
+        //    var player = session.GetBindInfo<Player>();
+        //    if (player == null)
+        //        return;
+        //    _curCount--;
+        //    LogMaster.I("[Server] OnPlayerQuit count:   {_curCount} ");
+        //    _id2Player.Remove(player.UserId);
+        //    if (_curCount == 0)
+        //    {
+        //        _game = null;
+        //    }
+        //}
     }
 }

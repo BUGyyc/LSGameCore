@@ -16,12 +16,12 @@ public class PureServer : MonoBehaviour
     // public MainScript script;
 
     // public GameObject clientCoreObj;
-    OneThreadSynchronizationContext contex;
+    //OneThreadSynchronizationContext contex;
     // Start is called before the first frame update
     void Start()
     {
-        contex = new OneThreadSynchronizationContext();
-        SynchronizationContext.SetSynchronizationContext(contex);
+        //contex = new OneThreadSynchronizationContext();
+        //SynchronizationContext.SetSynchronizationContext(contex);
         //Debug.Log("Main start");
         //Utils.StartServices();
         server = new Lockstep.FakeServer.Server.Server();
@@ -33,7 +33,7 @@ public class PureServer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        contex.Update();
+        //contex.Update();
         server.Update();
 
         // if (count == 30)
