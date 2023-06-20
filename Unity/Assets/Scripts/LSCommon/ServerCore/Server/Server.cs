@@ -14,10 +14,14 @@ namespace Lockstep.FakeServer.Server
 {
     public class Server : IMessageDispatcher
     {
-
+        #region LiteNetLib
+        //! 使用 LiteNetLibServer
+        protected LiteNetLibServer _liteServer;
+        Lockstep.Network.Server.Room room;
+        #endregion
 
         //network
-        public static IPEndPoint serverIpPoint;
+        // public static IPEndPoint serverIpPoint;
         private NetOuterProxy _netProxy = new NetOuterProxy();
 
         /// <summary>
@@ -68,12 +72,23 @@ namespace Lockstep.FakeServer.Server
             NetSetting.AutoCreateRandomPort();
 #endif
 
-            serverIpPoint = NetworkUtil.ToIPEndPoint(NetSetting.IP, (int)NetSetting.Port);
+            #region LiteNetLib
+            _liteServer = new LiteNetLibServer();
+            room = new Lockstep.Network.Server.Room(_liteServer, (int)NetSetting.Number);
+
+            room.Open((int)NetSetting.Port);
+            #endregion
+
+            UnityEngine.Debug.Log(
+                $"房间开启 RoomPlayerNumber{NetSetting.Number}  port {NetSetting.Port}  "
+            );
+
+            // serverIpPoint = NetworkUtil.ToIPEndPoint(NetSetting.IP, (int)NetSetting.Port);
 
             _netProxy.MessageDispatcher = this;
             _netProxy.MessagePacker = MessagePacker.Instance;
             //! 这里存在疑虑，TCP可能造成延迟更大
-            _netProxy.Awake(NetworkProtocol.TCP, serverIpPoint);
+            // _netProxy.Awake(NetworkProtocol.TCP, serverIpPoint);
             _startUpTimeStamp = _lastUpdateTimeStamp = DateTime.Now;
 
             LogMaster.L($"[Server] {NetSetting.IP} {NetSetting.Port} {NetSetting.Number} ");
@@ -95,7 +110,7 @@ namespace Lockstep.FakeServer.Server
             );
             OnNetMsg(session, opcode, message as BaseMsg);
         }
-
+        
         void OnNetMsg(Session session, ushort opcode, BaseMsg msg)
         {
             var type = (EMsgSC)opcode;
@@ -120,6 +135,9 @@ namespace Lockstep.FakeServer.Server
         /// </summary>
         public void Update()
         {
+            #region LiteNetLib
+            _liteServer.PollEvents();
+            #endregion
             var now = DateTime.Now;
             _deltaTime = (now - _lastUpdateTimeStamp).TotalSeconds;
             if (_deltaTime > UpdateInterval)

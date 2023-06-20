@@ -19,8 +19,8 @@ namespace Lockstep.Game
 
 
 
-        public string ServerIp = "127.0.0.1";
-        public int ServerPort = 10083;
+        //public string ServerIp = "127.0.0.1";
+        //public int ServerPort = 10083;
 
         private long _playerID;
         private int _roomId;
@@ -31,7 +31,7 @@ namespace Lockstep.Game
         private bool _noNetwork;
         private bool _isReconnected = false; //是否是重连
 
-        private RoomMsgManager _roomMsgMgr;
+        private LiteRoomMsgManager _roomMsgMgr;
         public NetworkMsgHandler _msgHandler = new NetworkMsgHandler();
 
         public override void DoAwake(IServiceContainer services)
@@ -39,7 +39,7 @@ namespace Lockstep.Game
             _noNetwork = _constStateService.IsVideoMode || _constStateService.IsClientMode;
             if (_noNetwork)
                 return;
-            _roomMsgMgr = new RoomMsgManager();
+            _roomMsgMgr = new LiteRoomMsgManager();
             _msgHandler = new NetworkMsgHandler();
             _roomMsgMgr.Init(_msgHandler);
         }
@@ -49,7 +49,7 @@ namespace Lockstep.Game
             if (_noNetwork)
                 return;
             _roomMsgMgr.ConnectToGameServer(new Msg_C2G_Hello(), null, false);
-            //Utils.StartServices();
+            // Utils.StartServices();
         }
 
         public void DoUpdate(LFloat deltaTime)

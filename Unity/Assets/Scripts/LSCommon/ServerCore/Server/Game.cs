@@ -94,6 +94,9 @@ namespace Lockstep.Game.Server
 
 namespace Lockstep.FakeServer.Server
 {
+    /// <summary>
+    /// !
+    /// </summary>
     public class Game : BaseLogger
     {
         private delegate void DealNetMsg(Player player, BaseMsg data);
