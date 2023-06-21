@@ -24,7 +24,8 @@ namespace Lockstep.Game
         private bool _hasStart = false;
 
         public void RollbackTo(int tick, int maxContinueServerTick, bool isNeedClear = true)
-        {        //NOTE: AutoCreate LockstepLog
+        {
+        //NOTE: AutoCreate LockstepLog
         LogMaster.L($"tick: {tick} maxContinueServerTick: {maxContinueServerTick} ");
 
             if (tick < 0)
@@ -45,8 +46,7 @@ namespace Lockstep.Game
             IServiceContainer serviceContainer,
             IManagerContainer mgrContainer
         )
-        {        //NOTE: AutoCreate LockstepLog
-        LogMaster.L($"");
+        {
 
             Instance = this;
             _serviceContainer = serviceContainer;
@@ -77,14 +77,15 @@ namespace Lockstep.Game
         }
 
         public void StartGame(Msg_G2C_GameStartInfo gameStartInfo, int localPlayerId)
-        {        //NOTE: AutoCreate LockstepLog
+        {
+        //NOTE: AutoCreate LockstepLog
         LogMaster.L($"localPlayerId: {localPlayerId} ");
 
             if (_hasStart)
                 return;
             _hasStart = true;
-            var playerInfos = gameStartInfo.UserInfos;
-            var playerCount = playerInfos.Length;
+            // var playerInfos = gameStartInfo.UserInfos;
+            // var playerCount = playerInfos.Length;
             string _traceLogPath = "";
 #if UNITY_STANDALONE_OSX
             _traceLogPath = $"/tmp/LPDemo/Dump_{localPlayerId}.txt";
@@ -93,19 +94,19 @@ namespace Lockstep.Game
 #endif
             Debug.TraceSavePath = _traceLogPath;
 
-            _debugService.Trace("CreatePlayer " + playerCount);
-            //create Players
-            for (int i = 0; i < playerCount; i++)
-            {
-                var PrefabId = 0; //TODO
-                var initPos = LVector2.zero; //TODO
-                var player = _gameStateService.CreateEntity<Player>(
-                    EntityType.Player,
-                    PrefabId,
-                    initPos
-                );
-                player.localId = i;
-            }
+            // _debugService.Trace("CreatePlayer " + playerCount);
+            // //create Players
+            // for (int i = 0; i < playerCount; i++)
+            // {
+            //     var PrefabId = 0; //TODO
+            //     var initPos = LVector2.zero; //TODO
+            //     var player = _gameStateService.CreateEntity<Player>(
+            //         EntityType.Player,
+            //         PrefabId,
+            //         initPos
+            //     );
+            //     player.localId = i;
+            // }
 
             //LogMaster.I("创建篮球");
             //var ball = _gameStateService.CreateEntity<Ball>(EntityType.Ball, 0, LVector2.zero);
@@ -116,7 +117,8 @@ namespace Lockstep.Game
         }
 
         public override void DoDestroy()
-        {        //NOTE: AutoCreate LockstepLog
+        {
+        //NOTE: AutoCreate LockstepLog
         LogMaster.L($"");
 
             foreach (var mgr in _systems)
@@ -128,7 +130,8 @@ namespace Lockstep.Game
         }
 
         public override void OnApplicationQuit()
-        {        //NOTE: AutoCreate LockstepLog
+        {
+        //NOTE: AutoCreate LockstepLog
         LogMaster.L($"");
 
             DoDestroy();
@@ -139,7 +142,8 @@ namespace Lockstep.Game
         /// </summary>
         /// <param name="isNeedGenSnap"></param>
         public void Step(bool isNeedGenSnap = true)
-        {        //NOTE: AutoCreate LockstepLog
+        {
+        //NOTE: AutoCreate LockstepLog
         LogMaster.L($"");
 
             if (_commonStateService.IsPause)
@@ -160,8 +164,8 @@ namespace Lockstep.Game
         ///! GameCore Logic
         /// </summary>
         public void RegisterSystems()
-        {        //NOTE: AutoCreate LockstepLog
-        LogMaster.L($"");
+        {
+
 
             RegisterSystem(new HeroSystem());
             RegisterSystem(new EnemySystem());
@@ -171,8 +175,8 @@ namespace Lockstep.Game
         }
 
         public void RegisterSystem(BaseSystem mgr)
-        {        //NOTE: AutoCreate LockstepLog
-        LogMaster.L($"");
+        {
+
 
             _systems.Add(mgr);
         }

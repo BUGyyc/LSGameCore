@@ -117,16 +117,21 @@ namespace Lockstep.Game
         private void NetworkOnDataReceived(byte[] rawData)
         {
             byte[] source = Compressor.Decompress(rawData);
-            var deserializer = new Lockstep.Core.Logic.Serialization.Utils.Deserializer(source);
-            var msgId = deserializer.GetByte();
-            Debug.Log($"[Client] 客户端接收到数据  {rawData.Length}  {msgId} ");
+            var deserializer = new Deserializer(source);
+            var msgId = 0; //deserializer.ReadByte();
+            Debug.Log($"[Client] 客户端接收到数据  len: {rawData.Length} msgId: {msgId} ");
             switch (msgId)
             {
                 case NetProtocolDefine.Init:
                 {
-                    // Msg_G2C_GameStartInfo init = new Msg_G2C_GameStartInfo();
-                    // init.Deserialize(deserializer);
+                    Msg_G2C_GameStartInfo info = new Msg_G2C_GameStartInfo();
+                    info.Deserialize(deserializer);
+                    LogMaster.I("Seed: " + info.Seed);
+                    // LogMaster.I("info: " + info.ToString());
                     // this.InitReceived?.Invoke(this, init);
+
+                    G2C_GameStartInfo(info);
+
                     break;
                 }
                 case NetProtocolDefine.Input:
@@ -340,7 +345,7 @@ namespace Lockstep.Game
             CurGameState = EGameState.Loading;
             _curLoadProgress = 1;
             EventHelper.Trigger(EEvent.OnGameCreate, msg);
-            Debug.Log("G2C_GameStartInfo");
+            Debug.Log("[Client]  客户端接收到广播，开启游戏  G2C_GameStartInfo");
         }
 
         private short curLevel;

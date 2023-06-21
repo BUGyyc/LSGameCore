@@ -273,10 +273,10 @@ namespace Lockstep.FakeServer.Server
                         RoomId = GameId,
                         Seed = Seed,
                         UserCount = (byte)NetSetting.Number,
-                        TcpEnd = TcpEnd,
-                        UdpEnd = UdpEnd,
+                        // TcpEnd = TcpEnd,
+                        // UdpEnd = UdpEnd,
                         SimulationSpeed = 30,
-                        UserInfos = userInfos
+                        // UserInfos = userInfos
                     }
                 );
             }
@@ -506,7 +506,7 @@ namespace Lockstep.FakeServer.Server
         public void SetStartInfo(Msg_G2C_GameStartInfo info)
         {
             LogMaster.I("[Server] 服务器通知客户端，开始游戏");
-            Debug.Log("SetStartInfo");
+            Debug.Log("SetStartInfo "+info.ToString());
             GameStartInfo = info;
             // BorderTcp(EMsgSC.G2C_GameStartInfo, GameStartInfo);
             Border(NetProtocolDefine.Init,GameStartInfo);
@@ -571,58 +571,78 @@ namespace Lockstep.FakeServer.Server
 
         private void RegisterMsgHandlers()
         {
-            RegisterHandler(
-                EMsgSC.C2G_PlayerInput,
-                C2G_PlayerInput,
-                (reader) =>
-                {
-                    return ParseData<Msg_PlayerInput>(reader);
-                }
-            );
-            RegisterHandler(
-                EMsgSC.C2G_PlayerPing,
-                C2G_PlayerPing,
-                (reader) =>
-                {
-                    return ParseData<Msg_C2G_PlayerPing>(reader);
-                }
-            );
-            RegisterHandler(
-                EMsgSC.C2G_HashCode,
-                C2G_HashCode,
-                (reader) =>
-                {
-                    return ParseData<Msg_HashCode>(reader);
-                }
-            );
-            RegisterHandler(
-                EMsgSC.C2G_LoadingProgress,
-                C2G_LoadingProgress,
-                (reader) =>
-                {
-                    return ParseData<Msg_C2G_LoadingProgress>(reader);
-                }
-            );
-            RegisterHandler(
-                EMsgSC.C2G_ReqMissFrame,
-                C2G_ReqMissFrame,
-                (reader) =>
-                {
-                    return ParseData<Msg_ReqMissFrame>(reader);
-                }
-            );
-            RegisterHandler(
-                EMsgSC.C2G_RepMissFrameAck,
-                C2G_RepMissFrameAck,
-                (reader) =>
-                {
-                    return ParseData<Msg_RepMissFrameAck>(reader);
-                }
-            );
+            // RegisterHandler(
+            //     NetProtocolDefine.Init,
+            //     C2G_PlayerInput,
+            //     (reader) =>
+            //     {
+            //         return ParseData<Msg_PlayerInput>(reader);
+            //     }
+            // );
+
+
+            // RegisterHandler(
+            //     EMsgSC.C2G_PlayerInput,
+            //     C2G_PlayerInput,
+            //     (reader) =>
+            //     {
+            //         return ParseData<Msg_PlayerInput>(reader);
+            //     }
+            // );
+            // RegisterHandler(
+            //     EMsgSC.C2G_PlayerPing,
+            //     C2G_PlayerPing,
+            //     (reader) =>
+            //     {
+            //         return ParseData<Msg_C2G_PlayerPing>(reader);
+            //     }
+            // );
+            // RegisterHandler(
+            //     EMsgSC.C2G_HashCode,
+            //     C2G_HashCode,
+            //     (reader) =>
+            //     {
+            //         return ParseData<Msg_HashCode>(reader);
+            //     }
+            // );
+            // RegisterHandler(
+            //     EMsgSC.C2G_LoadingProgress,
+            //     C2G_LoadingProgress,
+            //     (reader) =>
+            //     {
+            //         return ParseData<Msg_C2G_LoadingProgress>(reader);
+            //     }
+            // );
+            // RegisterHandler(
+            //     EMsgSC.C2G_ReqMissFrame,
+            //     C2G_ReqMissFrame,
+            //     (reader) =>
+            //     {
+            //         return ParseData<Msg_ReqMissFrame>(reader);
+            //     }
+            // );
+            // RegisterHandler(
+            //     EMsgSC.C2G_RepMissFrameAck,
+            //     C2G_RepMissFrameAck,
+            //     (reader) =>
+            //     {
+            //         return ParseData<Msg_RepMissFrameAck>(reader);
+            //     }
+            // );
         }
 
-        private void RegisterHandler(EMsgSC type, DealNetMsg func, ParseNetMsg parseFunc)
+        private void _RegisterHandler(EMsgSC type, DealNetMsg func, ParseNetMsg parseFunc)
         {
+            LogMaster.I($"[Server]  ____RegisterHandler {type} {func} {parseFunc} ");
+
+            allMsgDealFuncs[(int)type] = func;
+            allMsgParsers[(int)type] = parseFunc;
+        }
+
+        private void RegisterHandler(byte type, DealNetMsg func, ParseNetMsg parseFunc)
+        {
+            LogMaster.I($"[Server]  RegisterHandler {type} {func} {parseFunc} ");
+
             allMsgDealFuncs[(int)type] = func;
             allMsgParsers[(int)type] = parseFunc;
         }
@@ -657,19 +677,26 @@ namespace Lockstep.FakeServer.Server
         //     }
         // }
 
-        public void Border(byte msgId,BaseMsg data){
+        public void Border(byte msgId,Msg_G2C_GameStartInfo data){
 
-            var serializer = new Lockstep.Core.Logic.Serialization.Utils.Serializer();
-            serializer.Put(msgId);
-            var bytes = data.ToBytes();
-            serializer.Put(bytes);
+           
+
+            var serializer = new Serializer();
+
+            data.Serialize(serializer);
+
+            // serializer.Write(msgId);
+            // serializer.Write(data);
+            // serializer.Put(msgId);
+            // var bytes = data.ToBytes();
+            // serializer.Put(bytes);
             // foreach (var player in Players)
             // {
             //     player?.SendTcp(type, bytes);
             // }
-            _server.Distribute(Lockstep.Core.Logic.Serialization.Compressor.Compress(serializer));
+            _server.Distribute(Compressor.Compress(serializer));
 
-            LogMaster.I("[Server] 发送  msgID: " + msgId);
+            LogMaster.I("[Server] 发送  msgID: " + msgId+"  len: "+serializer.Data.Length);
         }
 
         // public void BorderUdp(EMsgSC type, byte[] data)

@@ -1,4 +1,6 @@
-using Lockstep.Core.Logic.Serialization.Utils;
+// using Lockstep.Core.Logic.Serialization.Utils;
+
+using Lockstep.Serialization;
 
 namespace Lockstep.Core.Logic.Serialization
 {
