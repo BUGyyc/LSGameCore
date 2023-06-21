@@ -78,14 +78,11 @@ namespace Lockstep.Game
 
         public void StartGame(Msg_G2C_GameStartInfo gameStartInfo, int localPlayerId)
         {
-        //NOTE: AutoCreate LockstepLog
-        LogMaster.L($"localPlayerId: {localPlayerId} ");
-
             if (_hasStart)
                 return;
             _hasStart = true;
-            // var playerInfos = gameStartInfo.UserInfos;
-            // var playerCount = playerInfos.Length;
+            var playerInfos = gameStartInfo.UserInfos;
+            var playerCount = playerInfos.Length;
             string _traceLogPath = "";
 #if UNITY_STANDALONE_OSX
             _traceLogPath = $"/tmp/LPDemo/Dump_{localPlayerId}.txt";
@@ -94,19 +91,19 @@ namespace Lockstep.Game
 #endif
             Debug.TraceSavePath = _traceLogPath;
 
-            // _debugService.Trace("CreatePlayer " + playerCount);
-            // //create Players
-            // for (int i = 0; i < playerCount; i++)
-            // {
-            //     var PrefabId = 0; //TODO
-            //     var initPos = LVector2.zero; //TODO
-            //     var player = _gameStateService.CreateEntity<Player>(
-            //         EntityType.Player,
-            //         PrefabId,
-            //         initPos
-            //     );
-            //     player.localId = i;
-            // }
+            _debugService.Trace("CreatePlayer " + playerCount);
+            //create Players
+            for (int i = 0; i < playerCount; i++)
+            {
+                var PrefabId = 0; //TODO
+                var initPos = LVector2.zero; //TODO
+                var player = _gameStateService.CreateEntity<Player>(
+                    EntityType.Player,
+                    PrefabId,
+                    initPos
+                );
+                player.localId = i;
+            }
 
             //LogMaster.I("创建篮球");
             //var ball = _gameStateService.CreateEntity<Ball>(EntityType.Ball, 0, LVector2.zero);

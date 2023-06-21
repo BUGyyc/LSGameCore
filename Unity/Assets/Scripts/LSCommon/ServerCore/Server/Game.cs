@@ -256,7 +256,7 @@ namespace Lockstep.FakeServer.Server
                 for (int i = 0; i < playerCount; i++)
                 {
                     var helloMsg = new Msg_G2C_Hello() { LocalId = (byte)i };
-                    // Players[i].SendTcp(EMsgSC.G2C_Hello, helloMsg);
+
                     Serializer serializer = new Serializer();
                     helloMsg.Serialize(serializer);
                     _server.Send(i,Compressor.Compress(serializer));
@@ -279,7 +279,7 @@ namespace Lockstep.FakeServer.Server
                         // TcpEnd = TcpEnd,
                         // UdpEnd = UdpEnd,
                         SimulationSpeed = 30,
-                        // UserInfos = userInfos
+                        UserInfos = userInfos
                     }
                 );
             }
@@ -442,8 +442,7 @@ namespace Lockstep.FakeServer.Server
 
             LogMaster.L($"[Server]  广播信息  Tick：{Tick} ");
 
-            //!  广播指令，这里的UDP 待验证
-            // BorderUdp(EMsgSC.G2C_FrameData, msg);
+            Border(EMsgSC.G2C_FrameData, msg);
 
             if (_firstFrameTimeStamp <= 0)
             {
@@ -511,7 +510,7 @@ namespace Lockstep.FakeServer.Server
             LogMaster.I("[Server] 服务器通知客户端，进入游戏");
             Debug.Log("SetStartInfo "+info.ToString());
             GameStartInfo = info;
-            // BorderTcp(EMsgSC.G2C_GameStartInfo, GameStartInfo);
+
             Border(EMsgSC.G2C_GameStartInfo,GameStartInfo);
         }
 
@@ -584,57 +583,57 @@ namespace Lockstep.FakeServer.Server
             // );
 
 
-            // RegisterHandler(
-            //     EMsgSC.C2G_PlayerInput,
-            //     C2G_PlayerInput,
-            //     (reader) =>
-            //     {
-            //         return ParseData<Msg_PlayerInput>(reader);
-            //     }
-            // );
-            // RegisterHandler(
-            //     EMsgSC.C2G_PlayerPing,
-            //     C2G_PlayerPing,
-            //     (reader) =>
-            //     {
-            //         return ParseData<Msg_C2G_PlayerPing>(reader);
-            //     }
-            // );
-            // RegisterHandler(
-            //     EMsgSC.C2G_HashCode,
-            //     C2G_HashCode,
-            //     (reader) =>
-            //     {
-            //         return ParseData<Msg_HashCode>(reader);
-            //     }
-            // );
-            // RegisterHandler(
-            //     EMsgSC.C2G_LoadingProgress,
-            //     C2G_LoadingProgress,
-            //     (reader) =>
-            //     {
-            //         return ParseData<Msg_C2G_LoadingProgress>(reader);
-            //     }
-            // );
-            // RegisterHandler(
-            //     EMsgSC.C2G_ReqMissFrame,
-            //     C2G_ReqMissFrame,
-            //     (reader) =>
-            //     {
-            //         return ParseData<Msg_ReqMissFrame>(reader);
-            //     }
-            // );
-            // RegisterHandler(
-            //     EMsgSC.C2G_RepMissFrameAck,
-            //     C2G_RepMissFrameAck,
-            //     (reader) =>
-            //     {
-            //         return ParseData<Msg_RepMissFrameAck>(reader);
-            //     }
-            // );
+            RegisterHandler(
+                EMsgSC.C2G_PlayerInput,
+                C2G_PlayerInput,
+                (reader) =>
+                {
+                    return ParseData<Msg_PlayerInput>(reader);
+                }
+            );
+            RegisterHandler(
+                EMsgSC.C2G_PlayerPing,
+                C2G_PlayerPing,
+                (reader) =>
+                {
+                    return ParseData<Msg_C2G_PlayerPing>(reader);
+                }
+            );
+            RegisterHandler(
+                EMsgSC.C2G_HashCode,
+                C2G_HashCode,
+                (reader) =>
+                {
+                    return ParseData<Msg_HashCode>(reader);
+                }
+            );
+            RegisterHandler(
+                EMsgSC.C2G_LoadingProgress,
+                C2G_LoadingProgress,
+                (reader) =>
+                {
+                    return ParseData<Msg_C2G_LoadingProgress>(reader);
+                }
+            );
+            RegisterHandler(
+                EMsgSC.C2G_ReqMissFrame,
+                C2G_ReqMissFrame,
+                (reader) =>
+                {
+                    return ParseData<Msg_ReqMissFrame>(reader);
+                }
+            );
+            RegisterHandler(
+                EMsgSC.C2G_RepMissFrameAck,
+                C2G_RepMissFrameAck,
+                (reader) =>
+                {
+                    return ParseData<Msg_RepMissFrameAck>(reader);
+                }
+            );
         }
 
-        private void _RegisterHandler(EMsgSC type, DealNetMsg func, ParseNetMsg parseFunc)
+        private void RegisterHandler(EMsgSC type, DealNetMsg func, ParseNetMsg parseFunc)
         {
             LogMaster.I($"[Server]  ____RegisterHandler {type} {func} {parseFunc} ");
 
@@ -642,13 +641,13 @@ namespace Lockstep.FakeServer.Server
             allMsgParsers[(int)type] = parseFunc;
         }
 
-        private void RegisterHandler(byte type, DealNetMsg func, ParseNetMsg parseFunc)
-        {
-            LogMaster.I($"[Server]  RegisterHandler {type} {func} {parseFunc} ");
+        // private void RegisterHandler(byte type, DealNetMsg func, ParseNetMsg parseFunc)
+        // {
+        //     LogMaster.I($"[Server]  RegisterHandler {type} {func} {parseFunc} ");
 
-            allMsgDealFuncs[(int)type] = func;
-            allMsgParsers[(int)type] = parseFunc;
-        }
+        //     allMsgDealFuncs[(int)type] = func;
+        //     allMsgParsers[(int)type] = parseFunc;
+        // }
 
         T ParseData<T>(Deserializer reader)
             where T : BaseMsg, new()
@@ -867,37 +866,88 @@ namespace Lockstep.FakeServer.Server
 
         #region Net msg handler
 
-        // public void OnNetMsg(Player player, ushort opcode, BaseMsg msg)
-        // {
-        //     var type = (EMsgSC)opcode;
-        //     switch (type)
-        //     {
-        //         //ping
-        //         case EMsgSC.C2G_PlayerPing:
-        //             C2G_PlayerPing(player, msg);
-        //             break;
-        //         //login
-        //         //room
-        //         case EMsgSC.C2G_PlayerInput:
-        //             C2G_PlayerInput(player, msg);
-        //             break;
-        //         case EMsgSC.C2G_HashCode:
-        //             C2G_HashCode(player, msg);
-        //             break;
-        //         case EMsgSC.C2G_LoadingProgress:
-        //             C2G_LoadingProgress(player, msg);
-        //             break;
-        //         case EMsgSC.C2G_ReqMissFrame:
-        //             C2G_ReqMissFrame(player, msg);
-        //             break;
-        //         case EMsgSC.C2G_RepMissFrameAck:
-        //             C2G_RepMissFrameAck(player, msg);
-        //             break;
-        //         default:
-        //             Debug.Log("Unknow msg " + type);
-        //             break;
-        //     }
-        // }
+        public void OnNetMsg(int clientId, ushort opcode, BaseMsg msg)
+        {
+            var player = GetPlayer((byte)clientId);
+
+            var type = (EMsgSC)opcode;
+            switch (type)
+            {
+                //ping
+                case EMsgSC.C2G_PlayerPing:
+                    C2G_PlayerPing(player, msg);
+                    break;
+                //login
+                //room
+                case EMsgSC.C2G_PlayerInput:
+                    C2G_PlayerInput(player, msg);
+                    break;
+                case EMsgSC.C2G_HashCode:
+                    C2G_HashCode(player, msg);
+                    break;
+                case EMsgSC.C2G_LoadingProgress:
+                    C2G_LoadingProgress(player, msg);
+                    break;
+                case EMsgSC.C2G_ReqMissFrame:
+                    C2G_ReqMissFrame(player, msg);
+                    break;
+                case EMsgSC.C2G_RepMissFrameAck:
+                    C2G_RepMissFrameAck(player, msg);
+                    break;
+                default:
+                    Debug.Log("Unknow msg " + type);
+                    break;
+            }
+        }
+
+        public void LiteNetLibOnNetMsg(int clientId, ushort opcode, Deserializer deserializer)
+        {
+            BaseMsg msg = default;
+            var player = GetPlayer((byte)clientId);
+            var type = (EMsgSC)opcode;
+            switch (type)
+            {
+                //ping
+                case EMsgSC.C2G_PlayerPing:
+                    msg = new Msg_C2G_PlayerPing();
+                    msg.Deserialize(deserializer);
+                    C2G_PlayerPing(player, msg);
+                    break;
+                case EMsgSC.C2G_PlayerInput:
+                    msg = new Msg_PlayerInput();
+                    msg.Deserialize(deserializer);
+
+                    C2G_PlayerInput(player, msg);
+                    break;
+                case EMsgSC.C2G_HashCode:
+                                    msg = new Msg_HashCode();
+                    msg.Deserialize(deserializer);
+                    
+                    C2G_HashCode(player, msg);
+                    break;
+                case EMsgSC.C2G_LoadingProgress:
+                                    msg = new Msg_C2G_LoadingProgress();
+                    msg.Deserialize(deserializer);
+                    
+                    C2G_LoadingProgress(player, msg);
+                    break;
+                case EMsgSC.C2G_ReqMissFrame:
+                                                    msg = new Msg_ReqMissFrame();
+                    msg.Deserialize(deserializer);
+
+                    C2G_ReqMissFrame(player, msg);
+                    break;
+                case EMsgSC.C2G_RepMissFrameAck:
+                                                    msg = new Msg_RepMissFrameAck();
+                    msg.Deserialize(deserializer);
+
+                    C2G_RepMissFrameAck(player, msg);
+                    break;
+                default:
+                    Debug.Log("Unknow msg " + type);
+                    break;
+            }
+        }
 
         public void _OnNetMsg(int clientId, ushort opcode, BaseMsg msg)
         {
@@ -971,6 +1021,20 @@ namespace Lockstep.FakeServer.Server
             //         timeSinceServerStart = LTime.realtimeSinceStartupMS - _gameStartTimestampMs
             //     }
             // );
+
+            Serializer serializer = new Serializer();
+            serializer.Write((byte)EMsgSC.G2C_PlayerPing);
+            var pingMsg = new Msg_G2C_PlayerPing()
+                {
+                    localId = msg.localId,
+                    sendTimestamp = msg.sendTimestamp,
+                    //发送者的时间戳 与 服务自身的时间戳 差值
+                    timeSinceServerStart = LTime.realtimeSinceStartupMS - _gameStartTimestampMs
+                };
+            pingMsg.Serialize(serializer);
+
+            _server.Send(player.LocalId,Compressor.Compress(serializer));
+            
         }
 
         /// <summary>
@@ -1157,6 +1221,8 @@ namespace Lockstep.FakeServer.Server
             msg.startTick = frames[0].tick;
             msg.frames = frames;
             // SendUdp(player, EMsgSC.G2C_RepMissFrame, msg, true);
+
+            // _server.Send(player.LocalId,EMsgSC.G2C_RepMissFrame, msg, true);
         }
 
         /// <summary>
@@ -1190,11 +1256,6 @@ namespace Lockstep.FakeServer.Server
             Log($"player{player.LocalId} Load {msg.Progress}");
 
             //! 服务器通知客户端端
-            // BorderTcp(
-            //     EMsgSC.G2C_LoadingProgress,
-            //     new Msg_G2C_LoadingProgress() { Progress = _playerLoadingProgress }
-            // );
-
             Border(
                 EMsgSC.G2C_LoadingProgress,
                 new Msg_G2C_LoadingProgress() { Progress = _playerLoadingProgress }
@@ -1236,9 +1297,10 @@ namespace Lockstep.FakeServer.Server
                 _allNeedWaitInputPlayerIds.Add(val);
             }
 
-            //BorderTcp(EMsgSC.G2C_GameStartInfo, GameStartInfo);
-            // BorderTcp(EMsgSC.G2C_AllFinishedLoaded, new Msg_G2C_AllFinishedLoaded() { });
-           Border(EMsgSC.G2C_AllFinishedLoaded, new Msg_G2C_AllFinishedLoaded() { });
+
+            // Border(EMsgSC.G2C_GameStartInfo, GameStartInfo);
+
+            Border(EMsgSC.G2C_AllFinishedLoaded, new Msg_G2C_AllFinishedLoaded() { });
         }
 
         #endregion

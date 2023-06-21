@@ -120,27 +120,100 @@ namespace Lockstep.Game
             var deserializer = new Deserializer(source);
             var msgId = deserializer.ReadByte();
             LogMaster.N($"[Client] 客户端接收到数据  len: {rawData.Length} msgId: {(EMsgSC)msgId} ");
-            switch ((EMsgSC)msgId)
+
+            LiteNetLibOnNetMsg(msgId, deserializer);
+
+            // switch ((EMsgSC)msgId)
+            // {
+            //     case EMsgSC.G2C_GameStartInfo:
+            //     {
+            //         Msg_G2C_GameStartInfo info = new Msg_G2C_GameStartInfo();
+            //         info.Deserialize(deserializer);
+            //         LogMaster.I("Seed: " + info.Seed);
+            //         // LogMaster.I("info: " + info.ToString());
+            //         // this.InitReceived?.Invoke(this, init);
+
+            //         G2C_GameStartInfo(info);
+
+            //         break;
+            //     }
+            //     case EMsgSC.G2C_LoadingProgress:
+            //     {
+            //         var info = new Msg_G2C_LoadingProgress();
+            //         info.Deserialize(deserializer);
+            //         G2C_LoadingProgress(info);
+            //         break;
+            //     }
+            //     case EMsgSC.G2C_AllFinishedLoaded:
+            //         var loadFinish = new Msg_G2C_AllFinishedLoaded();
+            //         loadFinish.Deserialize(deserializer);
+            //         G2C_AllFinishedLoaded(loadFinish);
+            //         break;
+            //     default:
+            //         LogMaster.E($"未实现协议 msgID:{(EMsgSC)msgId} ");
+            //         break;
+            // }
+        }
+
+        void LiteNetLibOnNetMsg(ushort opcode, Deserializer deserializer)
+        {
+            BaseMsg msg = default;
+            var type = (EMsgSC)opcode;
+            switch (type)
             {
+                //login
+                // case EMsgSC.L2C_JoinRoomResult:
+
+                //room
+                case EMsgSC.G2C_PlayerPing:
+                    msg = new Msg_G2C_PlayerPing();
+                    msg.Deserialize(deserializer);
+
+                    G2C_PlayerPing(msg);
+                    break;
+                case EMsgSC.G2C_Hello:
+                    msg = new Msg_G2C_Hello();
+                    msg.Deserialize(deserializer);
+
+                    G2C_Hello(msg);
+                    break;
+                case EMsgSC.G2C_FrameData:
+                    msg = new Msg_ServerFrames();
+                    msg.Deserialize(deserializer);
+
+                    G2C_FrameData(msg);
+                    break;
+                case EMsgSC.G2C_RepMissFrame:
+                    msg = new Msg_RepMissFrame();
+                    msg.Deserialize(deserializer);
+
+                    G2C_RepMissFrame(msg);
+                    break;
+                case EMsgSC.G2C_GameEvent:
+                    msg = new Msg_G2C_GameEvent();
+                    msg.Deserialize(deserializer);
+
+                    G2C_GameEvent(msg);
+                    break;
                 case EMsgSC.G2C_GameStartInfo:
-                {
-                    Msg_G2C_GameStartInfo info = new Msg_G2C_GameStartInfo();
-                    info.Deserialize(deserializer);
-                    LogMaster.I("Seed: " + info.Seed);
-                    // LogMaster.I("info: " + info.ToString());
-                    // this.InitReceived?.Invoke(this, init);
+                    msg = new Msg_G2C_GameStartInfo();
+                    msg.Deserialize(deserializer);
 
-                    G2C_GameStartInfo(info);
-
+                    G2C_GameStartInfo(msg);
                     break;
-                }
                 case EMsgSC.G2C_LoadingProgress:
-                {
-                    var info = new Msg_G2C_LoadingProgress();
-                    info.Deserialize(deserializer);
-                    G2C_LoadingProgress(info);
+                    msg = new Msg_G2C_LoadingProgress();
+                    msg.Deserialize(deserializer);
+
+                    G2C_LoadingProgress(msg);
                     break;
-                }
+                case EMsgSC.G2C_AllFinishedLoaded:
+
+                    msg = new Msg_G2C_AllFinishedLoaded();
+                    msg.Deserialize(deserializer);
+
+                    G2C_AllFinishedLoaded(msg);
+                    break;
             }
         }
 
@@ -274,8 +347,6 @@ namespace Lockstep.Game
 
             // ConnectUdp();
             // //TODO temp code
-            // SendTcp(EMsgSC.C2L_JoinRoom, new Msg_C2L_JoinRoom() { RoomId = 0 });
-
 
             Send(EMsgSC.C2L_JoinRoom, new Msg_C2L_JoinRoom() { RoomId = 0 });
 
@@ -357,8 +428,6 @@ namespace Lockstep.Game
 
         public void SendGameEvent(byte[] msg)
         {
-            // SendTcp(EMsgSC.C2G_GameEvent, new Msg_C2G_GameEvent() { Data = msg });
-
             Send(EMsgSC.C2G_GameEvent, new Msg_C2G_GameEvent() { Data = msg });
         }
 
@@ -371,11 +440,6 @@ namespace Lockstep.Game
             _nextSendLoadProgressTimer = Time.realtimeSinceStartup + ProgressSendInterval;
             if (!IsReconnecting)
             {
-                // SendTcp(
-                //     EMsgSC.C2G_LoadingProgress,
-                //     new Msg_C2G_LoadingProgress() { Progress = progress }
-                // );
-
                 Send(
                     EMsgSC.C2G_LoadingProgress,
                     new Msg_C2G_LoadingProgress() { Progress = progress }
@@ -420,11 +484,6 @@ namespace Lockstep.Game
         /// <param name="timestamp"></param>
         public void SendPing(byte localId, long timestamp)
         {
-            // SendUdp(
-            //     EMsgSC.C2G_PlayerPing,
-            //     new Msg_C2G_PlayerPing() { localId = localId, sendTimestamp = timestamp }
-            // );
-
             Send(
                 EMsgSC.C2G_PlayerPing,
                 new Msg_C2G_PlayerPing() { localId = localId, sendTimestamp = timestamp }
@@ -437,7 +496,6 @@ namespace Lockstep.Game
         /// <param name="msg"></param>
         public void SendInput(Msg_PlayerInput msg)
         {
-            // SendUdp(EMsgSC.C2G_PlayerInput, msg);
             Send(EMsgSC.C2G_PlayerInput, msg);
         }
 
@@ -447,8 +505,6 @@ namespace Lockstep.Game
         /// <param name="missFrameTick"></param>
         public void SendMissFrameReq(int missFrameTick)
         {
-            // SendUdp(EMsgSC.C2G_ReqMissFrame, new Msg_ReqMissFrame() { StartTick = missFrameTick });
-
             Send(EMsgSC.C2G_ReqMissFrame, new Msg_ReqMissFrame() { StartTick = missFrameTick });
         }
 
@@ -458,11 +514,6 @@ namespace Lockstep.Game
         /// <param name="missFrameTick"></param>
         public void SendMissFrameRepAck(int missFrameTick)
         {
-            // SendUdp(
-            //     EMsgSC.C2G_RepMissFrameAck,
-            //     new Msg_RepMissFrameAck() { MissFrameTick = missFrameTick }
-            // );
-
             Send(
                 EMsgSC.C2G_RepMissFrameAck,
                 new Msg_RepMissFrameAck() { MissFrameTick = missFrameTick }
@@ -490,8 +541,6 @@ namespace Lockstep.Game
             {
                 msg.HashCodes[i] = allHashCodes[i];
             }
-
-            // SendUdp(EMsgSC.C2G_HashCode, msg);
 
             Send(EMsgSC.C2G_HashCode, msg);
         }

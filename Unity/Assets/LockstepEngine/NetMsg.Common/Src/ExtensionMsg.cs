@@ -338,7 +338,8 @@ namespace NetMsg.Common{
 			writer.Write(RoomId);
 			writer.Write(Seed);
 			writer.Write(SimulationSpeed);
-			writer.Write(UserCount);                                                                                
+			writer.Write(UserCount);
+			writer.Write(UserInfos);                                                                                     
        }                                                                                            
                                                                                                     
        public override void Deserialize(Deserializer reader){                                       
@@ -347,7 +348,8 @@ namespace NetMsg.Common{
 			RoomId = reader.ReadInt32();
 			Seed = reader.ReadInt32();
 			SimulationSpeed = reader.ReadInt32();
-			UserCount = reader.ReadByte();                                                                                 
+			UserCount = reader.ReadByte();
+			UserInfos = reader.ReadArray(this.UserInfos);                                                                                     
        }                                                                                            
     }                                                                                              
 

@@ -147,19 +147,34 @@ namespace Lockstep.FakeServer.Server
             var msgId = deserializer.ReadByte();
             LogMaster.N($"[Server] 服务器接收到数据  clientId:{clientId} msgId:{(EMsgSC)msgId}");
 
-            switch ((EMsgSC)msgId)
-            {
-                case EMsgSC.C2G_LoadingProgress:
-                    // var p = GetPlayer(clientId);
+            // BaseMsg msg = new BaseMsg();
+            // msg.Deserialize(deserializer);
 
-                    var LoadProgressMsg = new Msg_C2G_LoadingProgress();
+            _game?.LiteNetLibOnNetMsg(clientId, msgId, deserializer);
 
-                    LoadProgressMsg.Deserialize(deserializer);
+            // switch ((EMsgSC)msgId)
+            // {
+            //     case EMsgSC.C2G_LoadingProgress:
+            //         // var p = GetPlayer(clientId);
 
-                    //! 同步加载进度
-                    _game?._OnNetMsg(clientId, msgId, LoadProgressMsg);
-                    break;
-            }
+            //         var LoadProgressMsg = new Msg_C2G_LoadingProgress();
+
+            //         LoadProgressMsg.Deserialize(deserializer);
+
+            //         //! 同步加载进度
+            //         _game?._OnNetMsg(clientId, msgId, LoadProgressMsg);
+            //         break;
+            //     case EMsgSC.C2G_PlayerInput:
+
+            //         var inputMsg = new Msg_PlayerInput();
+            //         inputMsg.Deserialize(deserializer);
+
+            //         _game?._OnNetMsg(clientId, msgId, inputMsg);
+            //         break;
+            //     default:
+            //         LogMaster.E(" 未实现协议 " + (EMsgSC)msgId);
+            //         break;
+            // }
             // switch (deserializer.GetByte())
             // {
             //     case NetProtocolDefine.Input:

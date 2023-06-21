@@ -242,7 +242,7 @@ namespace NetMsg.Common {
         public int MapId;
         public int RoomId;
         public int Seed;
-        // public GameData[] UserInfos;
+        public GameData[] UserInfos;
         // public IPEndInfo UdpEnd;
         // public IPEndInfo TcpEnd;
         public int SimulationSpeed;
