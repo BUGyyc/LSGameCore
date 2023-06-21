@@ -171,6 +171,13 @@ namespace Lockstep.Game
             _dumpHelper.DumpAll();
         }
 
+        /// <summary>
+        /// !  客户端收到服务器通知，开始游戏
+        /// </summary>
+        /// <param name="targetFps"></param>
+        /// <param name="localActorId"></param>
+        /// <param name="actorCount"></param>
+        /// <param name="isNeedRender"></param>
         public void OnGameCreate(
             int targetFps,
             byte localActorId,

@@ -10,6 +10,8 @@ using NetMsg.Common;
 
 using Server.LiteNetLib;
 
+using Lockstep.Serialization;
+
 namespace Lockstep.FakeServer.Server
 {
     public class Server : IMessageDispatcher
@@ -92,12 +94,14 @@ namespace Lockstep.FakeServer.Server
 
             _startUpTimeStamp = _lastUpdateTimeStamp = DateTime.Now;
 
-            LogMaster.L($"[Server] {NetSetting.IP} {NetSetting.Port} {NetSetting.Number} ");
+            LogMaster.I(
+                $"[Server] 服务器开启房间  {NetSetting.IP} {NetSetting.Port} {NetSetting.Number} "
+            );
         }
 
         private void OnClientConnected(int clientId)
         {
-            Debug.Log("[服务器] 服务器回应。客户端链接到服务器");
+            LogMaster.I("[Server] 服务器回应。客户端链接到服务器");
             // _actorIds.Add(clientId, _nextPlayerId++);
             // if (_actorIds.Count == _size)
             // {
@@ -139,8 +143,23 @@ namespace Lockstep.FakeServer.Server
 
         private void OnDataReceived(int clientId, byte[] data)
         {
-            Debug.Log("[服务器] 服务器接收到数据");
-            // Deserializer deserializer = new Deserializer(Compressor.Decompress(data));
+            Deserializer deserializer = new Deserializer(Compressor.Decompress(data));
+            var msgId = deserializer.ReadByte();
+            LogMaster.N($"[Server] 服务器接收到数据  clientId:{clientId} msgId:{(EMsgSC)msgId}");
+
+            switch ((EMsgSC)msgId)
+            {
+                case EMsgSC.C2G_LoadingProgress:
+                    // var p = GetPlayer(clientId);
+
+                    var LoadProgressMsg = new Msg_C2G_LoadingProgress();
+
+                    LoadProgressMsg.Deserialize(deserializer);
+
+                    //! 同步加载进度
+                    _game?._OnNetMsg(clientId, msgId, LoadProgressMsg);
+                    break;
+            }
             // switch (deserializer.GetByte())
             // {
             //     case NetProtocolDefine.Input:
@@ -213,27 +232,27 @@ namespace Lockstep.FakeServer.Server
                 Packet.Index,
                 packet.Length - Packet.Index
             );
-            OnNetMsg(session, opcode, message as BaseMsg);
+            // OnNetMsg(session, opcode, message as BaseMsg);
         }
 
-        void OnNetMsg(Session session, ushort opcode, BaseMsg msg)
-        {
-            var type = (EMsgSC)opcode;
-            switch (type)
-            {
-                //login
-                // case EMsgSC.L2C_JoinRoomResult:
-                case EMsgSC.C2L_JoinRoom:
-                    OnPlayerConnect(session, msg);
-                    return;
-                case EMsgSC.C2L_LeaveRoom:
-                    OnPlayerQuit(session, msg);
-                    return;
-                //room
-            }
-            var player = session.GetBindInfo<Player>();
-            _game?.OnNetMsg(player, opcode, msg);
-        }
+        // void OnNetMsg(Session session, ushort opcode, BaseMsg msg)
+        // {
+        //     var type = (EMsgSC)opcode;
+        //     switch (type)
+        //     {
+        //         //login
+        //         // case EMsgSC.L2C_JoinRoomResult:
+        //         case EMsgSC.C2L_JoinRoom:
+        //             OnPlayerConnect(session, msg);
+        //             return;
+        //         case EMsgSC.C2L_LeaveRoom:
+        //             OnPlayerQuit(session, msg);
+        //             return;
+        //         //room
+        //     }
+        //     var player = session.GetBindInfo<Player>();
+        //     _game?.OnNetMsg(player, opcode, msg);
+        // }
 
         /// <summary>
         /// Server 的驱动核心

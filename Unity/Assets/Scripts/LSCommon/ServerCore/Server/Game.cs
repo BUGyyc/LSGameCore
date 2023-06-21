@@ -257,6 +257,9 @@ namespace Lockstep.FakeServer.Server
                 {
                     var helloMsg = new Msg_G2C_Hello() { LocalId = (byte)i };
                     // Players[i].SendTcp(EMsgSC.G2C_Hello, helloMsg);
+                    Serializer serializer = new Serializer();
+                    helloMsg.Serialize(serializer);
+                    _server.Send(i,Compressor.Compress(serializer));
                 }
 
                 var userInfos = new GameData[playerCount];
@@ -505,11 +508,11 @@ namespace Lockstep.FakeServer.Server
 
         public void SetStartInfo(Msg_G2C_GameStartInfo info)
         {
-            LogMaster.I("[Server] 服务器通知客户端，开始游戏");
+            LogMaster.I("[Server] 服务器通知客户端，进入游戏");
             Debug.Log("SetStartInfo "+info.ToString());
             GameStartInfo = info;
             // BorderTcp(EMsgSC.G2C_GameStartInfo, GameStartInfo);
-            Border(NetProtocolDefine.Init,GameStartInfo);
+            Border(EMsgSC.G2C_GameStartInfo,GameStartInfo);
         }
 
         public void OnRecvMsg(Player player, Deserializer reader)
@@ -677,12 +680,12 @@ namespace Lockstep.FakeServer.Server
         //     }
         // }
 
-        public void Border(byte msgId,Msg_G2C_GameStartInfo data){
+        public void Border(EMsgSC msgId,BaseMsg data){
 
            
 
             var serializer = new Serializer();
-
+            serializer.Write((byte)msgId);  
             data.Serialize(serializer);
 
             // serializer.Write(msgId);
@@ -831,6 +834,19 @@ namespace Lockstep.FakeServer.Server
         //回收时候调用
         public void OnReuse() { }
 
+        private Player GetPlayer(byte localId){
+            if(Players == null || Players.Length == 0)return null;
+
+            for(var i = 0;i<Players.Length;i++){
+                var item  = Players[i];
+                if(item == null)continue;
+                if(item.LocalId == localId){
+                    return item;
+                }
+            }
+            return null;
+        }
+
         public void OnRecycle()
         {
             _userId2LocalId.Clear();
@@ -851,8 +867,41 @@ namespace Lockstep.FakeServer.Server
 
         #region Net msg handler
 
-        public void OnNetMsg(Player player, ushort opcode, BaseMsg msg)
+        // public void OnNetMsg(Player player, ushort opcode, BaseMsg msg)
+        // {
+        //     var type = (EMsgSC)opcode;
+        //     switch (type)
+        //     {
+        //         //ping
+        //         case EMsgSC.C2G_PlayerPing:
+        //             C2G_PlayerPing(player, msg);
+        //             break;
+        //         //login
+        //         //room
+        //         case EMsgSC.C2G_PlayerInput:
+        //             C2G_PlayerInput(player, msg);
+        //             break;
+        //         case EMsgSC.C2G_HashCode:
+        //             C2G_HashCode(player, msg);
+        //             break;
+        //         case EMsgSC.C2G_LoadingProgress:
+        //             C2G_LoadingProgress(player, msg);
+        //             break;
+        //         case EMsgSC.C2G_ReqMissFrame:
+        //             C2G_ReqMissFrame(player, msg);
+        //             break;
+        //         case EMsgSC.C2G_RepMissFrameAck:
+        //             C2G_RepMissFrameAck(player, msg);
+        //             break;
+        //         default:
+        //             Debug.Log("Unknow msg " + type);
+        //             break;
+        //     }
+        // }
+
+        public void _OnNetMsg(int clientId, ushort opcode, BaseMsg msg)
         {
+            var player = GetPlayer((byte)clientId);
             var type = (EMsgSC)opcode;
             switch (type)
             {
@@ -1138,13 +1187,18 @@ namespace Lockstep.FakeServer.Server
 
             _playerLoadingProgress[player.LocalId] = msg.Progress;
 
-            //Log($"palyer{player.LocalId} Load {msg.Progress}");
+            Log($"player{player.LocalId} Load {msg.Progress}");
 
             //! 服务器通知客户端端
             // BorderTcp(
             //     EMsgSC.G2C_LoadingProgress,
             //     new Msg_G2C_LoadingProgress() { Progress = _playerLoadingProgress }
             // );
+
+            Border(
+                EMsgSC.G2C_LoadingProgress,
+                new Msg_G2C_LoadingProgress() { Progress = _playerLoadingProgress }
+            );
 
             if (msg.Progress < 100)
                 return;
@@ -1184,6 +1238,7 @@ namespace Lockstep.FakeServer.Server
 
             //BorderTcp(EMsgSC.G2C_GameStartInfo, GameStartInfo);
             // BorderTcp(EMsgSC.G2C_AllFinishedLoaded, new Msg_G2C_AllFinishedLoaded() { });
+           Border(EMsgSC.G2C_AllFinishedLoaded, new Msg_G2C_AllFinishedLoaded() { });
         }
 
         #endregion
