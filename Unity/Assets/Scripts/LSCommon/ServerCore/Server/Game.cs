@@ -92,6 +92,8 @@ namespace Lockstep.Game.Server
 }
 #endif
 
+using Server.LiteNetLib;
+
 namespace Lockstep.FakeServer.Server
 {
     public class Game : BaseLogger
@@ -119,6 +121,8 @@ namespace Lockstep.FakeServer.Server
         public EGameState State = EGameState.Idle;
         public int GameType { get; set; }
         public int GameId { get; set; }
+
+        private LiteNetLibServer _server;
 
         public long[] UserIds => _userId2LocalId.Keys.ToArray();
 
@@ -252,7 +256,7 @@ namespace Lockstep.FakeServer.Server
                 for (int i = 0; i < playerCount; i++)
                 {
                     var helloMsg = new Msg_G2C_Hello() { LocalId = (byte)i };
-                    Players[i].SendTcp(EMsgSC.G2C_Hello, helloMsg);
+                    // Players[i].SendTcp(EMsgSC.G2C_Hello, helloMsg);
                 }
 
                 var userInfos = new GameData[playerCount];
@@ -292,6 +296,11 @@ namespace Lockstep.FakeServer.Server
 
             return -1;
         }
+
+        public Game(LiteNetLibServer server){
+            _server = server;
+        }
+
 
         #region  life cycle
 
@@ -431,7 +440,7 @@ namespace Lockstep.FakeServer.Server
             LogMaster.L($"[Server]  广播信息  Tick：{Tick} ");
 
             //!  广播指令，这里的UDP 待验证
-            BorderUdp(EMsgSC.G2C_FrameData, msg);
+            // BorderUdp(EMsgSC.G2C_FrameData, msg);
 
             if (_firstFrameTimeStamp <= 0)
             {
@@ -496,9 +505,11 @@ namespace Lockstep.FakeServer.Server
 
         public void SetStartInfo(Msg_G2C_GameStartInfo info)
         {
+            LogMaster.I("[Server] 服务器通知客户端，开始游戏");
             Debug.Log("SetStartInfo");
             GameStartInfo = info;
-            BorderTcp(EMsgSC.G2C_GameStartInfo, GameStartInfo);
+            // BorderTcp(EMsgSC.G2C_GameStartInfo, GameStartInfo);
+            Border(NetProtocolDefine.Init,GameStartInfo);
         }
 
         public void OnRecvMsg(Player player, Deserializer reader)
@@ -637,62 +648,77 @@ namespace Lockstep.FakeServer.Server
             return data;
         }
 
-        public void BorderTcp(EMsgSC type, BaseMsg data)
-        {
+        // public void BorderTcp(EMsgSC type, BaseMsg data)
+        // {
+        //     var bytes = data.ToBytes();
+        //     foreach (var player in Players)
+        //     {
+        //         player?.SendTcp(type, bytes);
+        //     }
+        // }
+
+        public void Border(byte msgId,BaseMsg data){
+
+            var serializer = new Lockstep.Core.Logic.Serialization.Utils.Serializer();
+            serializer.Put(msgId);
             var bytes = data.ToBytes();
-            foreach (var player in Players)
-            {
-                player?.SendTcp(type, bytes);
-            }
+            serializer.Put(bytes);
+            // foreach (var player in Players)
+            // {
+            //     player?.SendTcp(type, bytes);
+            // }
+            _server.Distribute(Lockstep.Core.Logic.Serialization.Compressor.Compress(serializer));
+
+            LogMaster.I("[Server] 发送  msgID: " + msgId);
         }
 
-        public void BorderUdp(EMsgSC type, byte[] data)
-        {
-            foreach (var player in Players)
-            {
-                SendUdp(player, type, data);
-            }
-        }
+        // public void BorderUdp(EMsgSC type, byte[] data)
+        // {
+        //     foreach (var player in Players)
+        //     {
+        //         SendUdp(player, type, data);
+        //     }
+        // }
 
-        public void BorderUdp(EMsgSC type, ISerializable body)
-        {
-            var writer = new Serializer();
-            body.Serialize(writer);
-            var bytes = writer.CopyData();
-            foreach (var player in Players)
-            {
-                player?.SendUdp(type, bytes);
-            }
-        }
+        // public void BorderUdp(EMsgSC type, ISerializable body)
+        // {
+        //     var writer = new Serializer();
+        //     body.Serialize(writer);
+        //     var bytes = writer.CopyData();
+        //     foreach (var player in Players)
+        //     {
+        //         player?.SendUdp(type, bytes);
+        //     }
+        // }
 
-        public void SendUdp(Player player, EMsgSC type, byte[] data)
-        {
-            player?.SendUdp(type, data);
-        }
+        // public void SendUdp(Player player, EMsgSC type, byte[] data)
+        // {
+        //     player?.SendUdp(type, data);
+        // }
 
-        public void SendUdp(
-            Player player,
-            EMsgSC type,
-            ISerializable body,
-            bool isNeedDebugSize = false
-        )
-        {
-            var writer = new Serializer();
-            body.Serialize(writer);
-            player?.SendUdp(type, writer.CopyData());
-        }
+        // public void SendUdp(
+        //     Player player,
+        //     EMsgSC type,
+        //     ISerializable body,
+        //     bool isNeedDebugSize = false
+        // )
+        // {
+        //     var writer = new Serializer();
+        //     body.Serialize(writer);
+        //     player?.SendUdp(type, writer.CopyData());
+        // }
 
         #endregion
 
         #region net status
 
-        public void OnPlayerConnect(Player player)
-        {
-            if (GameStartInfo != null)
-            {
-                player.SendTcp(EMsgSC.G2C_GameStartInfo, GameStartInfo);
-            }
-        }
+        // public void OnPlayerConnect(Player player)
+        // {
+        //     if (GameStartInfo != null)
+        //     {
+        //         player.SendTcp(EMsgSC.G2C_GameStartInfo, GameStartInfo);
+        //     }
+        // }
 
         //net status
         public void OnPlayerReconnect(GamePlayerInfo playerInfo)
@@ -737,30 +763,30 @@ namespace Lockstep.FakeServer.Server
 
         void RemovePlayer(Player player)
         {
-            if (Players[player.LocalId] == null)
-                return;
-            Players[player.LocalId] = null;
-            var peer = player.PeerTcp;
-            peer?.Dispose();
+            // if (Players[player.LocalId] == null)
+            //     return;
+            // Players[player.LocalId] = null;
+            // var peer = player.PeerTcp;
+            // peer?.Dispose();
 
-            player.PeerTcp = null;
-            peer = player.PeerUdp;
-            peer?.Dispose();
+            // player.PeerTcp = null;
+            // peer = player.PeerUdp;
+            // peer?.Dispose();
 
-            player.PeerUdp = null;
+            // player.PeerUdp = null;
 
-            var curCount = CurPlayerCount;
-            if (curCount == 0)
-            {
-                Log("All players left, stopping current simulation...");
-                IsRunning = false;
-                State = EGameState.Idle;
-                //_gameServer.OnGameEmpty(this);
-            }
-            else
-            {
-                Log(curCount + " players remaining.");
-            }
+            // var curCount = CurPlayerCount;
+            // if (curCount == 0)
+            // {
+            //     Log("All players left, stopping current simulation...");
+            //     IsRunning = false;
+            //     State = EGameState.Idle;
+            //     //_gameServer.OnGameEmpty(this);
+            // }
+            // else
+            // {
+            //     Log(curCount + " players remaining.");
+            // }
         }
 
         #endregion
@@ -859,16 +885,16 @@ namespace Lockstep.FakeServer.Server
         void C2G_PlayerPing(Player player, BaseMsg data)
         {
             var msg = data as Msg_C2G_PlayerPing;
-            player?.SendUdp(
-                EMsgSC.G2C_PlayerPing,
-                new Msg_G2C_PlayerPing()
-                {
-                    localId = msg.localId,
-                    sendTimestamp = msg.sendTimestamp,
-                    //发送者的时间戳 与 服务自身的时间戳 差值
-                    timeSinceServerStart = LTime.realtimeSinceStartupMS - _gameStartTimestampMs
-                }
-            );
+            // player?.SendUdp(
+            //     EMsgSC.G2C_PlayerPing,
+            //     new Msg_G2C_PlayerPing()
+            //     {
+            //         localId = msg.localId,
+            //         sendTimestamp = msg.sendTimestamp,
+            //         //发送者的时间戳 与 服务自身的时间戳 差值
+            //         timeSinceServerStart = LTime.realtimeSinceStartupMS - _gameStartTimestampMs
+            //     }
+            // );
         }
 
         /// <summary>
@@ -1054,7 +1080,7 @@ namespace Lockstep.FakeServer.Server
             //! 将需要的历史帧，下发给客户端
             msg.startTick = frames[0].tick;
             msg.frames = frames;
-            SendUdp(player, EMsgSC.G2C_RepMissFrame, msg, true);
+            // SendUdp(player, EMsgSC.G2C_RepMissFrame, msg, true);
         }
 
         /// <summary>
@@ -1088,10 +1114,10 @@ namespace Lockstep.FakeServer.Server
             //Log($"palyer{player.LocalId} Load {msg.Progress}");
 
             //! 服务器通知客户端端
-            BorderTcp(
-                EMsgSC.G2C_LoadingProgress,
-                new Msg_G2C_LoadingProgress() { Progress = _playerLoadingProgress }
-            );
+            // BorderTcp(
+            //     EMsgSC.G2C_LoadingProgress,
+            //     new Msg_G2C_LoadingProgress() { Progress = _playerLoadingProgress }
+            // );
 
             if (msg.Progress < 100)
                 return;
@@ -1130,7 +1156,7 @@ namespace Lockstep.FakeServer.Server
             }
 
             //BorderTcp(EMsgSC.G2C_GameStartInfo, GameStartInfo);
-            BorderTcp(EMsgSC.G2C_AllFinishedLoaded, new Msg_G2C_AllFinishedLoaded() { });
+            // BorderTcp(EMsgSC.G2C_AllFinishedLoaded, new Msg_G2C_AllFinishedLoaded() { });
         }
 
         #endregion

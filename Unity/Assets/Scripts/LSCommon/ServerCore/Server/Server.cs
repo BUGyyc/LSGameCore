@@ -106,6 +106,35 @@ namespace Lockstep.FakeServer.Server
             //     return;
             // }
             // Debug.Log(_actorIds.Count + " / " + _size + " players have connected.");
+
+
+            //TODO load from db
+            var info = new Player();
+            info.UserId = _idCounter++;
+            // info.PeerTcp = session;
+            // info.PeerUdp = session;
+            _id2Player[info.UserId] = info;
+            // session.BindInfo = info;
+            _curCount++;
+            if (_curCount >= NetSetting.Number)
+            {
+                //TODO temp code
+                _game = new Game(_server);
+                var players = new Player[_curCount];
+                int i = 0;
+                foreach (var player in _id2Player.Values)
+                {
+                    player.LocalId = (byte)i;
+                    player.Game = _game;
+                    players[i] = player;
+                    i++;
+                }
+                _game.DoStart(0, 0, 0, players, "123");
+            }
+
+            LogMaster.I(
+                "[Server] OnPlayerConnect count:" + _curCount + "  roomSize: " + NetSetting.Number
+            );
         }
 
         private void OnDataReceived(int clientId, byte[] data)
@@ -237,30 +266,30 @@ namespace Lockstep.FakeServer.Server
         void OnPlayerConnect(Session session, BaseMsg message)
         {
             //TODO load from db
-            var info = new Player();
-            info.UserId = _idCounter++;
-            info.PeerTcp = session;
-            info.PeerUdp = session;
-            _id2Player[info.UserId] = info;
-            session.BindInfo = info;
-            _curCount++;
-            if (_curCount >= NetSetting.Number)
-            {
-                //TODO temp code
-                _game = new Game();
-                var players = new Player[_curCount];
-                int i = 0;
-                foreach (var player in _id2Player.Values)
-                {
-                    player.LocalId = (byte)i;
-                    player.Game = _game;
-                    players[i] = player;
-                    i++;
-                }
-                _game.DoStart(0, 0, 0, players, "123");
-            }
+            // var info = new Player();
+            // info.UserId = _idCounter++;
+            // // info.PeerTcp = session;
+            // // info.PeerUdp = session;
+            // _id2Player[info.UserId] = info;
+            // session.BindInfo = info;
+            // _curCount++;
+            // if (_curCount >= NetSetting.Number)
+            // {
+            //     //TODO temp code
+            //     _game = new Game();
+            //     var players = new Player[_curCount];
+            //     int i = 0;
+            //     foreach (var player in _id2Player.Values)
+            //     {
+            //         player.LocalId = (byte)i;
+            //         player.Game = _game;
+            //         players[i] = player;
+            //         i++;
+            //     }
+            //     _game.DoStart(0, 0, 0, players, "123");
+            // }
 
-            LogMaster.I("[Server] OnPlayerConnect count:" + _curCount + " ");
+            // LogMaster.I("[Server] OnPlayerConnect count:" + _curCount + " ");
         }
 
         void OnPlayerQuit(Session session, BaseMsg message)

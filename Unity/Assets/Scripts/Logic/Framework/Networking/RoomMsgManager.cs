@@ -116,15 +116,15 @@ namespace Lockstep.Game
         /// <param name="rawData"></param>
         private void NetworkOnDataReceived(byte[] rawData)
         {
-            Debug.Log($"[Client] 客户端接收到数据  {rawData.Length} ");
-
             byte[] source = Compressor.Decompress(rawData);
             var deserializer = new Lockstep.Core.Logic.Serialization.Utils.Deserializer(source);
-            switch (deserializer.GetByte())
+            var msgId = deserializer.GetByte();
+            Debug.Log($"[Client] 客户端接收到数据  {rawData.Length}  {msgId} ");
+            switch (msgId)
             {
                 case NetProtocolDefine.Init:
                 {
-                    // Init init = new Init();
+                    // Msg_G2C_GameStartInfo init = new Msg_G2C_GameStartInfo();
                     // init.Deserialize(deserializer);
                     // this.InitReceived?.Invoke(this, init);
                     break;
