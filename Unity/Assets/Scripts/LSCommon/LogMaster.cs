@@ -19,7 +19,12 @@ public static class LogMaster
     /// <param name="str"></param>
     public static void N(params string[] args)
     {
-        Debug.LogFormat($"<color=red> {string.Join(",", args)}   </color>");
+        Debug.LogFormat($"<color=red>{string.Join(",", args)}   </color>");
+    }
+
+    public static void Log(params string[] args)
+    {
+        Debug.LogFormat($"<color=red>{string.Join(",", args)}   </color>");
     }
 
     public static void L(params string[] str)

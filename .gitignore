@@ -97,3 +97,4 @@ CopyUnityProject/Assembly-CSharp.csproj
 CopyUnityProject/Assembly-CSharp-Editor.csproj
 CopyUnityProject/CopyUnityProject.sln
 Unity/Bundles/StandaloneWindows64/
+Unity/Assets/StreamingAssets/BuildinFiles/
