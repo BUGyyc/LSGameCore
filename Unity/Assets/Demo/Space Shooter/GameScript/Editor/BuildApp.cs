@@ -2,7 +2,7 @@
  * @Author: delevin.ying
  * @Date: 2023-06-25 16:19:32
  * @Last Modified by: delevin.ying
- * @Last Modified time: 2023-07-12 12:29:31
+ * @Last Modified time: 2023-07-12 12:51:26
  */
 
 
@@ -15,8 +15,8 @@ using YooAsset.Editor;
 
 public static class BuildApp
 {
-    private const string c_RelativeDirPrefix = "../Release/";
-    private const string c_InitScenePath = "Assets/Demo/Space Shooter/Boot.unity";
+    private const string RelativeDirPrefix = "../Release/";
+    private const string InitScenePath = "Assets/Scenes/Launch.unity";
 
     [MenuItem("QuickFolder/Open Bundles")]
     public static void OpenBundles()
@@ -77,27 +77,32 @@ public static class BuildApp
         // LogMaster.Log("revert PlayerSettings. Version " + currVersion);
     }
 
-    [MenuItem("Build Tools/BuildApp")]
+    [MenuItem("Build Tools/BuildApp(快速构建APP)")]
     public static void Build()
     {
         var appBuild = SettingLoader.LoadSettingData<AppBuildSetting>();
         var manifest = Resources.Load<BuildinFileManifest>("BuildinFileManifest");
         var appVersion = appBuild.appVersion;
+        if (string.IsNullOrEmpty(appVersion))
+        {
+            throw new Exception("版本号异常，建议检测 Git 记录   @delevinying");
+        }
+
         PlayerSettings.bundleVersion = appVersion;
         UnityEngine.Debug.Log("[AppVersion]  " + appVersion);
-       
 
-
-        var outputPath = $"{c_RelativeDirPrefix}/ProjectS_EXE"; //EditorUtility.SaveFolderPanel("Choose Location of the Built Game", "", "");
-        if (outputPath.Length == 0)
-            return;
+        //var outputPath = $"{RelativeDirPrefix}/ProjectS_EXE";
+        //if (outputPath.Length == 0)
+        //{
+        //    throw new Exception("导出路径异常");
+        //}
 
         #region 将Unity的BuildInScene设置为仅包含Init，因为我们为了支持在编辑器模式下的测试而必须将所有Scene放到Unity的BuildInSetting里
 
         var backScenes = EditorBuildSettings.scenes;
         var scenes = new EditorBuildSettingsScene[]
         {
-            new EditorBuildSettingsScene(c_InitScenePath, true)
+            new EditorBuildSettingsScene(InitScenePath, true)
         };
         EditorBuildSettings.scenes = scenes;
 
@@ -112,33 +117,59 @@ public static class BuildApp
         if (targetName == null)
             return;
 
+        var platform = appBuild.platform;
+        var platformFolderName = GetPlatformFolderName(platform);
+        string folderPath =
+            Application.dataPath.Replace("/Assets", "") + "/OutPutAPP/" + platformFolderName + "/";
+
+        FileUtil.CheckFolderAndCreate(folderPath);
+
+
+        Debug.Log(folderPath);
+
         var buildPlayerOptions = new BuildPlayerOptions
         {
-            locationPathName = outputPath + targetName,
-            target = EditorUserBuildSettings.activeBuildTarget,
+            locationPathName = folderPath + targetName,
+            target = platform,
             options = EditorUserBuildSettings.development
                 ? BuildOptions.Development
                 : BuildOptions.None
         };
         var buildReport = BuildPipeline.BuildPlayer(buildPlayerOptions);
 
+        //updater.PlayMode = backPlayMode;
+        //EditorBuildSettings.scenes = backScenes;
 
-
-        updater.PlayMode = backPlayMode;
-        EditorBuildSettings.scenes = backScenes;
-
-        if (buildReport.summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded)
+        //if (buildReport.summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded)
         {
-            LogMaster.Log("build Success  outputPath：" + outputPath + targetName);
+            //LogMaster.Log("build Success  outputPath：" + folderPath + targetName);
 
+            //UnityEditor.AssetDatabase.SaveAssets();
 
-            UnityEditor.AssetDatabase.SaveAssets();
+            //string nextVersion = SetNextVersion(appVersion);
 
-            Application.OpenURL("file://" + outputPath);
+            //Debug.Log("下一个版本号 : " + nextVersion);
+
+            //Application.OpenURL("file://" + folderPath);
         }
 
+        Debug.Log("output : " + folderPath);
+    }
 
-        Debug.Log("output : " + outputPath);
+    public static string GetPlatformFolderName(BuildTarget target)
+    {
+        switch (target)
+        {
+            case BuildTarget.Android:
+                return "android";
+            case BuildTarget.iOS:
+                return "IOS";
+            case BuildTarget.StandaloneWindows:
+            case BuildTarget.StandaloneWindows64:
+                return "windows";
+            default:
+                return "unknown";
+        }
     }
 
     public static string SetNextVersion(string str)

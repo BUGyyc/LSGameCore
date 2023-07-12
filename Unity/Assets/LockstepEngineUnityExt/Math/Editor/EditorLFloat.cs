@@ -10,7 +10,7 @@ public class EditorLFloat : UnityEditor.PropertyDrawer {
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label){
         var xProperty = property.FindPropertyRelative("_val");
         float LabelWidth = EditorGUIUtility.labelWidth - EditorLVectorDrawTool.LableWidthOffset;
-        float lableWid = EditorLVectorDrawTool.LableWid;
+        //float lableWid = EditorLVectorDrawTool.LableWid;
         var labelRect = new Rect(position.x, position.y, LabelWidth, position.height);
         EditorGUI.LabelField(labelRect, label);
         float filedWid = (position.width - LabelWidth);

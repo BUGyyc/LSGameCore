@@ -7,6 +7,19 @@ using UnityEngine;
 
 public static class FileUtil
 {
+
+    public static bool CheckFolderAndCreate(string path)
+    {
+        DirectoryInfo dir = new DirectoryInfo(path);
+        if (dir.Exists == false)
+        {
+            dir.Create();
+            return false;
+        }
+        return true;
+    }
+
+
     public static void GetDir(string dirPath, string exName, ref List<string> dirs)
     {
         foreach (string path in Directory.GetFiles(dirPath))

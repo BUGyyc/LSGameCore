@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using AppBuild;
-
+using UnityEditor;
 
 [CreateAssetMenu(fileName = "AppBuildSetting", menuName = "Create AppBuildSetting")]
 public class AppBuildSetting : ScriptableObject
@@ -10,6 +10,8 @@ public class AppBuildSetting : ScriptableObject
     /// 版本号
     /// </summary>
     public string appVersion;
+
+    public BuildTarget platform;
 
     /// <summary>
     /// 标记
