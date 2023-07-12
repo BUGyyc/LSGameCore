@@ -8,5 +8,5 @@ public class BuildinFileManifest : ScriptableObject
 {
 	public List<string> BuildinFiles = new List<string>();
 
-	public string NextPackageVersion;
+	// public string NextPackageVersion;
 }

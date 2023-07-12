@@ -79,7 +79,10 @@ namespace YooAsset
                     {
                         _steps = ESteps.Done;
                         Status = EOperationStatus.Succeed;
-                        LogMaster.Log("[DownloadPackageVersion]"," success , RemoteVersionValue: "+PackageVersion);
+
+                        PackageRuntimeData.packageVersion = PackageVersion;
+
+                        LogMaster.Log("[DownloadPackageVersion]"," [PackageRuntimeData] 设定版本号，      success , RemoteVersionValue: "+PackageVersion);
                     }
                 }
 

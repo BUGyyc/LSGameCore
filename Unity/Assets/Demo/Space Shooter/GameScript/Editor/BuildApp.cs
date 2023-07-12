@@ -1,8 +1,8 @@
 ﻿/*
- * @Author: delevin.ying 
- * @Date: 2023-06-25 16:19:32 
+ * @Author: delevin.ying
+ * @Date: 2023-06-25 16:19:32
  * @Last Modified by: delevin.ying
- * @Last Modified time: 2023-06-25 16:31:42
+ * @Last Modified time: 2023-07-12 12:29:31
  */
 
 
@@ -15,96 +15,90 @@ using YooAsset.Editor;
 
 public static class BuildApp
 {
-
     private const string c_RelativeDirPrefix = "../Release/";
     private const string c_InitScenePath = "Assets/Demo/Space Shooter/Boot.unity";
-
 
     [MenuItem("QuickFolder/Open Bundles")]
     public static void OpenBundles()
     {
-        Application.OpenURL("file://"+Application.dataPath+"/../Bundles/");
+        Application.OpenURL("file://" + Application.dataPath + "/../Bundles/");
     }
 
     [MenuItem("QuickFolder/Open Root Project")]
     public static void OpenRoot()
     {
-        Application.OpenURL("file://"+Application.dataPath+"/../../");
+        Application.OpenURL("file://" + Application.dataPath + "/../../");
     }
 
     [MenuItem("QuickFolder/Open Tools")]
     public static void OpenTools()
     {
-        Application.OpenURL("file://"+Application.dataPath+"/../../Tools/");
+        Application.OpenURL("file://" + Application.dataPath + "/../../Tools/");
     }
 
     [MenuItem("QuickFolder/Open Cache Bundles")]
     public static void OpenCacheBundles()
     {
-        Application.OpenURL("file://"+Application.dataPath+"/../Sandbox/");
+        Application.OpenURL("file://" + Application.dataPath + "/../Sandbox/");
     }
 
     [MenuItem("Debug Tools/TestLastVersion")]
     public static void DebugLastVersion()
     {
-        var manifest = Resources.Load<BuildinFileManifest>("BuildinFileManifest");
-        var currVersion = manifest.NextPackageVersion;
-        LogMaster.Log("curr Version " + currVersion);
+        // var manifest = Resources.Load<BuildinFileManifest>("BuildinFileManifest");
+        // var currVersion = manifest.NextPackageVersion;
+        // LogMaster.Log("curr Version " + currVersion);
 
-        var lastVersion = _GetLastVersion(currVersion);
+        // var lastVersion = _GetLastVersion(currVersion);
 
-        PlayerSettings.bundleVersion = lastVersion;
+        // PlayerSettings.bundleVersion = lastVersion;
 
-        LogMaster.Log("set PlayerSettings. Version " + lastVersion);
+        // LogMaster.Log("set PlayerSettings. Version " + lastVersion);
     }
-
 
     [MenuItem("Debug Tools/RevertVersion")]
     public static void RevertVersion()
     {
-        var manifest = Resources.Load<BuildinFileManifest>("BuildinFileManifest");
-        var currVersion = manifest.NextPackageVersion;
+        // var manifest = Resources.Load<BuildinFileManifest>("BuildinFileManifest");
+        // var currVersion = manifest.NextPackageVersion;
 
-        if(string.IsNullOrEmpty(currVersion)){
-            // throw new Exception("版本号异常");
-            //! 纠正异常
-            currVersion = "0.0.1";
-        }
+        // if(string.IsNullOrEmpty(currVersion)){
+        //     // throw new Exception("版本号异常");
+        //     //! 纠正异常
+        //     currVersion = "0.0.1";
+        // }
 
-        //LogMaster.Log("curr Version " + currVersion);
+        // //LogMaster.Log("curr Version " + currVersion);
 
-        //var lastVersion = _GetLastVersion(currVersion);
+        // //var lastVersion = _GetLastVersion(currVersion);
 
-        PlayerSettings.bundleVersion = currVersion;
+        // PlayerSettings.bundleVersion = currVersion;
 
-        LogMaster.Log("revert PlayerSettings. Version " + currVersion);
+        // LogMaster.Log("revert PlayerSettings. Version " + currVersion);
     }
-
-
 
     [MenuItem("Build Tools/BuildApp")]
     public static void Build()
     {
+        var appBuild = SettingLoader.LoadSettingData<AppBuildSetting>();
         var manifest = Resources.Load<BuildinFileManifest>("BuildinFileManifest");
-        var packageVersion = manifest.NextPackageVersion;// AssetBundleBuilderSettingData.Setting.packageVersion;
-        if(string.IsNullOrEmpty(packageVersion))
-        {
-            packageVersion = "0.0.1";
-            UnityEngine.Debug.Log("[PackageVersion]  init version");
-        }
+        var appVersion = appBuild.appVersion;
+        PlayerSettings.bundleVersion = appVersion;
+        UnityEngine.Debug.Log("[AppVersion]  " + appVersion);
+       
 
-        PlayerSettings.bundleVersion = packageVersion;
-        //UnityEngine.Debug.Log("[PlayerSettings.bundleVersion]  "+ packageVersion);
 
-        var outputPath =
-             $"{c_RelativeDirPrefix}/ProjectS_EXE"; //EditorUtility.SaveFolderPanel("Choose Location of the Built Game", "", "");
+        var outputPath = $"{c_RelativeDirPrefix}/ProjectS_EXE"; //EditorUtility.SaveFolderPanel("Choose Location of the Built Game", "", "");
         if (outputPath.Length == 0)
             return;
 
         #region 将Unity的BuildInScene设置为仅包含Init，因为我们为了支持在编辑器模式下的测试而必须将所有Scene放到Unity的BuildInSetting里
 
         var backScenes = EditorBuildSettings.scenes;
-        var scenes = new EditorBuildSettingsScene[] { new EditorBuildSettingsScene(c_InitScenePath, true) };
+        var scenes = new EditorBuildSettingsScene[]
+        {
+            new EditorBuildSettingsScene(c_InitScenePath, true)
+        };
         EditorBuildSettings.scenes = scenes;
 
         #endregion
@@ -122,33 +116,27 @@ public static class BuildApp
         {
             locationPathName = outputPath + targetName,
             target = EditorUserBuildSettings.activeBuildTarget,
-            options = EditorUserBuildSettings.development ? BuildOptions.Development : BuildOptions.None
+            options = EditorUserBuildSettings.development
+                ? BuildOptions.Development
+                : BuildOptions.None
         };
         var buildReport = BuildPipeline.BuildPlayer(buildPlayerOptions);
 
-        UnityEngine.Debug.Log("[PlayerSettings.bundleVersion] packageVersion: " + packageVersion);
+
 
         updater.PlayMode = backPlayMode;
         EditorBuildSettings.scenes = backScenes;
 
-        if(buildReport.summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded){
-            LogMaster.Log("build Success  outputPath："+ outputPath + targetName);
+        if (buildReport.summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded)
+        {
+            LogMaster.Log("build Success  outputPath：" + outputPath + targetName);
 
-
-
-            /*AssetBundleBuilderSettingData.Setting.packageVersion*/
-            manifest.NextPackageVersion = SetNextVersion(packageVersion);
 
             UnityEditor.AssetDatabase.SaveAssets();
 
-            Application.OpenURL("file://"+outputPath);
+            Application.OpenURL("file://" + outputPath);
         }
 
-		//if (AssetBundleBuilderSettingData.IsDirty){
-  //          AssetBundleBuilderSettingData.SaveFile();
-  //      }
-				
-        
 
         Debug.Log("output : " + outputPath);
     }
@@ -227,10 +215,10 @@ public static class BuildApp
                 return "/" + name + ".app";
 
 #else
-                case BuildTarget.StandaloneOSXIntel:
-                case BuildTarget.StandaloneOSXIntel64:
-                case BuildTarget.StandaloneOSXUniversal:
-                    return "/" + path + ".app";
+            case BuildTarget.StandaloneOSXIntel:
+            case BuildTarget.StandaloneOSXIntel64:
+            case BuildTarget.StandaloneOSXUniversal:
+                return "/" + path + ".app";
 
 #endif
 

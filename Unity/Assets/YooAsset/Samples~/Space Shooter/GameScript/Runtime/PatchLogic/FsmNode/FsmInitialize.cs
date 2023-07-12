@@ -94,16 +94,18 @@ internal class FsmInitialize : IStateNode
 		string hostServerIP = "http://127.0.0.1";
 		string appVersion = "v1.0";
 
+		string packageName = "FPS";
+
 #if UNITY_EDITOR
-		appVersion = "2023-07-03-1064"; 
+		appVersion = "2023-07-12-622"; 
 		if (UnityEditor.EditorUserBuildSettings.activeBuildTarget == UnityEditor.BuildTarget.Android)
-			return $"{hostServerIP}:8000/Android/DefaultPackage/{appVersion}";
+			return $"{hostServerIP}:8000/Android/{packageName}/{appVersion}";
 		else if (UnityEditor.EditorUserBuildSettings.activeBuildTarget == UnityEditor.BuildTarget.iOS)
-			return $"{hostServerIP}:8000/IPhone/DefaultPackage/{appVersion}";
+			return $"{hostServerIP}:8000/IPhone/{packageName}/{appVersion}";
 		else if (UnityEditor.EditorUserBuildSettings.activeBuildTarget == UnityEditor.BuildTarget.WebGL)
-			return $"{hostServerIP}:8000/WebGL/DefaultPackage/{appVersion}";
+			return $"{hostServerIP}:8000/WebGL/{packageName}/{appVersion}";
 		else
-			return $"{hostServerIP}:8000/PC/DefaultPackage/{appVersion}";
+			return $"{hostServerIP}:8000/PC/{packageName}/{appVersion}";
 #else
 		if (Application.platform == RuntimePlatform.Android)
 			return $"{hostServerIP}/CDN/Android/{appVersion}";

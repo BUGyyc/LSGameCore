@@ -373,7 +373,10 @@ namespace YooAsset
                     _impl.ActiveManifest = _loadBuildinManifestOp.Manifest;
                     _steps = ESteps.PackageCaching;
 
-                    LogMaster.Log("[LoadBuildinManifest]"," succeed version:" + PackageVersion);
+
+                    // PackageRuntimeData.packageVersion = PackageVersion;
+
+                    LogMaster.Log("[LoadBuildinManifest]"," [PackageRuntimeData] 设定版本号，  succeed version:" + PackageVersion);
                 }
                 else
                 {
