@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root Version="2.4">
+  <Common AutoAddressable="True" UniqueBundleName="True" ShowPackageView="True" ShowEditorAlias="True" />
+  <Package PackageName="DefaultPackage" PackageDesc="">
+    <Group GroupActiveRule="EnableGroup" GroupName="battle" GroupDesc="战斗" AssetTags="">
+      <Collector CollectPath="Assets/Demo/Space Shooter/GameRes/Effect" CollectGUID="80d76514758554baaa96a9efffe9f3ef" CollectType="MainAssetCollector" AddressRule="AddressByFileName" PackRule="PackDirectory" FilterRule="CollectAll" UserData="" AssetTags="" />
+      <Collector CollectPath="Assets/Demo/Space Shooter/GameRes/Entity" CollectGUID="4d7c84745db8e884f8020a8c5356e67c" CollectType="MainAssetCollector" AddressRule="AddressByFileName" PackRule="PackDirectory" FilterRule="CollectAll" UserData="" AssetTags="" />
+      <Collector CollectPath="Assets/Demo/Space Shooter/GameRes/Audio" CollectGUID="306075fbe00b24251b6c889984a7a7d5" CollectType="MainAssetCollector" AddressRule="AddressByFileName" PackRule="PackDirectory" FilterRule="CollectAll" UserData="" AssetTags="" />
+    </Group>
+    <Group GroupActiveRule="EnableGroup" GroupName="scene" GroupDesc="场景" AssetTags="">
+      <Collector CollectPath="Assets/Demo/Space Shooter/GameRes/Scene" CollectGUID="6070eae1192f2994887f2983a177d503" CollectType="MainAssetCollector" AddressRule="AddressByFileName" PackRule="PackSeparately" FilterRule="CollectAll" UserData="" AssetTags="" />
+    </Group>
+    <Group GroupActiveRule="EnableGroup" GroupName="ugui" GroupDesc="面板" AssetTags="">
+      <Collector CollectPath="Assets/Demo/Space Shooter/GameRes/UIImage" CollectGUID="30c57db62bb02a24590e7046d3a9e33a" CollectType="MainAssetCollector" AddressRule="AddressByFileName" PackRule="PackDirectory" FilterRule="CollectAll" UserData="" AssetTags="" />
+      <Collector CollectPath="Assets/Demo/Space Shooter/GameRes/UIPanel" CollectGUID="12d33f33f3a55224c9c747d7bffa1c68" CollectType="MainAssetCollector" AddressRule="AddressByFileName" PackRule="PackSeparately" FilterRule="CollectAll" UserData="" AssetTags="" />
+      <Collector CollectPath="Assets/Demo/Space Shooter/GameRes/UISprite" CollectGUID="01865ad6f7c806147b6cb37f2d83bc96" CollectType="MainAssetCollector" AddressRule="AddressByFileName" PackRule="PackTopDirectory" FilterRule="CollectAll" UserData="" AssetTags="" />
+    </Group>
+    <Group GroupActiveRule="EnableGroup" GroupName="config" GroupDesc="配置表" AssetTags="">
+      <Collector CollectPath="Assets/Demo/Space Shooter/GameRes/Config" CollectGUID="1894d23646ddbf8479e579cc03261dde" CollectType="MainAssetCollector" AddressRule="AddressByFileName" PackRule="PackRawFile" FilterRule="CollectAll" UserData="" AssetTags="" />
+    </Group>
+  </Package>
+  <Package PackageName="FPS" PackageDesc="">
+    <Group GroupActiveRule="EnableGroup" GroupName="Scene" GroupDesc="场景" AssetTags="">
+      <Collector CollectPath="Assets/Scenes/Client" CollectGUID="b7aa36821065daa45a14315724327061" CollectType="MainAssetCollector" AddressRule="AddressByFileName" PackRule="PackSeparately" FilterRule="CollectAll" UserData="" AssetTags="" />
+      <Collector CollectPath="Assets/Scenes/Level" CollectGUID="ec38b54e5735f3246a5f972303c7d33d" CollectType="MainAssetCollector" AddressRule="AddressByFileName" PackRule="PackSeparately" FilterRule="CollectAll" UserData="" AssetTags="" />
+    </Group>
+    <Group GroupActiveRule="EnableGroup" GroupName="Battle" GroupDesc="战斗" AssetTags="">
+      <Collector CollectPath="Assets/Resources/Prefabs" CollectGUID="6b6ab4519bd51436b99c8232531c61a5" CollectType="MainAssetCollector" AddressRule="AddressByFileName" PackRule="PackDirectory" FilterRule="CollectAll" UserData="" AssetTags="" />
+    </Group>
+    <Group GroupActiveRule="EnableGroup" GroupName="UGUI" GroupDesc="面板" AssetTags="">
+      <Collector CollectPath="Assets/ArtRes/FPS/UI/Prefab" CollectGUID="44e5a7058f91b3b469780fb225007cf5" CollectType="MainAssetCollector" AddressRule="AddressByFileName" PackRule="PackSeparately" FilterRule="CollectAll" UserData="" AssetTags="" />
+    </Group>
+  </Package>
+</root>

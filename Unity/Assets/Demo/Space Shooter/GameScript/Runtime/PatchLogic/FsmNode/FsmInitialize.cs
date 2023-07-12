@@ -37,7 +37,7 @@ internal class FsmInitialize : IStateNode
 		var playMode = PatchManager.Instance.PlayMode;
 
 		// 创建默认的资源包
-		string packageName = "DefaultPackage";
+		string packageName = "FPS";
 		var package = YooAssets.TryGetPackage(packageName);
 		if (package == null)
 		{

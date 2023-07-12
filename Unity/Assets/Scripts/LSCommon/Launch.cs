@@ -5,49 +5,11 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System;
 using System.Text.RegularExpressions;
+using YooAsset;
+using UniFramework.Singleton;
 
 public class Launch : MonoBehaviour
 {
-    public virtual void FuncName(int arg1, object arg2, int arg3)
-    {        //NOTE: AutoCreate LockstepLog
-        LogMaster.L($"arg1: {arg1} arg3: {arg3} ");
-
-
- LogMaster.L($"arg1: {arg1} arg3: {arg3} ");
-
- //LogMaster.L($"arg1: {arg1}  arg3 : { arg3 } ");
-
- //LogMaster.L($"arg1: \{arg1\}  arg3 : \{ arg3 \} ");
-
- //LogMaster.L($"arg1: {arg1\}  arg3 : \{ arg3 \} ");
-
- //LogMaster.L($"{arg1: \{arg1\}  arg3 : \{ arg3 \} }");
-
-
-
-        int c = 1;
-        int b = arg1 + c;
-    }
-
-    public void Test(int a)
-    {        //NOTE: AutoCreate LockstepLog
-        LogMaster.L($"a: {a} ");
-
-
- LogMaster.L($"a: {a} ");
-
- //LogMaster.L($"a : {a } ");
-
- //LogMaster.L($"a : \{a \} ");
-
- //LogMaster.L($"a : \{a \} ");
-
- //LogMaster.L($"{a : \{a \} }");
-
-        int c = a++;
-        int b = a + c;
-    }
-
     public Button createRoomBtn;
     public Button joinRoomBtn;
 
@@ -58,24 +20,35 @@ public class Launch : MonoBehaviour
     {
         createRoomBtn.onClick.AddListener(() =>
         {
-            SceneManager.LoadScene("HostClient");
+            // SceneManager.LoadScene("HostClient");
+            UniSingleton.StartCoroutine(LoadScene("HostClient"));
         });
 
         joinRoomBtn.onClick.AddListener(() =>
         {
-            SceneManager.LoadScene("Client");
+            // SceneManager.LoadScene("Client");
+            UniSingleton.StartCoroutine(LoadScene("Client"));
         });
 
 #if UNITY_EDITOR
         if (APP.QuickDebugSinglePlayer)
         {
-            SceneManager.LoadScene("HostClient");
+            // SceneManager.LoadScene("HostClient");
+            UniSingleton.StartCoroutine(LoadScene("HostClient"));
         }
 #endif
 
         pureServerBtn.onClick.AddListener(() =>
         {
-            SceneManager.LoadScene("PureServer");
+            // SceneManager.LoadScene("PureServer");
+            UniSingleton.StartCoroutine(LoadScene("PureServer"));
         });
+    }
+
+    private IEnumerator LoadScene(string sceneName)
+    {
+        yield return YooAssets.LoadSceneAsync(sceneName);
+
+        LogMaster.I("Load Scene  name : " + sceneName);
     }
 }

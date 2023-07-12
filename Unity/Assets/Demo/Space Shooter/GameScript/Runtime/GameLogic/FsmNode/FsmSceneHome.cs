@@ -29,14 +29,14 @@ internal class FsmSceneHome : IStateNode
 	private IEnumerator Prepare()
 	{
 		//note 同步加载
-		yield return YooAssets.LoadSceneAsync("scene_home");	
+		yield return YooAssets.LoadSceneAsync("Lobby");	
 
 		Debug.Log("Open HomeScene");
 
-		yield return UniWindow.OpenWindowAsync<UIHomeWindow>("UIHome");
+		// yield return UniWindow.OpenWindowAsync<UIHomeWindow>("UIHome");
 
 		// 释放资源
-		var package = YooAssets.GetPackage("DefaultPackage");
+		var package = YooAssets.GetPackage("FPS");
 		//！清理未使用的资源
 		package.UnloadUnusedAssets();
 	}

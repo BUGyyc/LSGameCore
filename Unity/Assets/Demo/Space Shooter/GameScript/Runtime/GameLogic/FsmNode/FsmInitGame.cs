@@ -33,14 +33,16 @@ internal class FsmInitGame : IStateNode
 	/// <returns></returns>
 	private IEnumerator Prepare()
 	{
-		var handle = YooAssets.LoadAssetAsync<GameObject>("UICanvas");
-		yield return handle;
-		var canvas = handle.InstantiateSync();
-		var desktop = canvas.transform.Find("Desktop").gameObject;
-		GameObject.DontDestroyOnLoad(canvas);
+		// var handle = YooAssets.LoadAssetAsync<GameObject>("UICanvas");
+		// yield return handle;
+		// var canvas = handle.InstantiateSync();
+		// var desktop = canvas.transform.Find("Desktop").gameObject;
+		// GameObject.DontDestroyOnLoad(canvas);
 
-		// 初始化窗口系统
-		UniWindow.Initalize(desktop);
+		// // 初始化窗口系统
+		// UniWindow.Initalize(desktop);
+
+		yield return null;
 
 		// 初始化对象池系统
 		UniPooling.Initalize();

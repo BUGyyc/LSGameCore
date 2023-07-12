@@ -38,7 +38,7 @@ public class FsmUpdateManifest : IStateNode
 		yield return new WaitForSecondsRealtime(0.5f);
 
 		bool savePackageVersion = true;
-		var package = YooAssets.GetPackage("DefaultPackage");
+		var package = YooAssets.GetPackage("FPS");
 		var operation = package.UpdatePackageManifestAsync(PatchManager.Instance.PackageVersion, savePackageVersion);
 		yield return operation;
 

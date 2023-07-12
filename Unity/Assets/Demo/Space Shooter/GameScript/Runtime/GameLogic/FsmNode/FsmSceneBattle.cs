@@ -45,7 +45,7 @@ internal class FsmSceneBattle : IStateNode
 
 		//！ 这里的策略需要慎重一点
 		// 释放资源
-		var package = YooAssets.GetPackage("DefaultPackage");
+		var package = YooAssets.GetPackage("FPS");
 		package.UnloadUnusedAssets();
 	}
 }

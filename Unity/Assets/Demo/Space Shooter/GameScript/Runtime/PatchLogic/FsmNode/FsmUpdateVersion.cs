@@ -32,7 +32,7 @@ internal class FsmUpdateVersion : IStateNode
 	{
 		yield return new WaitForSecondsRealtime(0.5f);
 
-		var package = YooAssets.GetPackage("DefaultPackage");
+		var package = YooAssets.GetPackage("FPS");
 		var operation = package.UpdatePackageVersionAsync();
 		yield return operation;
 

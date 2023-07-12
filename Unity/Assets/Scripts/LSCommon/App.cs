@@ -10,7 +10,7 @@ public static class APP{
 
     // public 
 
-    public static bool QuickDebugSinglePlayer = true;
+    public static bool QuickDebugSinglePlayer = false;
 
     public static bool DebugMissNetPackage = false;
 

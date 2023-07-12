@@ -18,7 +18,7 @@ internal class FsmClearCache : IStateNode
 	{
 		Debug.Log("清理多余的缓存文件  Clear Cache");
 		PatchEventDefine.PatchStatesChange.SendEventMessage("清理未使用的缓存文件！");
-		var package = YooAsset.YooAssets.GetPackage("DefaultPackage");
+		var package = YooAsset.YooAssets.GetPackage("FPS");
 		var operation = package.ClearUnusedCacheFilesAsync();
 		operation.Completed += Operation_Completed;
 	}
